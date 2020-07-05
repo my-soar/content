@@ -1,0 +1,19 @@
+{
+    "name": "Alpaca Stock Trading Platform",
+    "description": "Alpaca Securities provides brokerage services to technology-minded users with a variety of experiences including general usage of APIs or automation of investing and trading",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "https://github.com/ayman-m",
+    "email": "content@ayman.online",
+    "created": "2020-06-30T16:35:49Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "stocks",
+        "trading"
+    ],
+    "useCases": [],
+    "keywords": []
+}
