@@ -62,6 +62,64 @@ script:
     - contextPath: Alpha.Stock.LastTrade
       description: Stock Last Trade Information
       type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 1D
+      description: 'Price Timeframes: 1Min, 5Min, 15Min or 1D'
+      isArray: false
+      name: timeframe
+      predefined:
+      - 1Min
+      - 5Min
+      - 15Min
+      - 1D
+      required: true
+      secret: false
+    - default: false
+      description: Stock Ticker
+      isArray: false
+      name: ticker
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '100'
+      description: The maximum number of candlesticks to be returned. It can be between
+        1 and 1000
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter bars equal to or after this time, cannot be used with "after".
+        ex: ''2019-04-15T09:30:00-04:00'''
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter bars equal to or before this time, cannot be used with
+        "until". ex: ''2019-04-15T09:30:00-04:00'''
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: until
+      description: 'Filter bars after this time, cannot be used with "start". ex:
+        ''2019-04-15T09:30:00-04:00'''
+      isArray: false
+      name: after
+      predefined:
+      - Filter bars before this time
+      - ' cannot be used with "end". ex: ''2019-04-15T09:30:00-04:00'''
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Stock Price Candlestick Information
+    execution: false
+    name: alpaca-get-candlesticks
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true

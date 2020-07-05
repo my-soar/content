@@ -62,6 +62,22 @@ class Client(BaseClient):
         )
         return res
 
+    def get_candlesticks(self, ticker, timeframe="1D", limit="100", start=None, end=None, after=None, until=None):
+        LOG('Getting Price Candlesticks')
+        params={
+            "symbols": ticker,
+            "limit": limit
+        }
+
+        res = self._http_request(
+            "GET",
+            url_suffix=f'/v1/bars/{timeframe}',
+            resp_type="json",
+            headers=self.api_request_headers,
+            params=params
+        )
+        return res
+
 '''' Commands '''
 
 
@@ -111,6 +127,46 @@ def get_last_trade(client, args):
     return [human_readable, context_entry, raws]
 
 
+def get_candlesticks(client, args):
+    raws=[]
+    alpaca_ec=[]
+    title = f'{INTEGRATION_NAME} - Price Candlesticks'
+    raw_response = client.get_candlesticks(timeframe=args.get('timeframe'), ticker=args.get('ticker'), limit=args.get('limit'),
+                                           start=args.get('start'), end=args.get('end'), after=args.get('after'),
+                                           until=args.get('until'))
+    if raw_response:
+        for candle in raw_response[args.get('ticker')]:
+            raws.append(candle)
+            alpaca_ec.append({
+                "Time": candle['t'],
+                "Open": candle['o'],
+                "High": candle['h'],
+                "Low": candle['l'],
+                "Close": candle['c'],
+                "Volume": candle['v']
+            })
+    else:
+        return f'{INTEGRATION_NAME} - Could not Get The CandleSticks'
+
+        for item in raw_response:
+            raws.append(item)
+            cyberark_ec.append({
+                'AccountName': item['name'],
+                'UserName': item['userName'],
+                'PlatformID': item['platformId'],
+                'SafeName': item['safeName'],
+                'AccountID': item['id'],
+                'CreatedTime': item['createdTime']
+            })
+
+    context_entry = {
+        "Alpha.Stock.CandleSticks": alpaca_ec
+    }
+
+    human_readable = tableToMarkdown(t=context_entry.get('Alpha.Stock.CandleSticks'), name=title)
+    return [human_readable, context_entry, raws]
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -155,6 +211,10 @@ def main():
 
         elif demisto.command() == 'alpaca-get-last-trade':
             result = get_last_trade(data_client, demisto.args())
+            return_outputs(*result)
+
+        elif demisto.command() == 'alpaca-get-candlesticks':
+            result = get_candlesticks(data_client, demisto.args())
             return_outputs(*result)
 
     except Exception as e:
