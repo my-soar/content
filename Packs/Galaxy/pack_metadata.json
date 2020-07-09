@@ -1,0 +1,18 @@
+{
+    "name": "Galaxy",
+    "description": "Integration Templates",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman",
+    "url": "https://github.com/ayman-m",
+    "email": "content@ayman.online",
+    "created": "2020-07-09T06:49:50Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [
+        "templates"
+    ],
+    "useCases": [],
+    "keywords": []
+}

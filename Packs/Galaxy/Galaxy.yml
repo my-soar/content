@@ -1,0 +1,42 @@
+category: Utilities
+commonfields:
+  id: Atom PY
+  version: -1
+description: Hello World Integrations !
+display: Atom PY
+name: Atom PY
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Use True or False
+      isArray: false
+      name: orbit
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use True or False
+      isArray: false
+      name: center
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Flag orbit or center of both
+    execution: false
+    name: atom
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
