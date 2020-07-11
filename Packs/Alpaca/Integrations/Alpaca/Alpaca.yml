@@ -59,8 +59,14 @@ script:
     execution: false
     name: alpaca-get-last-trade
     outputs:
-    - contextPath: Alpha.Stock.LastTrade
-      description: Stock Last Trade Information
+    - contextPath: Alpha.Stock.LastTrade.Ticker
+      description: Stock Last Trade Ticker
+      type: Unknown
+    - contextPath: Alpha.Stock.LastTrade.Price
+      description: Stock Last Trade Price
+      type: Unknown
+    - contextPath: Alpha.Stock.LastTrade.TimeStamp
+      description: Stock Last Trade TimeStamp
       type: Unknown
   - arguments:
     - auto: PREDEFINED
@@ -104,22 +110,279 @@ script:
       name: end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: until
+    - default: false
       description: 'Filter bars after this time, cannot be used with "start". ex:
         ''2019-04-15T09:30:00-04:00'''
       isArray: false
       name: after
       predefined:
-      - Filter bars before this time
-      - ' cannot be used with "end". ex: ''2019-04-15T09:30:00-04:00'''
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter bars before this time, cannot be used with "end". ex: ''2019-04-15T09:30:00-04:00'''
+      isArray: false
+      name: until
       required: false
       secret: false
     deprecated: false
     description: Get Stock Price Candlestick Information
     execution: false
     name: alpaca-get-candlesticks
+    outputs:
+    - contextPath: Alpha.Stock.CandleSticks.Time
+      description: Price Candle Stick Time
+      type: Unknown
+    - contextPath: Alpha.Stock.CandleSticks.Open
+      description: Price Candle Stick Open
+      type: Unknown
+    - contextPath: Alpha.Stock.CandleSticks.High
+      description: Price Candle Stick High
+      type: Unknown
+    - contextPath: Alpha.Stock.CandleSticks.Low
+      description: Price Candle Stick Low
+      type: Unknown
+    - contextPath: Alpha.Stock.CandleSticks.Close
+      description: Price Candle Stick Close
+      type: Unknown
+    - contextPath: Alpha.Stock.CandleSticks.Volume
+      description: Price Candle Stick Volume
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Stock Ticker
+      isArray: false
+      name: ticker
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Stock Last Quote
+    execution: false
+    name: alpaca-get-last-quote
+    outputs:
+    - contextPath: Alpha.Stock.LastQuote.Ticker
+      type: Unknown
+    - contextPath: Alpha.Stock.LastQuote.AskPrice
+      type: Unknown
+    - contextPath: Alpha.Stock.LastQuote.AskSize
+      type: Unknown
+    - contextPath: Alpha.Stock.LastQuote.AskExchange
+      type: Unknown
+    - contextPath: Alpha.Stock.LastQuote.BidPrice
+      type: Unknown
+    - contextPath: Alpha.Stock.LastQuote.BidSize
+      type: Unknown
+    - contextPath: Alpha.Stock.LastQuote.BideExchange
+      type: Unknown
+    - contextPath: Alpha.Stock.LastQuote.TimeStamp
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Order status to be queried. open, closed or all. Defaults to open.
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - closed
+      - all
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of orders in response. Defaults to 50 and max
+        is 500.
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: The response will include only ones submitted until this timestamp
+        (exclusive.)
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - default: false
+      description: The response will include only ones submitted after this timestamp
+        (exclusive.)
+      isArray: false
+      name: after
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The chronological order of response based on the submission time.
+        asc or desc. Defaults to desc.
+      isArray: false
+      name: direction
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If true, the result will roll up multi-leg orders under the legs
+        field of primary order.
+      isArray: false
+      name: nested
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of orders for the account, filtered by the supplied
+      query parameters.
+    execution: false
+    name: alpaca-get-orders
+    outputs:
+    - contextPath: Alpaca.Orders.OrderID
+      type: Unknown
+    - contextPath: Alpaca.Orders.SubmitedAt
+      type: Unknown
+    - contextPath: Alpaca.Orders.CreatedAt
+      type: Unknown
+    - contextPath: Alpaca.Orders.UpdatedAt
+      type: Unknown
+    - contextPath: Alpaca.Orders.FilledAt
+      type: Unknown
+    - contextPath: Alpaca.Orders.Ticker
+      type: Unknown
+    - contextPath: Alpaca.Orders.Quantity
+      type: Unknown
+    - contextPath: Alpaca.Orders.FilledQuantity
+      type: Unknown
+    - contextPath: Alpaca.Orders.Type
+      type: Unknown
+    - contextPath: Alpaca.Orders.Side
+      type: Unknown
+    - contextPath: Alpaca.Orders.TimeInForce
+      type: Unknown
+    - contextPath: Alpaca.Orders.LimitPrice
+      type: Unknown
+    - contextPath: Alpaca.Orders.StopPrice
+      type: Unknown
+    - contextPath: Alpaca.Orders.FilledAVGPrice
+      type: Unknown
+    - contextPath: Alpaca.Orders.Status
+      type: Unknown
+    - contextPath: Alpaca.Orders.ExtendedHours
+      type: Unknown
+    - contextPath: Alpaca.Orders.Legs
+      type: Unknown
+  - arguments:
+    - default: false
+      description: symbol or asset ID to identify the asset to trade
+      isArray: false
+      name: ticker
+      required: true
+      secret: false
+    - default: false
+      description: number of shares to trade
+      isArray: false
+      name: quantity
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Sell or Buy
+      isArray: false
+      name: side
+      predefined:
+      - buy
+      - sell
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: market
+      description: market, limit, stop, or stop_limit
+      isArray: false
+      name: type
+      predefined:
+      - market
+      - limit
+      - stop
+      - stop_limit
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: day
+      description: Day , Good to Cancel orders
+      isArray: false
+      name: time_in_force
+      predefined:
+      - day
+      - gtc
+      - opg
+      - cls
+      - ioc
+      - fok
+      required: true
+      secret: false
+    - default: false
+      description: Required if type is limit or stop_limit
+      isArray: false
+      name: limit_price
+      required: false
+      secret: false
+    - default: false
+      description: Required if type is stop or stop_limit
+      isArray: false
+      name: stop_price
+      required: false
+      secret: false
+    - default: false
+      description: (default) false. If true, order will be eligible to execute in
+        premarket/afterhours. Only works with type limit and time_in_force day.
+      isArray: false
+      name: extended_hours
+      required: false
+      secret: false
+    - default: false
+      description: A unique identifier for the order. Automatically generated if not
+        sent.
+      isArray: false
+      name: client_order_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: simple
+      description: simple, bracket, oco or oto
+      isArray: false
+      name: order_class
+      predefined:
+      - simple
+      - bracket
+      - oco
+      - oto
+      required: false
+      secret: false
+    - default: false
+      description: limit_price parameter is required for take-profit leg of advanced
+        orders
+      isArray: false
+      name: take_profit
+      required: false
+      secret: false
+    - default: false
+      description: stop_price and limit_price parameters for stop-loss leg of advanced
+        orders
+      isArray: false
+      name: stop_loss
+      required: false
+      secret: false
+    deprecated: false
+    description: Places a new order for the given account. An order request may be
+      rejected if the account is not authorized for trading, or if the tradable balance
+      is insufficient to fill the order.
+    execution: false
+    name: alpaca-submit-order
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: true
