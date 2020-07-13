@@ -1,0 +1,51 @@
+category: Utilities
+commonfields:
+  id: Gravity
+  version: -1
+configuration:
+- display: Long Running Instance
+  hidden: false
+  name: longRunning
+  required: true
+  type: 8
+- display: Listen Port
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Certificate (Required for HTTPS)
+  hidden: false
+  name: certificate
+  required: false
+  type: 0
+- display: Private Key (Required for HTTPS)
+  hidden: false
+  name: private_key
+  required: false
+  type: 0
+- display: Application ID
+  hidden: false
+  name: app_id
+  required: false
+  type: 0
+- display: Application Secret
+  hidden: false
+  name: app_secret
+  required: false
+  type: 0
+description: Very basic long running integration
+display: Gravity
+name: Gravity
+script:
+  commands:
+  - deprecated: false
+    execution: false
+    name: test
+  dockerimage: demisto/teams:1.0.0.7832
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

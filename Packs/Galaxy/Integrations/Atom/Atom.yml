@@ -7,44 +7,6 @@ display: Atom
 name: Atom
 configuration: []
 script:
-  commands:
-  - arguments:
-    - auto: PREDEFINED
-      default: true
-      defaultValue: 'false'
-      description: Flag True to Return "Electron"
-      isArray: false
-      name: orbit
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: true
-      defaultValue: 'false'
-      description: Flag True to Return "Nucleus"
-      isArray: false
-      name: center
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-      secret: false
-    deprecated: false
-    description: A command that returns process args and return an output
-    execution: false
-    name: get-atom
-    outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
-    - contextPath: Atom.Orbit
-      description: Atom's Orbit
-      type: String
-    - contextPath: Atom.Center
-      description: Atom's Orbit
-      type: String
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
