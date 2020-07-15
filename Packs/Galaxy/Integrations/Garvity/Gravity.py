@@ -1,18 +1,17 @@
 from CommonServerPython import *
-from secrets import compare_digest
 
 ''' IMPORTS '''
 
-import urllib3
 from tempfile import NamedTemporaryFile
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from gevent.pywsgi import WSGIServer
 from flask import Flask, Response, request
 from multiprocessing import Process
-from typing import Callable, List, Any, Dict, cast, Tuple
-from base64 import b64decode
-import hashlib
-import hmac
+from typing import Any, Dict, cast
+
+
+''' Classes '''
+
 
 class Handler:
     @staticmethod
@@ -23,8 +22,8 @@ class Handler:
 ''' CONSTANTS '''
 
 
-INTEGRATION_NAME = 'GitHub WebHook'
-APP: Flask = Flask('Github-WebHook')
+INTEGRATION_NAME = 'Gravity LongRunning Integration'
+APP: Flask = Flask('Github-LRI')
 XSOAR_LOGGER: Handler = Handler()
 
 
@@ -70,7 +69,27 @@ def validate_authentication(headers, app_secret, app_id=None):
 ''' ROUTE FUNCTIONS '''
 
 
-@APP.route('/black-hole', methods=['GET'])
+@APP.route('/', methods=['GET'])
+def void():
+    params = demisto.params()
+
+    app_id = params.get('app_id')
+    app_secret = params.get('app_secret')
+
+    if app_secret:
+        headers = cast(Dict[Any, Any], request.headers)
+        if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
+            err_msg = 'Authentication failed. Make sure you are using the right credentials.'
+            demisto.error(err_msg)
+            return Response(err_msg, status=401)
+
+    response = {
+        "message": "Void has no Gravity, try to find a space object!"
+    }
+    return Response(json.dumps(response), status=200, mimetype='application/json')
+
+
+@APP.route('/objects', methods=['GET'])
 def route_black_hole():
     """
     Main handler for values saved in the integration context
@@ -83,16 +102,18 @@ def route_black_hole():
     if app_secret:
         headers = cast(Dict[Any, Any], request.headers)
         if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
-            err_msg: str = 'Authentication failed. Make sure you are using the right credentials.'
+            err_msg = 'Authentication failed. Make sure you are using the right credentials.'
             demisto.error(err_msg)
             return Response(err_msg, status=401)
 
-    response = process_request_args(request.args, params)
+    response = process_object_args(request.args, params)
 
     return Response(response, status=200, mimetype='application/json')
 
 
-def process_request_args(request_args, params):
+def process_object_args(request_args, params):
+    res = {}
+
     """
     Processing a flask request arguments and generates a RequestArguments instance from it.
     Args:
@@ -102,14 +123,40 @@ def process_request_args(request_args, params):
     Returns:
         RequestArguments instance with processed arguments
     """
-    distance = request_args.get('distance')
-    size = request_args.get('size')
+    name = request_args.get('name')
+    object_type = request_args.get('type')
+    app_id = params.get('app_id')
 
-    return {
-        "Distance": distance,
-        "Size": size,
-        "AppID": params.get('app_id')
-    }
+    if object_type == "black-hole":
+        if name and "LB-1" in str(name):
+            res['Object'] = "black-hole"
+            res['Name'] = name
+            res['Status'] = f"{object_type} Found"
+            res['Distance'] = "7400 Light Years"
+            res['Mass'] = "9.2 Solar Mass"
+            res['Discovered'] = "Year 2019"
+        elif name and "Cygnus X-3" in str(name):
+            res['Object'] = "black-hole"
+            res['Name'] = name
+            res['Status'] = f"{object_type} Found"
+            res['Distance'] = "11100 Light Years"
+            res['Mass'] = "10.3 Solar Mass"
+            res['Discovered'] = "Year 1967"
+        else:
+            res.clear()
+            res['Object'] = "black-hole"
+            res['Name'] = name
+            res['Status'] = "BlackHole Not Found"
+    else:
+        res.clear()
+        res['Object'] = object_type
+        res['Name'] = name
+        res['Status'] = f"{object_type} Not Found"
+
+    if app_id:
+        res['AppID'] = app_id
+
+    return json.dumps(res)
 
 
 '''' Commands '''
@@ -123,7 +170,7 @@ def test_module(_, params):
 
 def run_long_running(params, is_test=False):
     certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
+    private_key: str = params.get('private_key', '')
 
     certificate_path = str()
     private_key_path = str()
