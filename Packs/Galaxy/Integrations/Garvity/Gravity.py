@@ -90,7 +90,7 @@ def void():
 
 
 @APP.route('/incidents', methods=['GET', 'POST'])
-def create_incident():
+def route_incidents():
     params = demisto.params()
 
     app_id = params.get('app_id')
@@ -108,10 +108,27 @@ def create_incident():
             "message": "Incident Get!"
         }
     else:
-        response = {
-            "message": "Incident Post!"
-        }
+        try:
+            if request.json['name']:
+                response = {
+                    "message": create_incident()
+                }
+        except:
+            response = {
+                "message": "Invalid Incident Data, please review your incident fields"
+            }
     return Response(json.dumps(response), status=200, mimetype='application/json')
+
+
+def create_incident():
+    incident = [{
+        'name': "incident1022",
+        "type": "Phishing",
+        "customFields": {"field1": "value"}
+    }]
+    demisto.createIncidents(incident)
+
+    return "Incident Created!"
 
 
 @APP.route('/objects', methods=['GET'])
@@ -250,6 +267,16 @@ def run_long_running(params, is_test=False):
         if private_key_path:
             os.unlink(private_key_path)
 
+def gravity_create_incident():
+    incident = [{
+        'name': "incident1020",
+        "type": "Phishing",
+        "customFields": {"field1": "value"}
+    }]
+    demisto.createIncidents(incident)
+    return "Incident Created"
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -269,9 +296,13 @@ def main():
     try:
         if demisto.command() == 'long-running-execution':
             run_long_running(params)
+        elif demisto.command() == 'gravity-create-incident':
+            result = gravity_create_incident()
+            return_results(result)
         elif demisto.command() == 'test-module':
             result = test_module(demisto.args(), params)
             return_results(result)
+
 
     except Exception as e:
         return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))

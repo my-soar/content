@@ -36,6 +36,11 @@ description: Very basic long running integration
 display: Gravity
 name: Gravity
 script:
+  commands:
+  - deprecated: false
+    description: Create a new Incident
+    execution: false
+    name: gravity-create-incident
   dockerimage: aymanam/gravity:longrunning
   feed: false
   isfetch: false
