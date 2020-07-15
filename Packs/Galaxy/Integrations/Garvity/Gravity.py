@@ -89,6 +89,31 @@ def void():
     return Response(json.dumps(response), status=200, mimetype='application/json')
 
 
+@APP.route('/incidents', methods=['GET', 'POST'])
+def create_incident():
+    params = demisto.params()
+
+    app_id = params.get('app_id')
+    app_secret = params.get('app_secret')
+
+    if app_secret:
+        headers = cast(Dict[Any, Any], request.headers)
+        if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
+            err_msg = 'Authentication failed. Make sure you are using the right credentials.'
+            demisto.error(err_msg)
+            return Response(err_msg, status=401)
+
+    if request.method == "GET":
+        response = {
+            "message": "Incident Get!"
+        }
+    else:
+        response = {
+            "message": "Incident Post!"
+        }
+    return Response(json.dumps(response), status=200, mimetype='application/json')
+
+
 @APP.route('/objects', methods=['GET'])
 def route_black_hole():
     """
@@ -159,6 +184,10 @@ def process_object_args(request_args, params):
     return json.dumps(res)
 
 
+
+
+
+
 '''' Commands '''
 
 
@@ -220,7 +249,6 @@ def run_long_running(params, is_test=False):
             os.unlink(certificate_path)
         if private_key_path:
             os.unlink(private_key_path)
-
 
 def main():
     """
