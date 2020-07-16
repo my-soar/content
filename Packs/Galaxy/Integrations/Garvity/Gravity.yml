@@ -37,10 +37,22 @@ display: Gravity
 name: Gravity
 script:
   commands:
-  - deprecated: false
-    description: Create a new Incident
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: replace
+      description: Update action type, replace or append
+      isArray: false
+      name: action
+      predefined:
+      - replace
+      - append
+      required: false
+      secret: false
+    deprecated: false
+    description: Update the integration cache
     execution: false
-    name: gravity-create-incident
+    name: gravity-update-cache
   dockerimage: aymanam/gravity:longrunning
   feed: false
   isfetch: false

@@ -267,7 +267,8 @@ def run_long_running(params, is_test=False):
         if private_key_path:
             os.unlink(private_key_path)
 
-def gravity_create_incident():
+
+def gravity_update_cache():
     incident = [{
         'name': "incident1020",
         "type": "Phishing",
@@ -296,8 +297,8 @@ def main():
     try:
         if demisto.command() == 'long-running-execution':
             run_long_running(params)
-        elif demisto.command() == 'gravity-create-incident':
-            result = gravity_create_incident()
+        elif demisto.command() == 'gravity-update-cache':
+            result = gravity_update_cache(demisto.args())
             return_results(result)
         elif demisto.command() == 'test-module':
             result = test_module(demisto.args(), params)
