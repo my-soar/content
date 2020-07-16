@@ -123,7 +123,7 @@ def route_incidents():
 def create_incident():
     incident = [{
         'name': "incident1022",
-        "type": "Phishing",
+        "type": "Gravity",
         "customFields": {"field1": "value"}
     }]
     demisto.createIncidents(incident)
