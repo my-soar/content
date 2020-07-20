@@ -38,21 +38,20 @@ name: Gravity
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: true
-      defaultValue: replace
-      description: Update action type, replace or append
+    - default: false
+      description: The data dictionary to be saved in the cache
       isArray: false
-      name: action
-      predefined:
-      - replace
-      - append
-      required: false
+      name: context
+      required: true
       secret: false
     deprecated: false
-    description: Update the integration cache
+    description: Set the integration context
     execution: false
-    name: gravity-update-cache
+    name: gravity-set-context
+  - deprecated: false
+    description: Get the integration context
+    execution: false
+    name: gravity-get-context
   dockerimage: aymanam/gravity:longrunning
   feed: false
   isfetch: false

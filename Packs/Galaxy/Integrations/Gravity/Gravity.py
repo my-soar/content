@@ -66,6 +66,16 @@ def validate_authentication(headers, app_secret, app_id=None):
     return False
 
 
+def create_incident(incident):
+    incident = demisto.createIncidents([incident])
+    return incident
+
+
+def set_context(context):
+    context = demisto.setIntegrationContext(context)
+    return context
+
+
 ''' ROUTE FUNCTIONS '''
 
 
@@ -89,8 +99,42 @@ def void():
     return Response(json.dumps(response), status=200, mimetype='application/json')
 
 
-@APP.route('/incidents', methods=['GET', 'POST'])
+@APP.route('/incidents', methods=['POST'])
 def route_incidents():
+    """
+    Main handler for creating new incidents
+    """
+    params = demisto.params()
+
+    app_id = params.get('app_id')
+    app_secret = params.get('app_secret')
+
+    response = {}
+
+    if app_secret:
+        headers = cast(Dict[Any, Any], request.headers)
+        if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
+            err_msg = 'Authentication failed. Make sure you are using the right credentials.'
+            demisto.error(err_msg)
+            return Response(err_msg, status=401)
+
+    try:
+        if request.json['name']:
+            response = {
+                "message": create_incident(incident=request.json)
+            }
+    except:
+        response = {
+            "message": "Invalid Incident Data, please review your incident fields"
+        }
+    return Response(json.dumps(response), status=200, mimetype='application/json')
+
+
+@APP.route('/context', methods=['GET'])
+def route_get_context():
+    """
+    Main handler for values saved in the integration context
+    """
     params = demisto.params()
 
     app_id = params.get('app_id')
@@ -103,38 +147,44 @@ def route_incidents():
             demisto.error(err_msg)
             return Response(err_msg, status=401)
 
-    if request.method == "GET":
+    response = json.dumps(demisto.getIntegrationContext())
+
+    return Response(response, status=200, mimetype='application/json')
+
+
+@APP.route('/context', methods=['POST'])
+def route_set_context():
+    """
+    Main handler for values saved in the integration context
+    """
+    params = demisto.params()
+
+    app_id = params.get('app_id')
+    app_secret = params.get('app_secret')
+
+    if app_secret:
+        headers = cast(Dict[Any, Any], request.headers)
+        if not validate_authentication(headers, app_secret=app_secret, app_id=app_id):
+            err_msg = 'Authentication failed. Make sure you are using the right credentials.'
+            demisto.error(err_msg)
+            return Response(err_msg, status=401)
+
+    try:
         response = {
-            "message": "Incident Get!"
+                "message": set_context(context=request.json)
         }
-    else:
-        try:
-            if request.json['name']:
-                response = {
-                    "message": create_incident()
-                }
-        except:
-            response = {
-                "message": "Invalid Incident Data, please review your incident fields"
-            }
+    except:
+        response = {
+            "message": "Invalid Context, the context has to be a JSON Dictionary"
+        }
+
     return Response(json.dumps(response), status=200, mimetype='application/json')
 
 
-def create_incident():
-    incident = [{
-        'name': "incident1022",
-        "type": "Gravity",
-        "customFields": {"field1": "value"}
-    }]
-    demisto.createIncidents(incident)
-
-    return "Incident Created!"
-
-
 @APP.route('/objects', methods=['GET'])
-def route_black_hole():
+def route_object():
     """
-    Main handler for values saved in the integration context
+    Main handler for values saved in somewhere
     """
     params = demisto.params()
 
@@ -201,10 +251,6 @@ def process_object_args(request_args, params):
     return json.dumps(res)
 
 
-
-
-
-
 '''' Commands '''
 
 
@@ -268,14 +314,22 @@ def run_long_running(params, is_test=False):
             os.unlink(private_key_path)
 
 
-def gravity_update_cache():
-    incident = [{
-        'name': "incident1020",
-        "type": "Phishing",
-        "customFields": {"field1": "value"}
-    }]
-    demisto.createIncidents(incident)
-    return "Incident Created"
+def gravity_set_context(args):
+    demisto.setIntegrationContext(json.loads(args['context']))
+    return demisto.getIntegrationContext()
+
+
+def gravity_get_context():
+
+    raw = demisto.getIntegrationContext()
+
+    result = CommandResults(
+        outputs=raw,
+        outputs_prefix="Gravity.Context",
+        outputs_key_field="NA",
+        readable_output=tableToMarkdown("Content Output", raw)
+    )
+    return result
 
 
 def main():
@@ -297,13 +351,15 @@ def main():
     try:
         if demisto.command() == 'long-running-execution':
             run_long_running(params)
-        elif demisto.command() == 'gravity-update-cache':
-            result = gravity_update_cache(demisto.args())
+        elif demisto.command() == 'gravity-set-context':
+            result = gravity_set_context(demisto.args())
+            return_results(result)
+        elif demisto.command() == 'gravity-get-context':
+            result = gravity_get_context()
             return_results(result)
         elif demisto.command() == 'test-module':
             result = test_module(demisto.args(), params)
             return_results(result)
-
 
     except Exception as e:
         return_error(str(f'Failed to execute {demisto.command()} command. Error: {str(e)}'))
