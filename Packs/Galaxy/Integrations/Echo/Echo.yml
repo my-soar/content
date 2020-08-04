@@ -1,0 +1,56 @@
+category: Utilities
+commonfields:
+  id: Echo
+  version: -1
+configuration:
+- hidden: false
+  name: Type
+  required: false
+  type: 0
+description: Very basic mirror investigation integration
+display: Echo
+name: Echo
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The data dictionary to be saved in the cache
+      isArray: false
+      name: context
+      required: true
+      secret: false
+    deprecated: false
+    description: Set the integration context
+    execution: false
+    name: echo-set-context
+  - deprecated: false
+    description: Get the integration context
+    execution: false
+    name: echo-get-context
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat",
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
+      isArray: false
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+      required: false
+      secret: false
+    deprecated: false
+    description: Mirrors the investigation's War Room
+    execution: false
+    name: echo-mirror-investigation
+  dockerimage: aymanam/gravity:longrunning
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

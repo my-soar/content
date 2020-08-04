@@ -2,36 +2,6 @@ category: Utilities
 commonfields:
   id: Gravity
   version: -1
-configuration:
-- display: Application ID
-  hidden: false
-  name: app_id
-  required: false
-  type: 0
-- display: Application Secret
-  hidden: false
-  name: app_secret
-  required: false
-  type: 0
-- display: Long Running Instance
-  hidden: false
-  name: longRunning
-  required: true
-  type: 8
-- display: Listen Port
-  name: longRunningPort
-  required: true
-  type: 0
-- display: Certificate (Required for HTTPS)
-  hidden: false
-  name: certificate
-  required: false
-  type: 12
-- display: Private Key (Required for HTTPS)
-  hidden: false
-  name: private_key
-  required: false
-  type: 12
 description: Very basic long running integration
 display: Gravity
 name: Gravity
