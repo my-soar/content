@@ -890,6 +890,52 @@ class Client(BaseClient):
             raise TypeError(f'got unexpected response from api: {reply_content}\n')
 
 
+class PrivateClient(BaseClient):
+
+    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
+        self.timeout = timeout
+        super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
+
+    def execute_xqr_query(self, xqr_query=None):
+        request_data: Dict[str, Any] = {
+            "input_dict": {
+                "query_definition_name": "XQL-QUERY-2588",
+                "xql": xqr_query,
+                "run_in_background": False,
+                "schedule": "null",
+                "notification_link": "xql/xql-search/_EXECUTION_ID_",
+                "tenants":["551917885"]
+            },
+            "timeframe": {
+                "relativeTime": 86400000
+            },
+            "source": "investigation",
+            "ttl": "0"
+        }
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/xql/start_investigation',
+            json_data={'request_data': request_data},
+            ok_codes=(200, 201),
+            timeout=self.timeout
+        )
+        return reply.get('reply')
+
+
+def execute_xqr_query_command(private_client, args):
+    xqr_query = args.get('query')
+    raw_query_response = private_client.execute_xqr_query(xqr_query)
+    return (
+        tableToMarkdown('Query Response', raw_query_response),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.XQL(val.query_id==obj.query_id)': raw_query_response
+        },
+        raw_query_response
+    )
+
+
 def get_incidents_command(client, args):
     """
     Retrieve a list of incidents from XDR, filtered by some filters.
@@ -2009,6 +2055,7 @@ def main():
     api_key_id = demisto.params().get('apikey_id')
     first_fetch_time = demisto.params().get('fetch_time', '3 days')
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
+    private_base_url = urljoin(demisto.params().get('console_url'), '/api/webapp')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
     try:
@@ -2038,6 +2085,14 @@ def main():
 
     client = Client(
         base_url=base_url,
+        proxy=proxy,
+        verify=verify_cert,
+        headers=headers,
+        timeout=timeout
+    )
+
+    private_client = PrivateClient(
+        base_url=private_base_url,
         proxy=proxy,
         verify=verify_cert,
         headers=headers,
@@ -2122,6 +2177,9 @@ def main():
 
         elif demisto.command() == 'update-remote-system':
             return_results(update_remote_system_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-execute-xqr-query':
+            return_outputs(*execute_xqr_query_command(private_client, demisto.args()))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
