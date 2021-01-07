@@ -4251,13 +4251,13 @@ script:
     - default: false
       description: Rotate the manager join token.
       isArray: false
-      name: rotateManagerToken
+      name: rotate_manager_token
       required: false
       secret: false
     - default: false
       description: Rotate the manager unlock key.
       isArray: false
-      name: rotateManagerUnlockKey
+      name: rotate_manager_unlock_key
       required: false
       secret: false
     deprecated: false

@@ -1,11 +1,31 @@
 import urllib3
+import requests
 
 from CommonServerPython import *
 
 
-class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers, auth):
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+class Client:
+    def __init__(self, server_url, verify, proxy, headers, client_cert, client_key):
+        self._base_url = server_url
+        self._verify = verify
+        self._proxy = proxy
+        self._headers = headers
+        self._client_cert = client_cert
+        self._client_key = client_key
+
+    def _http_request(self, method, url_suffix='', full_url=None, params=None, headers=None, data=None, json_data=None):
+        address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        headers = headers if headers else self._headers
+        response = requests.session().request(
+            method,
+            address,
+            verify=self._verify,
+            params=params,
+            data=data,
+            json=json_data,
+            headers=headers,
+            cert=(self._client_cert, self._client_key)
+        )
 
     def build_prune_request(self, keep_storage, prune_all, filters):
         params = assign_params(keep_storage=keep_storage, prune_all=prune_all, filters=filters)
@@ -991,10 +1011,11 @@ class Client(BaseClient):
 
     def swarm_update_request(self, swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft,
                              swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,
-                             swarmspec_taskdefaults, version, rotate_worker_token, rotateManagerToken,
-                             rotateManagerUnlockKey):
+                             swarmspec_taskdefaults, version, rotate_worker_token, rotate_manager_token,
+                             rotate_manager_unlock_key):
         params = assign_params(version=version, rotate_worker_token=rotate_worker_token,
-                               rotateManagerToken=rotateManagerToken, rotateManagerUnlockKey=rotateManagerUnlockKey)
+                               rotate_manager_token=rotate_manager_token,
+                               rotate_manager_unlock_key=rotate_manager_unlock_key)
         data = assign_params(Name=swarmspec_name, Labels=swarmspec_labels, Orchestration=swarmspec_orchestration,
                              Raft=swarmspec_raft, Dispatcher=swarmspec_dispatcher,
                              CAConfig=swarmspec_caconfig, EncryptionConfig=swarmspec_encryptionconfig,
@@ -3067,13 +3088,13 @@ def swarm_update_command(client, args):
     swarmspec_taskdefaults = assign_params(LogDriver=swarmspec_taskdefaults_logdriver)
     version = args.get('version', None)
     rotate_worker_token = argToBoolean(args.get('rotate_worker_token', False))
-    rotateManagerToken = argToBoolean(args.get('rotateManagerToken', False))
-    rotateManagerUnlockKey = argToBoolean(args.get('rotateManagerUnlockKey', False))
+    rotate_manager_token = argToBoolean(args.get('rotate_manager_token', False))
+    rotate_manager_unlock_key = argToBoolean(args.get('rotate_manager_unlock_key', False))
 
     response = client.swarm_update_request(swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft,
                                            swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,
-                                           swarmspec_taskdefaults, version, rotate_worker_token, rotateManagerToken,
-                                           rotateManagerUnlockKey)
+                                           swarmspec_taskdefaults, version, rotate_worker_token, rotate_manager_token,
+                                           rotate_manager_unlock_key)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -3317,6 +3338,8 @@ def main():
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')
+    client_cert = demisto.params().get('client_certificate')
+    client_key = demisto.params().get('client_key')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {'Authorization': f'{params["api_key"]}'}
@@ -3326,7 +3349,8 @@ def main():
 
     try:
         urllib3.disable_warnings()
-        client = Client(urljoin(url, "/v1.41"), verify_certificate, proxy, headers=headers, auth=None)
+        client = Client(urljoin(url, "/v1.41"), verify_certificate, proxy, headers=headers,
+                        client_cert=client_cert, client_key=client_key)
         commands = {
             'docker-build-prune': build_prune_command,
             'docker-config-create': config_create_command,
