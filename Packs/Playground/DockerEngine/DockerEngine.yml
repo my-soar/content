@@ -8,10 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
-  name: api_key
+- display: Docker Client Certificate (PEM)
+  hidden: false
+  name: client_certificate
   required: true
-  type: 4
+  type: 12
+- display: Docker Client Private Key
+  hidden: false
+  name: client_key
+  required: true
+  type: 12
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -37,7 +43,7 @@ script:
     - default: false
       description: Remove all types of build cache
       isArray: false
-      name: all
+      name: prune_all
       required: false
       secret: false
     - default: false
@@ -239,7 +245,7 @@ script:
         a single character `[a-Z]` or `ctrl- value ` where ` value ` is one of: `a-z`,
         `@`, `^`, `[`, `,` or `_`. '
       isArray: false
-      name: detachKeys
+      name: detach_keys
       required: false
       secret: false
     - default: false
@@ -291,7 +297,7 @@ script:
         a single character `[a-Z]` or `ctrl- value ` where ` value ` is one of: `a-z`,
         `@`, `^`, `[`, `,`, or `_`. '
       isArray: false
-      name: detachKeys
+      name: detach_keys
       required: false
       secret: false
     - default: false
@@ -1063,7 +1069,7 @@ script:
       description: 'Return all containers. By default, only running containers are
         shown. '
       isArray: false
-      name: all
+      name: list_all
       required: false
       secret: false
     - default: false
@@ -1255,7 +1261,7 @@ script:
         a single character `[a-Z]` or `ctrl- value ` where ` value ` is one of: `a-z`,
         `@`, `^`, `[`, `,` or `_`. '
       isArray: false
-      name: detachKeys
+      name: detach_keys
       required: false
       secret: false
     deprecated: false
@@ -1728,7 +1734,7 @@ script:
       description: 'A tar archive compressed with one of the following algorithms:
         identity (no compression), gzip, bzip2, xz.'
       isArray: false
-      name: inputStream
+      name: input_stream
       required: false
       secret: false
     - default: false
@@ -2160,7 +2166,7 @@ script:
         This  meter may only be used when pulling an image. The pull is cancelled
         if the HTTP connection is closed.
       isArray: false
-      name: fromImage
+      name: from_image
       required: false
       secret: false
     - default: false
@@ -2168,7 +2174,7 @@ script:
         be retrieved or `-` to read the image from the request body. This  meter may
         only be used when importing an image.
       isArray: false
-      name: fromSrc
+      name: from_src
       required: false
       secret: false
     - default: false
@@ -2192,9 +2198,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Image content if the value `-` has been specified in fromSrc query  meter
+      description: Image content if the value `-` has been specified in from_src query  meter
       isArray: false
-      name: inputImage
+      name: input_image
       required: false
       secret: false
     - default: false
@@ -2330,7 +2336,7 @@ script:
       description: Show all images. Only images from a final layer (no children) are
         shown by default.
       isArray: false
-      name: all
+      name: list_all
       required: false
       secret: false
     - default: false
@@ -2372,7 +2378,7 @@ script:
     - default: false
       description: Tar archive containing images
       isArray: false
-      name: imagesTarball
+      name: images_tarball
       required: false
       secret: false
     - default: false
@@ -2954,7 +2960,7 @@ script:
     - default: false
       description: Path to tar containing plugin rootfs and manifest
       isArray: false
-      name: tarContext
+      name: tar_content
       required: false
       secret: false
     deprecated: false
@@ -3203,14 +3209,14 @@ script:
         the given content would cause an existing directory to be replaced with a
         non-directory and vice versa. '
       isArray: false
-      name: noOverwriteDirNonDir
+      name: no_overwrite
       required: false
       secret: false
     - default: false
       description: 'If `1`, `true`, then it will copy UID/GID maps to the dest file
         or dir '
       isArray: false
-      name: copyUIDGID
+      name: copy_uid_gid
       required: false
       secret: false
     - default: false
@@ -3218,7 +3224,7 @@ script:
         the following algorithms: `identity` (no compression), `gzip`, `bzip2`, or
         `xz`. '
       isArray: false
-      name: inputStream
+      name: input_stream
       required: true
       secret: false
     deprecated: false
@@ -3606,7 +3612,7 @@ script:
     - default: false
       description: Fill empty fields with default values.
       isArray: false
-      name: insertDefaults
+      name: insert_defaults
       required: false
       secret: false
     deprecated: false
@@ -3908,7 +3914,7 @@ script:
       description: 'If the `X-Registry-Auth` header is not specified, this  meter
         indicates where to find registry authorization credentials. '
       isArray: false
-      name: registryAuthFrom
+      name: registery_auth_from
       predefined:
       - spec
       - previous-spec
@@ -4239,7 +4245,7 @@ script:
     - default: false
       description: Rotate the worker join token.
       isArray: false
-      name: rotateWorkerToken
+      name: rotate_worker_token
       required: false
       secret: false
     - default: false
@@ -4929,5 +4935,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-
-one_shot

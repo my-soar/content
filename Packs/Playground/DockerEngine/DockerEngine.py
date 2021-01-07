@@ -1,6 +1,5 @@
 import urllib3
 
-import demistomock as demisto
 from CommonServerPython import *
 
 
@@ -8,8 +7,8 @@ class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def build_prune_request(self, keep_storage, all, filters):
-        params = assign_params(keep_storage=keep_storage, all=all, filters=filters)
+    def build_prune_request(self, keep_storage, prune_all, filters):
+        params = assign_params(keep_storage=keep_storage, prune_all=prune_all, filters=filters)
 
         headers = self._headers
 
@@ -17,8 +16,10 @@ class Client(BaseClient):
 
         return response
 
-    def config_create_request(self, configspec_name, configspec_labels, configspec_data, configspec_templating):
-        data = assign_params(Name=configspec_name, Labels=configspec_labels, Data=configspec_data, Templating=configspec_templating)
+    def config_create_request(self, configspec_name, configspec_labels,
+                              configspec_data, configspec_templating):
+        data = assign_params(Name=configspec_name, Labels=configspec_labels,
+                             Data=configspec_data, Templating=configspec_templating)
 
         headers = self._headers
 
@@ -51,9 +52,11 @@ class Client(BaseClient):
 
         return response
 
-    def config_update_request(self, id_, configspec_name, configspec_labels, configspec_data, configspec_templating, version):
+    def config_update_request(self, id_, configspec_name, configspec_labels,
+                              configspec_data, configspec_templating, version):
         params = assign_params(version=version)
-        data = assign_params(Name=configspec_name, Labels=configspec_labels, Data=configspec_data, Templating=configspec_templating)
+        data = assign_params(Name=configspec_name, Labels=configspec_labels,
+                             Data=configspec_data, Templating=configspec_templating)
 
         headers = self._headers
 
@@ -80,8 +83,9 @@ class Client(BaseClient):
 
         return response
 
-    def container_attach_request(self, id_, detachKeys, logs, stream, stdin, stdout, stderr):
-        params = assign_params(detachKeys=detachKeys, logs=logs, stream=stream, stdin=stdin, stdout=stdout, stderr=stderr)
+    def container_attach_request(self, id_, detach_keys, logs, stream, stdin, stdout, stderr):
+        params = assign_params(detach_keys=detach_keys, logs=logs,
+                               stream=stream, stdin=stdin, stdout=stdout, stderr=stderr)
 
         headers = self._headers
         headers['Accept'] = 'application/vnd.docker.raw-stream'
@@ -90,8 +94,9 @@ class Client(BaseClient):
 
         return response
 
-    def container_attach_websocket_request(self, id_, detachKeys, logs, stream, stdin, stdout, stderr):
-        params = assign_params(detachKeys=detachKeys, logs=logs, stream=stream, stdin=stdin, stdout=stdout, stderr=stderr)
+    def container_attach_websocket_request(self, id_, detach_keys, logs, stream, stdin, stdout, stderr):
+        params = assign_params(detach_keys=detach_keys, logs=logs,
+                               stream=stream, stdin=stdin, stdout=stdout, stderr=stderr)
 
         headers = self._headers
 
@@ -107,9 +112,66 @@ class Client(BaseClient):
 
         return response
 
-    def container_create_request(self, name, containerconfig_hostname, containerconfig_domainname, containerconfig_user, containerconfig_attachstdin, containerconfig_attachstdout, containerconfig_attachstderr, containerconfig_exposedports, containerconfig_tty, containerconfig_openstdin, containerconfig_stdinonce, containerconfig_env, containerconfig_cmd, containerconfig_healthcheck, containerconfig_argsescaped, containerconfig_image, containerconfig_volumes, containerconfig_workingdir, containerconfig_entrypoint, containerconfig_networkdisabled, containerconfig_macaddress, containerconfig_onbuild, containerconfig_labels, containerconfig_stopsignal, containerconfig_stoptimeout, containerconfig_shell, hostconfig_binds, hostconfig_containeridfile, hostconfig_logconfig, hostconfig_networkmode, hostconfig_portbindings, hostconfig_restartpolicy, hostconfig_autoremove, hostconfig_volumedriver, hostconfig_volumesfrom, hostconfig_mounts, hostconfig_capadd, hostconfig_capdrop, hostconfig_cgroupnsmode, hostconfig_dns, hostconfig_dnsoptions, hostconfig_dnssearch, hostconfig_extrahosts, hostconfig_groupadd, hostconfig_ipcmode, hostconfig_cgroup, hostconfig_links, hostconfig_oomscoreadj, hostconfig_pidmode, hostconfig_privileged, hostconfig_publishallports, hostconfig_readonlyrootfs, hostconfig_securityopt, hostconfig_storageopt, hostconfig_tmpfs, hostconfig_utsmode, hostconfig_usernsmode, hostconfig_shmsize, hostconfig_sysctls, hostconfig_runtime, hostconfig_consolesize, hostconfig_isolation, hostconfig_maskedpaths, hostconfig_readonlypaths, networkingconfig_endpointsconfig):
+    def container_create_request(self, name, containerconfig_hostname,
+                                 containerconfig_domainname, containerconfig_user,
+                                 containerconfig_attachstdin, containerconfig_attachstdout,
+                                 containerconfig_attachstderr, containerconfig_exposedports,
+                                 containerconfig_tty, containerconfig_openstdin, containerconfig_stdinonce,
+                                 containerconfig_env, containerconfig_cmd, containerconfig_healthcheck,
+                                 containerconfig_argsescaped, containerconfig_image, containerconfig_volumes,
+                                 containerconfig_workingdir, containerconfig_entrypoint,
+                                 containerconfig_networkdisabled, containerconfig_macaddress,
+                                 containerconfig_onbuild, containerconfig_labels,
+                                 containerconfig_stopsignal, containerconfig_stoptimeout,
+                                 containerconfig_shell, hostconfig_binds, hostconfig_containeridfile,
+                                 hostconfig_logconfig, hostconfig_networkmode, hostconfig_portbindings,
+                                 hostconfig_restartpolicy, hostconfig_autoremove, hostconfig_volumedriver,
+                                 hostconfig_volumesfrom, hostconfig_mounts, hostconfig_capadd,
+                                 hostconfig_capdrop, hostconfig_cgroupnsmode, hostconfig_dns,
+                                 hostconfig_dnsoptions, hostconfig_dnssearch, hostconfig_extrahosts,
+                                 hostconfig_groupadd, hostconfig_ipcmode, hostconfig_cgroup, hostconfig_links,
+                                 hostconfig_oomscoreadj, hostconfig_pidmode, hostconfig_privileged,
+                                 hostconfig_publishallports, hostconfig_readonlyrootfs, hostconfig_securityopt,
+                                 hostconfig_storageopt, hostconfig_tmpfs, hostconfig_utsmode,
+                                 hostconfig_usernsmode, hostconfig_shmsize, hostconfig_sysctls,
+                                 hostconfig_runtime, hostconfig_consolesize, hostconfig_isolation,
+                                 hostconfig_maskedpaths, hostconfig_readonlypaths,
+                                 networkingconfig_endpointsconfig):
         params = assign_params(name=name)
-        data = assign_params(Hostname=containerconfig_hostname, Domainname=containerconfig_domainname, User=containerconfig_user, AttachStdin=containerconfig_attachstdin, AttachStdout=containerconfig_attachstdout, AttachStderr=containerconfig_attachstderr, ExposedPorts=containerconfig_exposedports, Tty=containerconfig_tty, OpenStdin=containerconfig_openstdin, StdinOnce=containerconfig_stdinonce, Env=containerconfig_env, Cmd=containerconfig_cmd, Healthcheck=containerconfig_healthcheck, ArgsEscaped=containerconfig_argsescaped, Image=containerconfig_image, Volumes=containerconfig_volumes, WorkingDir=containerconfig_workingdir, Entrypoint=containerconfig_entrypoint, NetworkDisabled=containerconfig_networkdisabled, MacAddress=containerconfig_macaddress, OnBuild=containerconfig_onbuild, Labels=containerconfig_labels, StopSignal=containerconfig_stopsignal, StopTimeout=containerconfig_stoptimeout, Shell=containerconfig_shell, Binds=hostconfig_binds, ContainerIDFile=hostconfig_containeridfile, LogConfig=hostconfig_logconfig, NetworkMode=hostconfig_networkmode, PortBindings=hostconfig_portbindings, RestartPolicy=hostconfig_restartpolicy, AutoRemove=hostconfig_autoremove, VolumeDriver=hostconfig_volumedriver, VolumesFrom=hostconfig_volumesfrom, Mounts=hostconfig_mounts, CapAdd=hostconfig_capadd, CapDrop=hostconfig_capdrop, CgroupnsMode=hostconfig_cgroupnsmode, Dns=hostconfig_dns, DnsOptions=hostconfig_dnsoptions, DnsSearch=hostconfig_dnssearch, ExtraHosts=hostconfig_extrahosts, GroupAdd=hostconfig_groupadd, IpcMode=hostconfig_ipcmode, Cgroup=hostconfig_cgroup, Links=hostconfig_links, OomScoreAdj=hostconfig_oomscoreadj, PidMode=hostconfig_pidmode, Privileged=hostconfig_privileged, PublishAllPorts=hostconfig_publishallports, ReadonlyRootfs=hostconfig_readonlyrootfs, SecurityOpt=hostconfig_securityopt, StorageOpt=hostconfig_storageopt, Tmpfs=hostconfig_tmpfs, UTSMode=hostconfig_utsmode, UsernsMode=hostconfig_usernsmode, ShmSize=hostconfig_shmsize, Sysctls=hostconfig_sysctls, Runtime=hostconfig_runtime, ConsoleSize=hostconfig_consolesize, Isolation=hostconfig_isolation, MaskedPaths=hostconfig_maskedpaths, ReadonlyPaths=hostconfig_readonlypaths, EndpointsConfig=networkingconfig_endpointsconfig)
+        data = assign_params(Hostname=containerconfig_hostname, Domainname=containerconfig_domainname,
+                             User=containerconfig_user, AttachStdin=containerconfig_attachstdin,
+                             AttachStdout=containerconfig_attachstdout, AttachStderr=containerconfig_attachstderr,
+                             ExposedPorts=containerconfig_exposedports, Tty=containerconfig_tty,
+                             OpenStdin=containerconfig_openstdin, StdinOnce=containerconfig_stdinonce,
+                             Env=containerconfig_env, Cmd=containerconfig_cmd,
+                             Healthcheck=containerconfig_healthcheck, ArgsEscaped=containerconfig_argsescaped,
+                             Image=containerconfig_image, Volumes=containerconfig_volumes,
+                             WorkingDir=containerconfig_workingdir, Entrypoint=containerconfig_entrypoint,
+                             NetworkDisabled=containerconfig_networkdisabled,
+                             MacAddress=containerconfig_macaddress, OnBuild=containerconfig_onbuild,
+                             Labels=containerconfig_labels, StopSignal=containerconfig_stopsignal,
+                             StopTimeout=containerconfig_stoptimeout, Shell=containerconfig_shell,
+                             Binds=hostconfig_binds, ContainerIDFile=hostconfig_containeridfile,
+                             LogConfig=hostconfig_logconfig, NetworkMode=hostconfig_networkmode,
+                             PortBindings=hostconfig_portbindings, RestartPolicy=hostconfig_restartpolicy,
+                             AutoRemove=hostconfig_autoremove, VolumeDriver=hostconfig_volumedriver,
+                             VolumesFrom=hostconfig_volumesfrom, Mounts=hostconfig_mounts,
+                             CapAdd=hostconfig_capadd, CapDrop=hostconfig_capdrop,
+                             CgroupnsMode=hostconfig_cgroupnsmode, Dns=hostconfig_dns,
+                             DnsOptions=hostconfig_dnsoptions, DnsSearch=hostconfig_dnssearch,
+                             ExtraHosts=hostconfig_extrahosts, GroupAdd=hostconfig_groupadd,
+                             IpcMode=hostconfig_ipcmode, Cgroup=hostconfig_cgroup,
+                             Links=hostconfig_links, OomScoreAdj=hostconfig_oomscoreadj,
+                             PidMode=hostconfig_pidmode, Privileged=hostconfig_privileged,
+                             PublishAllPorts=hostconfig_publishallports,
+                             ReadonlyRootfs=hostconfig_readonlyrootfs, SecurityOpt=hostconfig_securityopt,
+                             StorageOpt=hostconfig_storageopt, Tmpfs=hostconfig_tmpfs,
+                             UTSMode=hostconfig_utsmode, UsernsMode=hostconfig_usernsmode,
+                             ShmSize=hostconfig_shmsize, Sysctls=hostconfig_sysctls,
+                             Runtime=hostconfig_runtime, ConsoleSize=hostconfig_consolesize,
+                             Isolation=hostconfig_isolation, MaskedPaths=hostconfig_maskedpaths,
+                             ReadonlyPaths=hostconfig_readonlypaths,
+                             EndpointsConfig=networkingconfig_endpointsconfig)
 
         headers = self._headers
 
@@ -126,8 +188,15 @@ class Client(BaseClient):
 
         return response
 
-    def container_exec_request(self, execconfig_attachstdin, execconfig_attachstdout, execconfig_attachstderr, execconfig_detachkeys, execconfig_tty, execconfig_env, execconfig_cmd, execconfig_privileged, execconfig_user, execconfig_workingdir, id_):
-        data = assign_params(AttachStdin=execconfig_attachstdin, AttachStdout=execconfig_attachstdout, AttachStderr=execconfig_attachstderr, DetachKeys=execconfig_detachkeys, Tty=execconfig_tty, Env=execconfig_env, Cmd=execconfig_cmd, Privileged=execconfig_privileged, User=execconfig_user, WorkingDir=execconfig_workingdir)
+    def container_exec_request(self, execconfig_attachstdin, execconfig_attachstdout, execconfig_attachstderr,
+                               execconfig_detachkeys, execconfig_tty, execconfig_env,
+                               execconfig_cmd, execconfig_privileged, execconfig_user,
+                               execconfig_workingdir, id_):
+        data = assign_params(AttachStdin=execconfig_attachstdin, AttachStdout=execconfig_attachstdout,
+                             AttachStderr=execconfig_attachstderr, detach_keys=execconfig_detachkeys,
+                             Tty=execconfig_tty, Env=execconfig_env, Cmd=execconfig_cmd,
+                             Privileged=execconfig_privileged, User=execconfig_user,
+                             WorkingDir=execconfig_workingdir)
 
         headers = self._headers
 
@@ -162,8 +231,8 @@ class Client(BaseClient):
 
         return response
 
-    def container_list_request(self, all, limit, size, filters):
-        params = assign_params(all=all, limit=limit, size=size, filters=filters)
+    def container_list_request(self, list_all, limit, size, filters):
+        params = assign_params(list_all=list_all, limit=limit, size=size, filters=filters)
 
         headers = self._headers
 
@@ -172,7 +241,8 @@ class Client(BaseClient):
         return response
 
     def container_logs_request(self, id_, follow, stdout, stderr, since, until, timestamps, tail):
-        params = assign_params(follow=follow, stdout=stdout, stderr=stderr, since=since, until=until, timestamps=timestamps, tail=tail)
+        params = assign_params(follow=follow, stdout=stdout, stderr=stderr, since=since, until=until,
+                               timestamps=timestamps, tail=tail)
 
         headers = self._headers
 
@@ -226,8 +296,8 @@ class Client(BaseClient):
 
         return response
 
-    def container_start_request(self, id_, detachKeys):
-        params = assign_params(detachKeys=detachKeys)
+    def container_start_request(self, id_, detach_keys):
+        params = assign_params(detach_keys=detach_keys)
 
         headers = self._headers
 
@@ -270,8 +340,43 @@ class Client(BaseClient):
 
         return response
 
-    def container_update_request(self, id_, resources_cpushares, resources_memory, resources_cgroupparent, resources_blkioweight, resources_blkioweightdevice, resources_blkiodevicereadbps, resources_blkiodevicewritebps, resources_blkiodevicereadiops, resources_blkiodevicewriteiops, resources_cpuperiod, resources_cpuquota, resources_cpurealtimeperiod, resources_cpurealtimeruntime, resources_cpusetcpus, resources_cpusetmems, resources_devices, resources_devicecgrouprules, resources_devicerequests, resources_kernelmemory, resources_kernelmemorytcp, resources_memoryreservation, resources_memoryswap, resources_memoryswappiness, resources_nanocpus, resources_oomkilldisable, resources_init, resources_pidslimit, resources_ulimits, resources_cpucount, resources_cpupercent, resources_iomaximumiops, resources_iomaximumbandwidth, restartpolicy_name, restartpolicy_maximumretrycount):
-        data = assign_params(CpuShares=resources_cpushares, Memory=resources_memory, CgroupParent=resources_cgroupparent, BlkioWeight=resources_blkioweight, BlkioWeightDevice=resources_blkioweightdevice, BlkioDeviceReadBps=resources_blkiodevicereadbps, BlkioDeviceWriteBps=resources_blkiodevicewritebps, BlkioDeviceReadIOps=resources_blkiodevicereadiops, BlkioDeviceWriteIOps=resources_blkiodevicewriteiops, CpuPeriod=resources_cpuperiod, CpuQuota=resources_cpuquota, CpuRealtimePeriod=resources_cpurealtimeperiod, CpuRealtimeRuntime=resources_cpurealtimeruntime, CpusetCpus=resources_cpusetcpus, CpusetMems=resources_cpusetmems, Devices=resources_devices, DeviceCgroupRules=resources_devicecgrouprules, DeviceRequests=resources_devicerequests, KernelMemory=resources_kernelmemory, KernelMemoryTCP=resources_kernelmemorytcp, MemoryReservation=resources_memoryreservation, MemorySwap=resources_memoryswap, MemorySwappiness=resources_memoryswappiness, NanoCPUs=resources_nanocpus, OomKillDisable=resources_oomkilldisable, Init=resources_init, PidsLimit=resources_pidslimit, Ulimits=resources_ulimits, CpuCount=resources_cpucount, CpuPercent=resources_cpupercent, IOMaximumIOps=resources_iomaximumiops, IOMaximumBandwidth=resources_iomaximumbandwidth, Name=restartpolicy_name, MaximumRetryCount=restartpolicy_maximumretrycount)
+    def container_update_request(self, id_, resources_cpushares, resources_memory, resources_cgroupparent,
+                                 resources_blkioweight, resources_blkioweightdevice, resources_blkiodevicereadbps,
+                                 resources_blkiodevicewritebps, resources_blkiodevicereadiops,
+                                 resources_blkiodevicewriteiops, resources_cpuperiod, resources_cpuquota,
+                                 resources_cpurealtimeperiod, resources_cpurealtimeruntime, resources_cpusetcpus,
+                                 resources_cpusetmems, resources_devices, resources_devicecgrouprules,
+                                 resources_devicerequests, resources_kernelmemory, resources_kernelmemorytcp,
+                                 resources_memoryreservation, resources_memoryswap, resources_memoryswappiness,
+                                 resources_nanocpus, resources_oomkilldisable, resources_init, resources_pidslimit,
+                                 resources_ulimits, resources_cpucount, resources_cpupercent, resources_iomaximumiops,
+                                 resources_iomaximumbandwidth, restartpolicy_name, restartpolicy_maximumretrycount):
+        data = assign_params(CpuShares=resources_cpushares, Memory=resources_memory,
+                             CgroupParent=resources_cgroupparent, BlkioWeight=resources_blkioweight,
+                             BlkioWeightDevice=resources_blkioweightdevice,
+                             BlkioDeviceReadBps=resources_blkiodevicereadbps,
+                             BlkioDeviceWriteBps=resources_blkiodevicewritebps,
+                             BlkioDeviceReadIOps=resources_blkiodevicereadiops,
+                             BlkioDeviceWriteIOps=resources_blkiodevicewriteiops,
+                             CpuPeriod=resources_cpuperiod, CpuQuota=resources_cpuquota,
+                             CpuRealtimePeriod=resources_cpurealtimeperiod,
+                             CpuRealtimeRuntime=resources_cpurealtimeruntime,
+                             CpusetCpus=resources_cpusetcpus, CpusetMems=resources_cpusetmems,
+                             Devices=resources_devices,
+                             DeviceCgroupRules=resources_devicecgrouprules,
+                             DeviceRequests=resources_devicerequests,
+                             KernelMemory=resources_kernelmemory,
+                             KernelMemoryTCP=resources_kernelmemorytcp,
+                             MemoryReservation=resources_memoryreservation,
+                             MemorySwap=resources_memoryswap,
+                             MemorySwappiness=resources_memoryswappiness,
+                             NanoCPUs=resources_nanocpus, OomKillDisable=resources_oomkilldisable,
+                             Init=resources_init, PidsLimit=resources_pidslimit,
+                             Ulimits=resources_ulimits, CpuCount=resources_cpucount,
+                             CpuPercent=resources_cpupercent, IOMaximumIOps=resources_iomaximumiops,
+                             IOMaximumBandwidth=resources_iomaximumbandwidth,
+                             Name=restartpolicy_name,
+                             MaximumRetryCount=restartpolicy_maximumretrycount)
 
         headers = self._headers
 
@@ -332,9 +437,15 @@ class Client(BaseClient):
 
         return response
 
-    def image_build_request(self, inputStream, dockerfile, t, extrahosts, remote, q, nocache, cachefrom, pull, rm, forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize, squash, labels, networkmode, platform, target, outputs):
-        params = assign_params(dockerfile=dockerfile, t=t, extrahosts=extrahosts, remote=remote, q=q, nocache=nocache, cachefrom=cachefrom, pull=pull, rm=rm, forcerm=forcerm, memory=memory, memswap=memswap, cpushares=cpushares, cpusetcpus=cpusetcpus, cpuperiod=cpuperiod, cpuquota=cpuquota, buildargs=buildargs, shmsize=shmsize, squash=squash, labels=labels, networkmode=networkmode, platform=platform, target=target, outputs=outputs)
-        data = assign_params(inputStream=inputStream)
+    def image_build_request(self, input_stream, dockerfile, t, extrahosts, remote, q, nocache, cachefrom, pull, rm,
+                            forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize,
+                            squash, labels, networkmode, platform, target, outputs):
+        params = assign_params(dockerfile=dockerfile, t=t, extrahosts=extrahosts, remote=remote, q=q, nocache=nocache,
+                               cachefrom=cachefrom, pull=pull, rm=rm, forcerm=forcerm, memory=memory, memswap=memswap,
+                               cpushares=cpushares, cpusetcpus=cpusetcpus, cpuperiod=cpuperiod, cpuquota=cpuquota,
+                               buildargs=buildargs, shmsize=shmsize, squash=squash, labels=labels,
+                               networkmode=networkmode, platform=platform, target=target, outputs=outputs)
+        data = assign_params(input_stream=input_stream)
 
         headers = self._headers
         headers['Content-Type'] = 'application/octet-stream'
@@ -343,9 +454,31 @@ class Client(BaseClient):
 
         return response
 
-    def image_commit_request(self, containerconfig_hostname, containerconfig_domainname, containerconfig_user, containerconfig_attachstdin, containerconfig_attachstdout, containerconfig_attachstderr, containerconfig_exposedports, containerconfig_tty, containerconfig_openstdin, containerconfig_stdinonce, containerconfig_env, containerconfig_cmd, containerconfig_healthcheck, containerconfig_argsescaped, containerconfig_image, containerconfig_volumes, containerconfig_workingdir, containerconfig_entrypoint, containerconfig_networkdisabled, containerconfig_macaddress, containerconfig_onbuild, containerconfig_labels, containerconfig_stopsignal, containerconfig_stoptimeout, containerconfig_shell, container, repo, tag, comment, author, pause, changes):
-        params = assign_params(container=container, repo=repo, tag=tag, comment=comment, author=author, pause=pause, changes=changes)
-        data = assign_params(Hostname=containerconfig_hostname, Domainname=containerconfig_domainname, User=containerconfig_user, AttachStdin=containerconfig_attachstdin, AttachStdout=containerconfig_attachstdout, AttachStderr=containerconfig_attachstderr, ExposedPorts=containerconfig_exposedports, Tty=containerconfig_tty, OpenStdin=containerconfig_openstdin, StdinOnce=containerconfig_stdinonce, Env=containerconfig_env, Cmd=containerconfig_cmd, Healthcheck=containerconfig_healthcheck, ArgsEscaped=containerconfig_argsescaped, Image=containerconfig_image, Volumes=containerconfig_volumes, WorkingDir=containerconfig_workingdir, Entrypoint=containerconfig_entrypoint, NetworkDisabled=containerconfig_networkdisabled, MacAddress=containerconfig_macaddress, OnBuild=containerconfig_onbuild, Labels=containerconfig_labels, StopSignal=containerconfig_stopsignal, StopTimeout=containerconfig_stoptimeout, Shell=containerconfig_shell)
+    def image_commit_request(self, containerconfig_hostname, containerconfig_domainname, containerconfig_user,
+                             containerconfig_attachstdin, containerconfig_attachstdout, containerconfig_attachstderr,
+                             containerconfig_exposedports, containerconfig_tty, containerconfig_openstdin,
+                             containerconfig_stdinonce, containerconfig_env, containerconfig_cmd,
+                             containerconfig_healthcheck, containerconfig_argsescaped, containerconfig_image,
+                             containerconfig_volumes, containerconfig_workingdir, containerconfig_entrypoint,
+                             containerconfig_networkdisabled, containerconfig_macaddress, containerconfig_onbuild,
+                             containerconfig_labels, containerconfig_stopsignal, containerconfig_stoptimeout,
+                             containerconfig_shell, container, repo, tag, comment, author, pause, changes):
+        params = assign_params(container=container, repo=repo, tag=tag, comment=comment, author=author, pause=pause,
+                               changes=changes)
+        data = assign_params(Hostname=containerconfig_hostname, Domainname=containerconfig_domainname,
+                             User=containerconfig_user, AttachStdin=containerconfig_attachstdin,
+                             AttachStdout=containerconfig_attachstdout, AttachStderr=containerconfig_attachstderr,
+                             ExposedPorts=containerconfig_exposedports, Tty=containerconfig_tty,
+                             OpenStdin=containerconfig_openstdin, StdinOnce=containerconfig_stdinonce,
+                             Env=containerconfig_env, Cmd=containerconfig_cmd,
+                             Healthcheck=containerconfig_healthcheck,
+                             ArgsEscaped=containerconfig_argsescaped,
+                             Image=containerconfig_image, Volumes=containerconfig_volumes,
+                             WorkingDir=containerconfig_workingdir, Entrypoint=containerconfig_entrypoint,
+                             NetworkDisabled=containerconfig_networkdisabled,
+                             MacAddress=containerconfig_macaddress, OnBuild=containerconfig_onbuild,
+                             Labels=containerconfig_labels, StopSignal=containerconfig_stopsignal,
+                             StopTimeout=containerconfig_stoptimeout, Shell=containerconfig_shell)
 
         headers = self._headers
 
@@ -353,9 +486,10 @@ class Client(BaseClient):
 
         return response
 
-    def image_create_request(self, fromImage, fromSrc, repo, tag, message, inputImage, platform):
-        params = assign_params(fromImage=fromImage, fromSrc=fromSrc, repo=repo, tag=tag, message=message, platform=platform)
-        data = assign_params(inputImage=inputImage)
+    def image_create_request(self, from_image, from_src, repo, tag, message, input_image, platform):
+        params = assign_params(from_image=from_image, from_src=from_src, repo=repo, tag=tag, message=message,
+                               platform=platform)
+        data = assign_params(input_image=input_image)
 
         headers = self._headers
         headers['Content-Type'] = 'text/plain'
@@ -408,8 +542,8 @@ class Client(BaseClient):
 
         return response
 
-    def image_list_request(self, all, filters, digests):
-        params = assign_params(all=all, filters=filters, digests=digests)
+    def image_list_request(self, prune_all, filters, digests):
+        params = assign_params(prune_all=prune_all, filters=filters, digests=digests)
 
         headers = self._headers
 
@@ -417,9 +551,9 @@ class Client(BaseClient):
 
         return response
 
-    def image_load_request(self, imagesTarball, quiet):
+    def image_load_request(self, images_tarball, quiet):
         params = assign_params(quiet=quiet)
-        data = assign_params(imagesTarball=imagesTarball)
+        data = assign_params(images_tarball=images_tarball)
 
         headers = self._headers
         headers['Content-Type'] = 'application/x-tar'
@@ -474,8 +608,15 @@ class Client(BaseClient):
 
         return response
 
-    def network_create_request(self, networkconfig_name, networkconfig_checkduplicate, networkconfig_driver, networkconfig_internal, networkconfig_attachable, networkconfig_ingress, networkconfig_ipam, networkconfig_enableipv6, networkconfig_options, networkconfig_labels):
-        data = assign_params(Name=networkconfig_name, CheckDuplicate=networkconfig_checkduplicate, Driver=networkconfig_driver, Internal=networkconfig_internal, Attachable=networkconfig_attachable, Ingress=networkconfig_ingress, IPAM=networkconfig_ipam, EnableIPv6=networkconfig_enableipv6, Options=networkconfig_options, Labels=networkconfig_labels)
+    def network_create_request(self, networkconfig_name, networkconfig_checkduplicate, networkconfig_driver,
+                               networkconfig_internal, networkconfig_attachable, networkconfig_ingress,
+                               networkconfig_ipam, networkconfig_enableipv6, networkconfig_options,
+                               networkconfig_labels):
+        data = assign_params(Name=networkconfig_name, CheckDuplicate=networkconfig_checkduplicate,
+                             Driver=networkconfig_driver, Internal=networkconfig_internal,
+                             Attachable=networkconfig_attachable, Ingress=networkconfig_ingress,
+                             IPAM=networkconfig_ipam, EnableIPv6=networkconfig_enableipv6,
+                             Options=networkconfig_options, Labels=networkconfig_labels)
 
         headers = self._headers
 
@@ -555,7 +696,8 @@ class Client(BaseClient):
 
     def node_update_request(self, id_, nodespec_name, nodespec_labels, nodespec_role, nodespec_availability, version):
         params = assign_params(version=version)
-        data = assign_params(Name=nodespec_name, Labels=nodespec_labels, Role=nodespec_role, Availability=nodespec_availability)
+        data = assign_params(Name=nodespec_name, Labels=nodespec_labels, Role=nodespec_role,
+                             Availability=nodespec_availability)
 
         headers = self._headers
 
@@ -563,9 +705,9 @@ class Client(BaseClient):
 
         return response
 
-    def plugin_create_request(self, name, tarContext):
+    def plugin_create_request(self, name, tar_content):
         params = assign_params(name=name)
-        data = assign_params(tarContext=tarContext)
+        data = assign_params(tar_content=tar_content)
 
         headers = self._headers
         headers['Content-Type'] = 'application/x-tar'
@@ -654,19 +796,22 @@ class Client(BaseClient):
 
         return response
 
-    def put_container_archive_request(self, id_, path, noOverwriteDirNonDir, copyUIDGID, inputStream):
-        params = assign_params(path=path, noOverwriteDirNonDir=noOverwriteDirNonDir, copyUIDGID=copyUIDGID)
-        data = assign_params(inputStream=inputStream)
+    def put_container_archive_request(self, id_, path, no_overwrite, copy_uid_gid, input_stream):
+        params = assign_params(path=path, no_overwrite=no_overwrite, copy_uid_gid=copy_uid_gid)
+        data = assign_params(input_stream=input_stream)
 
         headers = self._headers
         headers['Content-Type'] = 'application/x-tar'
 
-        response = self._http_request('put', f'containers/{id_}/archive', params=params, json_data=data, headers=headers)
+        response = self._http_request('put', f'containers/{id_}/archive', params=params, json_data=data,
+                                      headers=headers)
 
         return response
 
-    def secret_create_request(self, secretspec_name, secretspec_labels, secretspec_data, secretspec_driver, secretspec_templating):
-        data = assign_params(Name=secretspec_name, Labels=secretspec_labels, Data=secretspec_data, Driver=secretspec_driver, Templating=secretspec_templating)
+    def secret_create_request(self, secretspec_name, secretspec_labels, secretspec_data, secretspec_driver,
+                              secretspec_templating):
+        data = assign_params(Name=secretspec_name, Labels=secretspec_labels, Data=secretspec_data,
+                             Driver=secretspec_driver, Templating=secretspec_templating)
 
         headers = self._headers
 
@@ -699,9 +844,11 @@ class Client(BaseClient):
 
         return response
 
-    def secret_update_request(self, id_, secretspec_name, secretspec_labels, secretspec_data, secretspec_driver, secretspec_templating, version):
+    def secret_update_request(self, id_, secretspec_name, secretspec_labels, secretspec_data, secretspec_driver,
+                              secretspec_templating, version):
         params = assign_params(version=version)
-        data = assign_params(Name=secretspec_name, Labels=secretspec_labels, Data=secretspec_data, Driver=secretspec_driver, Templating=secretspec_templating)
+        data = assign_params(Name=secretspec_name, Labels=secretspec_labels, Data=secretspec_data,
+                             Driver=secretspec_driver, Templating=secretspec_templating)
 
         headers = self._headers
 
@@ -709,8 +856,13 @@ class Client(BaseClient):
 
         return response
 
-    def service_create_request(self, servicespec_name, servicespec_labels, servicespec_tasktemplate, servicespec_mode, servicespec_updateconfig, servicespec_rollbackconfig, servicespec_networks, servicespec_endpointspec):
-        data = assign_params(Name=servicespec_name, Labels=servicespec_labels, TaskTemplate=servicespec_tasktemplate, Mode=servicespec_mode, UpdateConfig=servicespec_updateconfig, RollbackConfig=servicespec_rollbackconfig, Networks=servicespec_networks, EndpointSpec=servicespec_endpointspec)
+    def service_create_request(self, servicespec_name, servicespec_labels, servicespec_tasktemplate, servicespec_mode,
+                               servicespec_updateconfig, servicespec_rollbackconfig, servicespec_networks,
+                               servicespec_endpointspec):
+        data = assign_params(Name=servicespec_name, Labels=servicespec_labels, TaskTemplate=servicespec_tasktemplate,
+                             Mode=servicespec_mode, UpdateConfig=servicespec_updateconfig,
+                             RollbackConfig=servicespec_rollbackconfig, Networks=servicespec_networks,
+                             EndpointSpec=servicespec_endpointspec)
 
         headers = self._headers
 
@@ -726,8 +878,8 @@ class Client(BaseClient):
 
         return response
 
-    def service_inspect_request(self, id_, insertDefaults):
-        params = assign_params(insertDefaults=insertDefaults)
+    def service_inspect_request(self, id_, insert_defaults):
+        params = assign_params(insert_defaults=insert_defaults)
 
         headers = self._headers
 
@@ -745,7 +897,8 @@ class Client(BaseClient):
         return response
 
     def service_logs_request(self, id_, details, follow, stdout, stderr, since, timestamps, tail):
-        params = assign_params(details=details, follow=follow, stdout=stdout, stderr=stderr, since=since, timestamps=timestamps, tail=tail)
+        params = assign_params(details=details, follow=follow, stdout=stdout, stderr=stderr, since=since,
+                               timestamps=timestamps, tail=tail)
 
         headers = self._headers
 
@@ -753,9 +906,14 @@ class Client(BaseClient):
 
         return response
 
-    def service_update_request(self, id_, servicespec_name, servicespec_labels, servicespec_tasktemplate, servicespec_mode, servicespec_updateconfig, servicespec_rollbackconfig, servicespec_networks, servicespec_endpointspec, version, registryAuthFrom, rollback):
-        params = assign_params(version=version, registryAuthFrom=registryAuthFrom, rollback=rollback)
-        data = assign_params(Name=servicespec_name, Labels=servicespec_labels, TaskTemplate=servicespec_tasktemplate, Mode=servicespec_mode, UpdateConfig=servicespec_updateconfig, RollbackConfig=servicespec_rollbackconfig, Networks=servicespec_networks, EndpointSpec=servicespec_endpointspec)
+    def service_update_request(self, id_, servicespec_name, servicespec_labels, servicespec_tasktemplate,
+                               servicespec_mode, servicespec_updateconfig, servicespec_rollbackconfig,
+                               servicespec_networks, servicespec_endpointspec, version, registery_auth_from, rollback):
+        params = assign_params(version=version, registery_auth_from=registery_auth_from, rollback=rollback)
+        data = assign_params(Name=servicespec_name, Labels=servicespec_labels, TaskTemplate=servicespec_tasktemplate,
+                             Mode=servicespec_mode, UpdateConfig=servicespec_updateconfig,
+                             RollbackConfig=servicespec_rollbackconfig, Networks=servicespec_networks,
+                             EndpointSpec=servicespec_endpointspec)
 
         headers = self._headers
 
@@ -772,8 +930,12 @@ class Client(BaseClient):
 
         return response
 
-    def swarm_init_request(self, body_1_listenaddr, body_1_advertiseaddr, body_1_datapathaddr, body_1_datapathport, body_1_defaultaddrpool, body_1_forcenewcluster, body_1_subnetsize, body_1_spec):
-        data = assign_params(ListenAddr=body_1_listenaddr, AdvertiseAddr=body_1_advertiseaddr, DataPathAddr=body_1_datapathaddr, DataPathPort=body_1_datapathport, DefaultAddrPool=body_1_defaultaddrpool, ForceNewCluster=body_1_forcenewcluster, SubnetSize=body_1_subnetsize, Spec=body_1_spec)
+    def swarm_init_request(self, body_1_listenaddr, body_1_advertiseaddr, body_1_datapathaddr, body_1_datapathport,
+                           body_1_defaultaddrpool, body_1_forcenewcluster, body_1_subnetsize, body_1_spec):
+        data = assign_params(ListenAddr=body_1_listenaddr, AdvertiseAddr=body_1_advertiseaddr,
+                             DataPathAddr=body_1_datapathaddr, DataPathPort=body_1_datapathport,
+                             DefaultAddrPool=body_1_defaultaddrpool, ForceNewCluster=body_1_forcenewcluster,
+                             SubnetSize=body_1_subnetsize, Spec=body_1_spec)
 
         headers = self._headers
 
@@ -789,8 +951,11 @@ class Client(BaseClient):
 
         return response
 
-    def swarm_join_request(self, body_2_listenaddr, body_2_advertiseaddr, body_2_datapathaddr, body_2_remoteaddrs, body_2_jointoken):
-        data = assign_params(ListenAddr=body_2_listenaddr, AdvertiseAddr=body_2_advertiseaddr, DataPathAddr=body_2_datapathaddr, RemoteAddrs=body_2_remoteaddrs, JoinToken=body_2_jointoken)
+    def swarm_join_request(self, body_2_listenaddr, body_2_advertiseaddr, body_2_datapathaddr, body_2_remoteaddrs,
+                           body_2_jointoken):
+        data = assign_params(ListenAddr=body_2_listenaddr, AdvertiseAddr=body_2_advertiseaddr,
+                             DataPathAddr=body_2_datapathaddr, RemoteAddrs=body_2_remoteaddrs,
+                             JoinToken=body_2_jointoken)
 
         headers = self._headers
 
@@ -824,9 +989,16 @@ class Client(BaseClient):
 
         return response
 
-    def swarm_update_request(self, swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft, swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig, swarmspec_taskdefaults, version, rotateWorkerToken, rotateManagerToken, rotateManagerUnlockKey):
-        params = assign_params(version=version, rotateWorkerToken=rotateWorkerToken, rotateManagerToken=rotateManagerToken, rotateManagerUnlockKey=rotateManagerUnlockKey)
-        data = assign_params(Name=swarmspec_name, Labels=swarmspec_labels, Orchestration=swarmspec_orchestration, Raft=swarmspec_raft, Dispatcher=swarmspec_dispatcher, CAConfig=swarmspec_caconfig, EncryptionConfig=swarmspec_encryptionconfig, TaskDefaults=swarmspec_taskdefaults)
+    def swarm_update_request(self, swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft,
+                             swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,
+                             swarmspec_taskdefaults, version, rotate_worker_token, rotateManagerToken,
+                             rotateManagerUnlockKey):
+        params = assign_params(version=version, rotate_worker_token=rotate_worker_token,
+                               rotateManagerToken=rotateManagerToken, rotateManagerUnlockKey=rotateManagerUnlockKey)
+        data = assign_params(Name=swarmspec_name, Labels=swarmspec_labels, Orchestration=swarmspec_orchestration,
+                             Raft=swarmspec_raft, Dispatcher=swarmspec_dispatcher,
+                             CAConfig=swarmspec_caconfig, EncryptionConfig=swarmspec_encryptionconfig,
+                             TaskDefaults=swarmspec_taskdefaults)
 
         headers = self._headers
 
@@ -835,7 +1007,8 @@ class Client(BaseClient):
         return response
 
     def system_auth_request(self, authconfig_username, authconfig_password, authconfig_email, authconfig_serveraddress):
-        data = assign_params(username=authconfig_username, password=authconfig_password, email=authconfig_email, serveraddress=authconfig_serveraddress)
+        data = assign_params(username=authconfig_username, password=authconfig_password, email=authconfig_email,
+                             serveraddress=authconfig_serveraddress)
 
         headers = self._headers
 
@@ -902,7 +1075,6 @@ class Client(BaseClient):
 
         return response
 
-
     def task_list_request(self, filters):
         params = assign_params(filters=filters)
 
@@ -912,9 +1084,9 @@ class Client(BaseClient):
 
         return response
 
-
     def task_logs_request(self, id_, details, follow, stdout, stderr, since, timestamps, tail):
-        params = assign_params(details=details, follow=follow, stdout=stdout, stderr=stderr, since=since, timestamps=timestamps, tail=tail)
+        params = assign_params(details=details, follow=follow, stdout=stdout, stderr=stderr, since=since,
+                               timestamps=timestamps, tail=tail)
 
         headers = self._headers
 
@@ -922,16 +1094,16 @@ class Client(BaseClient):
 
         return response
 
-
-    def volume_create_request(self, volumeconfig_name, volumeconfig_driver, volumeconfig_driveropts, volumeconfig_labels):
-        data = assign_params(Name=volumeconfig_name, Driver=volumeconfig_driver, DriverOpts=volumeconfig_driveropts, Labels=volumeconfig_labels)
+    def volume_create_request(self, volumeconfig_name, volumeconfig_driver, volumeconfig_driveropts,
+                              volumeconfig_labels):
+        data = assign_params(Name=volumeconfig_name, Driver=volumeconfig_driver, DriverOpts=volumeconfig_driveropts,
+                             Labels=volumeconfig_labels)
 
         headers = self._headers
 
         response = self._http_request('post', 'volumes/create', json_data=data, headers=headers)
 
         return response
-
 
     def volume_delete_request(self, name, force):
         params = assign_params(force=force)
@@ -942,7 +1114,6 @@ class Client(BaseClient):
 
         return response
 
-
     def volume_inspect_request(self, name):
 
         headers = self._headers
@@ -950,7 +1121,6 @@ class Client(BaseClient):
         response = self._http_request('get', f'volumes/{name}', headers=headers)
 
         return response
-
 
     def volume_list_request(self, filters):
         params = assign_params(filters=filters)
@@ -960,7 +1130,6 @@ class Client(BaseClient):
         response = self._http_request('get', 'volumes', params=params, headers=headers)
 
         return response
-
 
     def volume_prune_request(self, filters):
         params = assign_params(filters=filters)
@@ -972,14 +1141,12 @@ class Client(BaseClient):
         return response
 
 
-
-
 def build_prune_command(client, args):
     keep_storage = args.get('keep_storage', None)
-    all = argToBoolean(args.get('all', False))
+    prune_all = argToBoolean(args.get('prune_all', False))
     filters = str(args.get('filters', ''))
 
-    response = client.build_prune_request(keep_storage, all, filters)
+    response = client.build_prune_request(keep_storage, prune_all, filters)
     command_results = CommandResults(
         outputs_prefix='Docker.BuildPruneResponse',
         outputs_key_field='',
@@ -1061,7 +1228,8 @@ def config_update_command(client, args):
     configspec_templating = assign_params(Name=configspec_templating_name, Options=configspec_templating_options)
     version = args.get('version', None)
 
-    response = client.config_update_request(id_, configspec_name, configspec_labels, configspec_data, configspec_templating, version)
+    response = client.config_update_request(id_, configspec_name, configspec_labels, configspec_data,
+                                            configspec_templating, version)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1104,14 +1272,14 @@ def container_archive_info_command(client, args):
 
 def container_attach_command(client, args):
     id_ = str(args.get('id', ''))
-    detachKeys = str(args.get('detachKeys', ''))
+    detach_keys = str(args.get('detach_keys', ''))
     logs = argToBoolean(args.get('logs', False))
     stream = argToBoolean(args.get('stream', False))
     stdin = argToBoolean(args.get('stdin', False))
     stdout = argToBoolean(args.get('stdout', False))
     stderr = argToBoolean(args.get('stderr', False))
 
-    response = client.container_attach_request(id_, detachKeys, logs, stream, stdin, stdout, stderr)
+    response = client.container_attach_request(id_, detach_keys, logs, stream, stdin, stdout, stderr)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1124,14 +1292,14 @@ def container_attach_command(client, args):
 
 def container_attach_websocket_command(client, args):
     id_ = str(args.get('id', ''))
-    detachKeys = str(args.get('detachKeys', ''))
+    detach_keys = str(args.get('detach_keys', ''))
     logs = argToBoolean(args.get('logs', False))
     stream = argToBoolean(args.get('stream', False))
     stdin = argToBoolean(args.get('stdin', False))
     stdout = argToBoolean(args.get('stdout', False))
     stderr = argToBoolean(args.get('stderr', False))
 
-    response = client.container_attach_websocket_request(id_, detachKeys, logs, stream, stdin, stdout, stderr)
+    response = client.container_attach_websocket_request(id_, detach_keys, logs, stream, stdin, stdout, stderr)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1175,7 +1343,11 @@ def container_create_command(client, args):
     containerconfig_healthcheck_timeout = args.get('containerconfig_healthcheck_timeout', None)
     containerconfig_healthcheck_retries = args.get('containerconfig_healthcheck_retries', None)
     containerconfig_healthcheck_startperiod = args.get('containerconfig_healthcheck_startperiod', None)
-    containerconfig_healthcheck = assign_params(Test=containerconfig_healthcheck_test, Interval=containerconfig_healthcheck_interval, Timeout=containerconfig_healthcheck_timeout, Retries=containerconfig_healthcheck_retries, StartPeriod=containerconfig_healthcheck_startperiod)
+    containerconfig_healthcheck = assign_params(Test=containerconfig_healthcheck_test,
+                                                Interval=containerconfig_healthcheck_interval,
+                                                Timeout=containerconfig_healthcheck_timeout,
+                                                Retries=containerconfig_healthcheck_retries,
+                                                StartPeriod=containerconfig_healthcheck_startperiod)
     containerconfig_argsescaped = argToBoolean(args.get('containerconfig_argsescaped', False))
     containerconfig_image = str(args.get('containerconfig_image', ''))
     containerconfig_volumes = str(args.get('containerconfig_volumes', ''))
@@ -1197,7 +1369,8 @@ def container_create_command(client, args):
     hostconfig_portbindings = str(args.get('hostconfig_portbindings', ''))
     hostconfig_restartpolicy_name = str(args.get('hostconfig_restartpolicy_name', ''))
     hostconfig_restartpolicy_maximumretrycount = args.get('hostconfig_restartpolicy_maximumretrycount', None)
-    hostconfig_restartpolicy = assign_params(Name=hostconfig_restartpolicy_name, MaximumRetryCount=hostconfig_restartpolicy_maximumretrycount)
+    hostconfig_restartpolicy = assign_params(Name=hostconfig_restartpolicy_name,
+                                             MaximumRetryCount=hostconfig_restartpolicy_maximumretrycount)
     hostconfig_autoremove = argToBoolean(args.get('hostconfig_autoremove', False))
     hostconfig_volumedriver = str(args.get('hostconfig_volumedriver', ''))
     hostconfig_volumesfrom = argToList(args.get('hostconfig_volumesfrom', []))
@@ -1232,7 +1405,69 @@ def container_create_command(client, args):
     hostconfig_readonlypaths = argToList(args.get('hostconfig_readonlypaths', []))
     networkingconfig_endpointsconfig = str(args.get('networkingconfig_endpointsconfig', ''))
 
-    response = client.container_create_request(name, containerconfig_hostname, containerconfig_domainname, containerconfig_user, containerconfig_attachstdin, containerconfig_attachstdout, containerconfig_attachstderr, containerconfig_exposedports, containerconfig_tty, containerconfig_openstdin, containerconfig_stdinonce, containerconfig_env, containerconfig_cmd, containerconfig_healthcheck, containerconfig_argsescaped, containerconfig_image, containerconfig_volumes, containerconfig_workingdir, containerconfig_entrypoint, containerconfig_networkdisabled, containerconfig_macaddress, containerconfig_onbuild, containerconfig_labels, containerconfig_stopsignal, containerconfig_stoptimeout, containerconfig_shell, hostconfig_binds, hostconfig_containeridfile, hostconfig_logconfig, hostconfig_networkmode, hostconfig_portbindings, hostconfig_restartpolicy, hostconfig_autoremove, hostconfig_volumedriver, hostconfig_volumesfrom, hostconfig_mounts, hostconfig_capadd, hostconfig_capdrop, hostconfig_cgroupnsmode, hostconfig_dns, hostconfig_dnsoptions, hostconfig_dnssearch, hostconfig_extrahosts, hostconfig_groupadd, hostconfig_ipcmode, hostconfig_cgroup, hostconfig_links, hostconfig_oomscoreadj, hostconfig_pidmode, hostconfig_privileged, hostconfig_publishallports, hostconfig_readonlyrootfs, hostconfig_securityopt, hostconfig_storageopt, hostconfig_tmpfs, hostconfig_utsmode, hostconfig_usernsmode, hostconfig_shmsize, hostconfig_sysctls, hostconfig_runtime, hostconfig_consolesize, hostconfig_isolation, hostconfig_maskedpaths, hostconfig_readonlypaths, networkingconfig_endpointsconfig)
+    response = client.container_create_request(name, containerconfig_hostname, containerconfig_domainname,
+                                               containerconfig_user,
+                                               containerconfig_attachstdin,
+                                               containerconfig_attachstdout,
+                                               containerconfig_attachstderr,
+                                               containerconfig_exposedports,
+                                               containerconfig_tty,
+                                               containerconfig_openstdin,
+                                               containerconfig_stdinonce,
+                                               containerconfig_env,
+                                               containerconfig_cmd,
+                                               containerconfig_healthcheck,
+                                               containerconfig_argsescaped,
+                                               containerconfig_image,
+                                               containerconfig_volumes,
+                                               containerconfig_workingdir,
+                                               containerconfig_entrypoint,
+                                               containerconfig_networkdisabled,
+                                               containerconfig_macaddress,
+                                               containerconfig_onbuild,
+                                               containerconfig_labels,
+                                               containerconfig_stopsignal,
+                                               containerconfig_stoptimeout,
+                                               containerconfig_shell,
+                                               hostconfig_binds,
+                                               hostconfig_containeridfile,
+                                               hostconfig_logconfig,
+                                               hostconfig_networkmode,
+                                               hostconfig_portbindings,
+                                               hostconfig_restartpolicy,
+                                               hostconfig_autoremove,
+                                               hostconfig_volumedriver,
+                                               hostconfig_volumesfrom,
+                                               hostconfig_mounts,
+                                               hostconfig_capadd,
+                                               hostconfig_capdrop,
+                                               hostconfig_cgroupnsmode,
+                                               hostconfig_dns,
+                                               hostconfig_dnsoptions,
+                                               hostconfig_dnssearch,
+                                               hostconfig_extrahosts,
+                                               hostconfig_groupadd,
+                                               hostconfig_ipcmode,
+                                               hostconfig_cgroup,
+                                               hostconfig_links,
+                                               hostconfig_oomscoreadj,
+                                               hostconfig_pidmode,
+                                               hostconfig_privileged,
+                                               hostconfig_publishallports,
+                                               hostconfig_readonlyrootfs,
+                                               hostconfig_securityopt,
+                                               hostconfig_storageopt,
+                                               hostconfig_tmpfs,
+                                               hostconfig_utsmode,
+                                               hostconfig_usernsmode,
+                                               hostconfig_shmsize,
+                                               hostconfig_sysctls,
+                                               hostconfig_runtime,
+                                               hostconfig_consolesize,
+                                               hostconfig_isolation,
+                                               hostconfig_maskedpaths,
+                                               hostconfig_readonlypaths,
+                                               networkingconfig_endpointsconfig)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1273,7 +1508,11 @@ def container_exec_command(client, args):
     execconfig_workingdir = str(args.get('execconfig_workingdir', ''))
     id_ = str(args.get('id', ''))
 
-    response = client.container_exec_request(execconfig_attachstdin, execconfig_attachstdout, execconfig_attachstderr, execconfig_detachkeys, execconfig_tty, execconfig_env, execconfig_cmd, execconfig_privileged, execconfig_user, execconfig_workingdir, id_)
+    response = client.container_exec_request(execconfig_attachstdin, execconfig_attachstdout, execconfig_attachstderr,
+                                             execconfig_detachkeys, execconfig_tty,
+                                             execconfig_env, execconfig_cmd,
+                                             execconfig_privileged, execconfig_user,
+                                             execconfig_workingdir, id_)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1329,12 +1568,12 @@ def container_kill_command(client, args):
 
 
 def container_list_command(client, args):
-    all = argToBoolean(args.get('all', False))
+    list_all = argToBoolean(args.get('list_all', False))
     limit = args.get('limit', None)
     size = argToBoolean(args.get('size', False))
     filters = str(args.get('filters', ''))
 
-    response = client.container_list_request(all, limit, size, filters)
+    response = client.container_list_request(list_all, limit, size, filters)
     command_results = CommandResults(
         outputs_prefix='Docker.ContainerSummary',
         outputs_key_field='',
@@ -1442,9 +1681,9 @@ def container_restart_command(client, args):
 
 def container_start_command(client, args):
     id_ = str(args.get('id', ''))
-    detachKeys = str(args.get('detachKeys', ''))
+    detach_keys = str(args.get('detach_keys', ''))
 
-    response = client.container_start_request(id_, detachKeys)
+    response = client.container_start_request(id_, detach_keys)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1552,7 +1791,36 @@ def container_update_command(client, args):
     restartpolicy_name = str(args.get('restartpolicy_name', ''))
     restartpolicy_maximumretrycount = args.get('restartpolicy_maximumretrycount', None)
 
-    response = client.container_update_request(id_, resources_cpushares, resources_memory, resources_cgroupparent, resources_blkioweight, resources_blkioweightdevice, resources_blkiodevicereadbps, resources_blkiodevicewritebps, resources_blkiodevicereadiops, resources_blkiodevicewriteiops, resources_cpuperiod, resources_cpuquota, resources_cpurealtimeperiod, resources_cpurealtimeruntime, resources_cpusetcpus, resources_cpusetmems, resources_devices, resources_devicecgrouprules, resources_devicerequests, resources_kernelmemory, resources_kernelmemorytcp, resources_memoryreservation, resources_memoryswap, resources_memoryswappiness, resources_nanocpus, resources_oomkilldisable, resources_init, resources_pidslimit, resources_ulimits, resources_cpucount, resources_cpupercent, resources_iomaximumiops, resources_iomaximumbandwidth, restartpolicy_name, restartpolicy_maximumretrycount)
+    response = client.container_update_request(id_, resources_cpushares, resources_memory, resources_cgroupparent,
+                                               resources_blkioweight,
+                                               resources_blkioweightdevice,
+                                               resources_blkiodevicereadbps,
+                                               resources_blkiodevicewritebps,
+                                               resources_blkiodevicereadiops,
+                                               resources_blkiodevicewriteiops,
+                                               resources_cpuperiod,
+                                               resources_cpuquota,
+                                               resources_cpurealtimeperiod,
+                                               resources_cpurealtimeruntime,
+                                               resources_cpusetcpus,
+                                               resources_cpusetmems,
+                                               resources_devices,
+                                               resources_devicecgrouprules,
+                                               resources_devicerequests,
+                                               resources_kernelmemory,
+                                               resources_kernelmemorytcp,
+                                               resources_memoryreservation,
+                                               resources_memoryswap,
+                                               resources_memoryswappiness,
+                                               resources_nanocpus,
+                                               resources_oomkilldisable,
+                                               resources_init, resources_pidslimit,
+                                               resources_ulimits, resources_cpucount,
+                                               resources_cpupercent,
+                                               resources_iomaximumiops,
+                                               resources_iomaximumbandwidth,
+                                               restartpolicy_name,
+                                               restartpolicy_maximumretrycount)
     command_results = CommandResults(
         outputs_prefix='Docker.ContainerUpdateResponse',
         outputs_key_field='',
@@ -1653,7 +1921,7 @@ def get_plugin_privileges_command(client, args):
 
 
 def image_build_command(client, args):
-    inputStream = str(args.get('inputStream', ''))
+    input_stream = str(args.get('input_stream', ''))
     dockerfile = str(args.get('dockerfile', 'Dockerfile'))
     t = str(args.get('t', ''))
     extrahosts = str(args.get('extrahosts', ''))
@@ -1679,7 +1947,11 @@ def image_build_command(client, args):
     target = str(args.get('target', ''))
     outputs = str(args.get('outputs', ''))
 
-    response = client.image_build_request(inputStream, dockerfile, t, extrahosts, remote, q, nocache, cachefrom, pull, rm, forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize, squash, labels, networkmode, platform, target, outputs)
+    response = client.image_build_request(input_stream, dockerfile, t, extrahosts, remote, q, nocache, cachefrom, pull,
+                                          rm, forcerm, memory, memswap, cpushares,
+                                          cpusetcpus, cpuperiod, cpuquota, buildargs,
+                                          shmsize, squash, labels, networkmode,
+                                          platform, target, outputs)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1708,7 +1980,11 @@ def image_commit_command(client, args):
     containerconfig_healthcheck_timeout = args.get('containerconfig_healthcheck_timeout', None)
     containerconfig_healthcheck_retries = args.get('containerconfig_healthcheck_retries', None)
     containerconfig_healthcheck_startperiod = args.get('containerconfig_healthcheck_startperiod', None)
-    containerconfig_healthcheck = assign_params(Test=containerconfig_healthcheck_test, Interval=containerconfig_healthcheck_interval, Timeout=containerconfig_healthcheck_timeout, Retries=containerconfig_healthcheck_retries, StartPeriod=containerconfig_healthcheck_startperiod)
+    containerconfig_healthcheck = assign_params(Test=containerconfig_healthcheck_test,
+                                                Interval=containerconfig_healthcheck_interval,
+                                                Timeout=containerconfig_healthcheck_timeout,
+                                                Retries=containerconfig_healthcheck_retries,
+                                                StartPeriod=containerconfig_healthcheck_startperiod)
     containerconfig_argsescaped = argToBoolean(args.get('containerconfig_argsescaped', False))
     containerconfig_image = str(args.get('containerconfig_image', ''))
     containerconfig_volumes = str(args.get('containerconfig_volumes', ''))
@@ -1729,7 +2005,30 @@ def image_commit_command(client, args):
     pause = argToBoolean(args.get('pause', False))
     changes = str(args.get('changes', ''))
 
-    response = client.image_commit_request(containerconfig_hostname, containerconfig_domainname, containerconfig_user, containerconfig_attachstdin, containerconfig_attachstdout, containerconfig_attachstderr, containerconfig_exposedports, containerconfig_tty, containerconfig_openstdin, containerconfig_stdinonce, containerconfig_env, containerconfig_cmd, containerconfig_healthcheck, containerconfig_argsescaped, containerconfig_image, containerconfig_volumes, containerconfig_workingdir, containerconfig_entrypoint, containerconfig_networkdisabled, containerconfig_macaddress, containerconfig_onbuild, containerconfig_labels, containerconfig_stopsignal, containerconfig_stoptimeout, containerconfig_shell, container, repo, tag, comment, author, pause, changes)
+    response = client.image_commit_request(containerconfig_hostname, containerconfig_domainname, containerconfig_user,
+                                           containerconfig_attachstdin,
+                                           containerconfig_attachstdout,
+                                           containerconfig_attachstderr,
+                                           containerconfig_exposedports,
+                                           containerconfig_tty,
+                                           containerconfig_openstdin,
+                                           containerconfig_stdinonce,
+                                           containerconfig_env,
+                                           containerconfig_cmd,
+                                           containerconfig_healthcheck,
+                                           containerconfig_argsescaped,
+                                           containerconfig_image,
+                                           containerconfig_volumes,
+                                           containerconfig_workingdir,
+                                           containerconfig_entrypoint,
+                                           containerconfig_networkdisabled,
+                                           containerconfig_macaddress,
+                                           containerconfig_onbuild,
+                                           containerconfig_labels,
+                                           containerconfig_stopsignal,
+                                           containerconfig_stoptimeout,
+                                           containerconfig_shell, container,
+                                           repo, tag, comment, author, pause, changes)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1741,15 +2040,15 @@ def image_commit_command(client, args):
 
 
 def image_create_command(client, args):
-    fromImage = str(args.get('fromImage', ''))
-    fromSrc = str(args.get('fromSrc', ''))
+    from_image = str(args.get('from_image', ''))
+    from_src = str(args.get('from_src', ''))
     repo = str(args.get('repo', ''))
     tag = str(args.get('tag', ''))
     message = str(args.get('message', ''))
-    inputImage = str(args.get('inputImage', ''))
+    input_image = str(args.get('input_image', ''))
     platform = str(args.get('platform', ''))
 
-    response = client.image_create_request(fromImage, fromSrc, repo, tag, message, inputImage, platform)
+    response = client.image_create_request(from_image, from_src, repo, tag, message, input_image, platform)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1833,11 +2132,11 @@ def image_inspect_command(client, args):
 
 
 def image_list_command(client, args):
-    all = argToBoolean(args.get('all', False))
+    list_all = argToBoolean(args.get('list_all', False))
     filters = str(args.get('filters', ''))
     digests = argToBoolean(args.get('digests', False))
 
-    response = client.image_list_request(all, filters, digests)
+    response = client.image_list_request(list_all, filters, digests)
     command_results = CommandResults(
         outputs_prefix='Docker.ImageSummary',
         outputs_key_field='',
@@ -1849,10 +2148,10 @@ def image_list_command(client, args):
 
 
 def image_load_command(client, args):
-    imagesTarball = str(args.get('imagesTarball', ''))
+    images_tarball = str(args.get('images_tarball', ''))
     quiet = argToBoolean(args.get('quiet', False))
 
-    response = client.image_load_request(imagesTarball, quiet)
+    response = client.image_load_request(images_tarball, quiet)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -1940,7 +2239,19 @@ def network_connect_command(client, args):
     container_endpointconfig_globalipv6prefixlen = args.get('container_endpointconfig_globalipv6prefixlen', None)
     container_endpointconfig_macaddress = str(args.get('container_endpointconfig_macaddress', ''))
     container_endpointconfig_driveropts = str(args.get('container_endpointconfig_driveropts', ''))
-    container_endpointconfig = assign_params(IPAMConfig=container_endpointconfig_ipamconfig, Links=container_endpointconfig_links, Aliases=container_endpointconfig_aliases, NetworkID=container_endpointconfig_networkid, EndpointID=container_endpointconfig_endpointid, Gateway=container_endpointconfig_gateway, IPAddress=container_endpointconfig_ipaddress, IPPrefixLen=container_endpointconfig_ipprefixlen, IPv6Gateway=container_endpointconfig_ipv6gateway, GlobalIPv6Address=container_endpointconfig_globalipv6address, GlobalIPv6PrefixLen=container_endpointconfig_globalipv6prefixlen, MacAddress=container_endpointconfig_macaddress, DriverOpts=container_endpointconfig_driveropts)
+    container_endpointconfig = assign_params(IPAMConfig=container_endpointconfig_ipamconfig,
+                                             Links=container_endpointconfig_links,
+                                             Aliases=container_endpointconfig_aliases,
+                                             NetworkID=container_endpointconfig_networkid,
+                                             EndpointID=container_endpointconfig_endpointid,
+                                             Gateway=container_endpointconfig_gateway,
+                                             IPAddress=container_endpointconfig_ipaddress,
+                                             IPPrefixLen=container_endpointconfig_ipprefixlen,
+                                             IPv6Gateway=container_endpointconfig_ipv6gateway,
+                                             GlobalIPv6Address=container_endpointconfig_globalipv6address,
+                                             GlobalIPv6PrefixLen=container_endpointconfig_globalipv6prefixlen,
+                                             MacAddress=container_endpointconfig_macaddress,
+                                             DriverOpts=container_endpointconfig_driveropts)
 
     response = client.network_connect_request(id_, container_container, container_endpointconfig)
     command_results = CommandResults(
@@ -1963,12 +2274,16 @@ def network_create_command(client, args):
     networkconfig_ipam_driver = str(args.get('networkconfig_ipam_driver', ''))
     networkconfig_ipam_config = str(args.get('networkconfig_ipam_config', ''))
     networkconfig_ipam_options = str(args.get('networkconfig_ipam_options', ''))
-    networkconfig_ipam = assign_params(Driver=networkconfig_ipam_driver, Config=networkconfig_ipam_config, Options=networkconfig_ipam_options)
+    networkconfig_ipam = assign_params(Driver=networkconfig_ipam_driver, Config=networkconfig_ipam_config,
+                                       Options=networkconfig_ipam_options)
     networkconfig_enableipv6 = argToBoolean(args.get('networkconfig_enableipv6', False))
     networkconfig_options = str(args.get('networkconfig_options', ''))
     networkconfig_labels = str(args.get('networkconfig_labels', ''))
 
-    response = client.network_create_request(networkconfig_name, networkconfig_checkduplicate, networkconfig_driver, networkconfig_internal, networkconfig_attachable, networkconfig_ingress, networkconfig_ipam, networkconfig_enableipv6, networkconfig_options, networkconfig_labels)
+    response = client.network_create_request(networkconfig_name, networkconfig_checkduplicate, networkconfig_driver,
+                                             networkconfig_internal, networkconfig_attachable, networkconfig_ingress,
+                                             networkconfig_ipam, networkconfig_enableipv6, networkconfig_options,
+                                             networkconfig_labels)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2104,7 +2419,8 @@ def node_update_command(client, args):
     nodespec_availability = str(args.get('nodespec_availability', ''))
     version = args.get('version', None)
 
-    response = client.node_update_request(id_, nodespec_name, nodespec_labels, nodespec_role, nodespec_availability, version)
+    response = client.node_update_request(id_, nodespec_name, nodespec_labels, nodespec_role, nodespec_availability,
+                                          version)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2117,9 +2433,9 @@ def node_update_command(client, args):
 
 def plugin_create_command(client, args):
     name = str(args.get('name', ''))
-    tarContext = str(args.get('tarContext', ''))
+    tar_content = str(args.get('tar_content', ''))
 
-    response = client.plugin_create_request(name, tarContext)
+    response = client.plugin_create_request(name, tar_content)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2270,11 +2586,11 @@ def plugin_upgrade_command(client, args):
 def put_container_archive_command(client, args):
     id_ = str(args.get('id', ''))
     path = str(args.get('path', ''))
-    noOverwriteDirNonDir = str(args.get('noOverwriteDirNonDir', ''))
-    copyUIDGID = str(args.get('copyUIDGID', ''))
-    inputStream = str(args.get('inputStream', ''))
+    no_overwrite = str(args.get('no_overwrite', ''))
+    copy_uid_gid = str(args.get('copy_uid_gid', ''))
+    input_stream = str(args.get('input_stream', ''))
 
-    response = client.put_container_archive_request(id_, path, noOverwriteDirNonDir, copyUIDGID, inputStream)
+    response = client.put_container_archive_request(id_, path, no_overwrite, copy_uid_gid, input_stream)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2296,7 +2612,8 @@ def secret_create_command(client, args):
     secretspec_templating_options = str(args.get('secretspec_templating_options', ''))
     secretspec_templating = assign_params(Name=secretspec_templating_name, Options=secretspec_templating_options)
 
-    response = client.secret_create_request(secretspec_name, secretspec_labels, secretspec_data, secretspec_driver, secretspec_templating)
+    response = client.secret_create_request(secretspec_name, secretspec_labels, secretspec_data, secretspec_driver,
+                                            secretspec_templating)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2362,7 +2679,8 @@ def secret_update_command(client, args):
     secretspec_templating = assign_params(Name=secretspec_templating_name, Options=secretspec_templating_options)
     version = args.get('version', None)
 
-    response = client.secret_update_request(id_, secretspec_name, secretspec_labels, secretspec_data, secretspec_driver, secretspec_templating, version)
+    response = client.secret_update_request(id_, secretspec_name, secretspec_labels, secretspec_data, secretspec_driver,
+                                            secretspec_templating, version)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2386,32 +2704,56 @@ def service_create_command(client, args):
     servicespec_tasktemplate_runtime = str(args.get('servicespec_tasktemplate_runtime', ''))
     servicespec_tasktemplate_networks = str(args.get('servicespec_tasktemplate_networks', ''))
     servicespec_tasktemplate_logdriver = str(args.get('servicespec_tasktemplate_logdriver', ''))
-    servicespec_tasktemplate = assign_params(PluginSpec=servicespec_tasktemplate_pluginspec, ContainerSpec=servicespec_tasktemplate_containerspec, NetworkAttachmentSpec=servicespec_tasktemplate_networkattachmentspec, Resources=servicespec_tasktemplate_resources, RestartPolicy=servicespec_tasktemplate_restartpolicy, Placement=servicespec_tasktemplate_placement, ForceUpdate=servicespec_tasktemplate_forceupdate, Runtime=servicespec_tasktemplate_runtime, Networks=servicespec_tasktemplate_networks, LogDriver=servicespec_tasktemplate_logdriver)
+    servicespec_tasktemplate = assign_params(PluginSpec=servicespec_tasktemplate_pluginspec,
+                                             ContainerSpec=servicespec_tasktemplate_containerspec,
+                                             NetworkAttachmentSpec=servicespec_tasktemplate_networkattachmentspec,
+                                             Resources=servicespec_tasktemplate_resources,
+                                             RestartPolicy=servicespec_tasktemplate_restartpolicy,
+                                             Placement=servicespec_tasktemplate_placement,
+                                             ForceUpdate=servicespec_tasktemplate_forceupdate,
+                                             Runtime=servicespec_tasktemplate_runtime,
+                                             Networks=servicespec_tasktemplate_networks,
+                                             LogDriver=servicespec_tasktemplate_logdriver)
     servicespec_mode_replicated = str(args.get('servicespec_mode_replicated', ''))
     servicespec_mode_global = str(args.get('servicespec_mode_global', ''))
     servicespec_mode_replicatedjob = str(args.get('servicespec_mode_replicatedjob', ''))
     servicespec_mode_globaljob = str(args.get('servicespec_mode_globaljob', ''))
-    servicespec_mode = assign_params(Replicated=servicespec_mode_replicated, Global=servicespec_mode_global, ReplicatedJob=servicespec_mode_replicatedjob, GlobalJob=servicespec_mode_globaljob)
+    servicespec_mode = assign_params(Replicated=servicespec_mode_replicated, Global=servicespec_mode_global,
+                                     ReplicatedJob=servicespec_mode_replicatedjob,
+                                     GlobalJob=servicespec_mode_globaljob)
     servicespec_updateconfig_parallelism = args.get('servicespec_updateconfig_parallelism', None)
     servicespec_updateconfig_delay = args.get('servicespec_updateconfig_delay', None)
     servicespec_updateconfig_failureaction = str(args.get('servicespec_updateconfig_failureaction', ''))
     servicespec_updateconfig_monitor = args.get('servicespec_updateconfig_monitor', None)
     servicespec_updateconfig_maxfailureratio = str(args.get('servicespec_updateconfig_maxfailureratio', ''))
     servicespec_updateconfig_order = str(args.get('servicespec_updateconfig_order', ''))
-    servicespec_updateconfig = assign_params(Parallelism=servicespec_updateconfig_parallelism, Delay=servicespec_updateconfig_delay, FailureAction=servicespec_updateconfig_failureaction, Monitor=servicespec_updateconfig_monitor, MaxFailureRatio=servicespec_updateconfig_maxfailureratio, Order=servicespec_updateconfig_order)
+    servicespec_updateconfig = assign_params(Parallelism=servicespec_updateconfig_parallelism,
+                                             Delay=servicespec_updateconfig_delay,
+                                             FailureAction=servicespec_updateconfig_failureaction,
+                                             Monitor=servicespec_updateconfig_monitor,
+                                             MaxFailureRatio=servicespec_updateconfig_maxfailureratio,
+                                             Order=servicespec_updateconfig_order)
     servicespec_rollbackconfig_parallelism = args.get('servicespec_rollbackconfig_parallelism', None)
     servicespec_rollbackconfig_delay = args.get('servicespec_rollbackconfig_delay', None)
     servicespec_rollbackconfig_failureaction = str(args.get('servicespec_rollbackconfig_failureaction', ''))
     servicespec_rollbackconfig_monitor = args.get('servicespec_rollbackconfig_monitor', None)
     servicespec_rollbackconfig_maxfailureratio = str(args.get('servicespec_rollbackconfig_maxfailureratio', ''))
     servicespec_rollbackconfig_order = str(args.get('servicespec_rollbackconfig_order', ''))
-    servicespec_rollbackconfig = assign_params(Parallelism=servicespec_rollbackconfig_parallelism, Delay=servicespec_rollbackconfig_delay, FailureAction=servicespec_rollbackconfig_failureaction, Monitor=servicespec_rollbackconfig_monitor, MaxFailureRatio=servicespec_rollbackconfig_maxfailureratio, Order=servicespec_rollbackconfig_order)
+    servicespec_rollbackconfig = assign_params(Parallelism=servicespec_rollbackconfig_parallelism,
+                                               Delay=servicespec_rollbackconfig_delay,
+                                               FailureAction=servicespec_rollbackconfig_failureaction,
+                                               Monitor=servicespec_rollbackconfig_monitor,
+                                               MaxFailureRatio=servicespec_rollbackconfig_maxfailureratio,
+                                               Order=servicespec_rollbackconfig_order)
     servicespec_networks = argToList(args.get('servicespec_networks', []))
     servicespec_endpointspec_mode = str(args.get('servicespec_endpointspec_mode', ''))
     servicespec_endpointspec_ports = str(args.get('servicespec_endpointspec_ports', ''))
     servicespec_endpointspec = assign_params(Mode=servicespec_endpointspec_mode, Ports=servicespec_endpointspec_ports)
 
-    response = client.service_create_request(servicespec_name, servicespec_labels, servicespec_tasktemplate, servicespec_mode, servicespec_updateconfig, servicespec_rollbackconfig, servicespec_networks, servicespec_endpointspec)
+    response = client.service_create_request(servicespec_name, servicespec_labels, servicespec_tasktemplate,
+                                             servicespec_mode, servicespec_updateconfig,
+                                             servicespec_rollbackconfig, servicespec_networks,
+                                             servicespec_endpointspec)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2438,9 +2780,9 @@ def service_delete_command(client, args):
 
 def service_inspect_command(client, args):
     id_ = str(args.get('id', ''))
-    insertDefaults = argToBoolean(args.get('insertDefaults', False))
+    insert_defaults = argToBoolean(args.get('insert_defaults', False))
 
-    response = client.service_inspect_request(id_, insertDefaults)
+    response = client.service_inspect_request(id_, insert_defaults)
     command_results = CommandResults(
         outputs_prefix='Docker.Service',
         outputs_key_field='',
@@ -2501,35 +2843,62 @@ def service_update_command(client, args):
     servicespec_tasktemplate_runtime = str(args.get('servicespec_tasktemplate_runtime', ''))
     servicespec_tasktemplate_networks = str(args.get('servicespec_tasktemplate_networks', ''))
     servicespec_tasktemplate_logdriver = str(args.get('servicespec_tasktemplate_logdriver', ''))
-    servicespec_tasktemplate = assign_params(PluginSpec=servicespec_tasktemplate_pluginspec, ContainerSpec=servicespec_tasktemplate_containerspec, NetworkAttachmentSpec=servicespec_tasktemplate_networkattachmentspec, Resources=servicespec_tasktemplate_resources, RestartPolicy=servicespec_tasktemplate_restartpolicy, Placement=servicespec_tasktemplate_placement, ForceUpdate=servicespec_tasktemplate_forceupdate, Runtime=servicespec_tasktemplate_runtime, Networks=servicespec_tasktemplate_networks, LogDriver=servicespec_tasktemplate_logdriver)
+    servicespec_tasktemplate = assign_params(PluginSpec=servicespec_tasktemplate_pluginspec,
+                                             ContainerSpec=servicespec_tasktemplate_containerspec,
+                                             NetworkAttachmentSpec=servicespec_tasktemplate_networkattachmentspec,
+                                             Resources=servicespec_tasktemplate_resources,
+                                             RestartPolicy=servicespec_tasktemplate_restartpolicy,
+                                             Placement=servicespec_tasktemplate_placement,
+                                             ForceUpdate=servicespec_tasktemplate_forceupdate,
+                                             Runtime=servicespec_tasktemplate_runtime,
+                                             Networks=servicespec_tasktemplate_networks,
+                                             LogDriver=servicespec_tasktemplate_logdriver)
     servicespec_mode_replicated = str(args.get('servicespec_mode_replicated', ''))
     servicespec_mode_global = str(args.get('servicespec_mode_global', ''))
     servicespec_mode_replicatedjob = str(args.get('servicespec_mode_replicatedjob', ''))
     servicespec_mode_globaljob = str(args.get('servicespec_mode_globaljob', ''))
-    servicespec_mode = assign_params(Replicated=servicespec_mode_replicated, Global=servicespec_mode_global, ReplicatedJob=servicespec_mode_replicatedjob, GlobalJob=servicespec_mode_globaljob)
+    servicespec_mode = assign_params(Replicated=servicespec_mode_replicated, Global=servicespec_mode_global,
+                                     ReplicatedJob=servicespec_mode_replicatedjob,
+                                     GlobalJob=servicespec_mode_globaljob)
     servicespec_updateconfig_parallelism = args.get('servicespec_updateconfig_parallelism', None)
     servicespec_updateconfig_delay = args.get('servicespec_updateconfig_delay', None)
     servicespec_updateconfig_failureaction = str(args.get('servicespec_updateconfig_failureaction', ''))
     servicespec_updateconfig_monitor = args.get('servicespec_updateconfig_monitor', None)
     servicespec_updateconfig_maxfailureratio = str(args.get('servicespec_updateconfig_maxfailureratio', ''))
     servicespec_updateconfig_order = str(args.get('servicespec_updateconfig_order', ''))
-    servicespec_updateconfig = assign_params(Parallelism=servicespec_updateconfig_parallelism, Delay=servicespec_updateconfig_delay, FailureAction=servicespec_updateconfig_failureaction, Monitor=servicespec_updateconfig_monitor, MaxFailureRatio=servicespec_updateconfig_maxfailureratio, Order=servicespec_updateconfig_order)
+    servicespec_updateconfig = assign_params(Parallelism=servicespec_updateconfig_parallelism,
+                                             Delay=servicespec_updateconfig_delay,
+                                             FailureAction=servicespec_updateconfig_failureaction,
+                                             Monitor=servicespec_updateconfig_monitor,
+                                             MaxFailureRatio=servicespec_updateconfig_maxfailureratio,
+                                             Order=servicespec_updateconfig_order)
     servicespec_rollbackconfig_parallelism = args.get('servicespec_rollbackconfig_parallelism', None)
     servicespec_rollbackconfig_delay = args.get('servicespec_rollbackconfig_delay', None)
     servicespec_rollbackconfig_failureaction = str(args.get('servicespec_rollbackconfig_failureaction', ''))
     servicespec_rollbackconfig_monitor = args.get('servicespec_rollbackconfig_monitor', None)
     servicespec_rollbackconfig_maxfailureratio = str(args.get('servicespec_rollbackconfig_maxfailureratio', ''))
     servicespec_rollbackconfig_order = str(args.get('servicespec_rollbackconfig_order', ''))
-    servicespec_rollbackconfig = assign_params(Parallelism=servicespec_rollbackconfig_parallelism, Delay=servicespec_rollbackconfig_delay, FailureAction=servicespec_rollbackconfig_failureaction, Monitor=servicespec_rollbackconfig_monitor, MaxFailureRatio=servicespec_rollbackconfig_maxfailureratio, Order=servicespec_rollbackconfig_order)
+    servicespec_rollbackconfig = assign_params(Parallelism=servicespec_rollbackconfig_parallelism,
+                                               Delay=servicespec_rollbackconfig_delay,
+                                               FailureAction=servicespec_rollbackconfig_failureaction,
+                                               Monitor=servicespec_rollbackconfig_monitor,
+                                               MaxFailureRatio=servicespec_rollbackconfig_maxfailureratio,
+                                               Order=servicespec_rollbackconfig_order)
     servicespec_networks = argToList(args.get('servicespec_networks', []))
     servicespec_endpointspec_mode = str(args.get('servicespec_endpointspec_mode', ''))
     servicespec_endpointspec_ports = str(args.get('servicespec_endpointspec_ports', ''))
     servicespec_endpointspec = assign_params(Mode=servicespec_endpointspec_mode, Ports=servicespec_endpointspec_ports)
     version = args.get('version', None)
-    registryAuthFrom = str(args.get('registryAuthFrom', 'spec'))
+    registery_auth_from = str(args.get('registery_auth_from', 'spec'))
     rollback = str(args.get('rollback', ''))
 
-    response = client.service_update_request(id_, servicespec_name, servicespec_labels, servicespec_tasktemplate, servicespec_mode, servicespec_updateconfig, servicespec_rollbackconfig, servicespec_networks, servicespec_endpointspec, version, registryAuthFrom, rollback)
+    response = client.service_update_request(id_, servicespec_name, servicespec_labels, servicespec_tasktemplate,
+                                             servicespec_mode,
+                                             servicespec_updateconfig,
+                                             servicespec_rollbackconfig,
+                                             servicespec_networks,
+                                             servicespec_endpointspec,
+                                             version, registery_auth_from, rollback)
     command_results = CommandResults(
         outputs_prefix='Docker.ServiceUpdateResponse',
         outputs_key_field='',
@@ -2569,9 +2938,17 @@ def swarm_init_command(client, args):
     body_1_spec_caconfig = str(args.get('body_1_spec_caconfig', ''))
     body_1_spec_encryptionconfig = str(args.get('body_1_spec_encryptionconfig', ''))
     body_1_spec_taskdefaults = str(args.get('body_1_spec_taskdefaults', ''))
-    body_1_spec = assign_params(Name=body_1_spec_name, Labels=body_1_spec_labels, Orchestration=body_1_spec_orchestration, Raft=body_1_spec_raft, Dispatcher=body_1_spec_dispatcher, CAConfig=body_1_spec_caconfig, EncryptionConfig=body_1_spec_encryptionconfig, TaskDefaults=body_1_spec_taskdefaults)
+    body_1_spec = assign_params(Name=body_1_spec_name, Labels=body_1_spec_labels,
+                                Orchestration=body_1_spec_orchestration,
+                                Raft=body_1_spec_raft,
+                                Dispatcher=body_1_spec_dispatcher,
+                                CAConfig=body_1_spec_caconfig,
+                                EncryptionConfig=body_1_spec_encryptionconfig,
+                                TaskDefaults=body_1_spec_taskdefaults)
 
-    response = client.swarm_init_request(body_1_listenaddr, body_1_advertiseaddr, body_1_datapathaddr, body_1_datapathport, body_1_defaultaddrpool, body_1_forcenewcluster, body_1_subnetsize, body_1_spec)
+    response = client.swarm_init_request(body_1_listenaddr, body_1_advertiseaddr, body_1_datapathaddr,
+                                         body_1_datapathport, body_1_defaultaddrpool, body_1_forcenewcluster,
+                                         body_1_subnetsize, body_1_spec)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2602,7 +2979,8 @@ def swarm_join_command(client, args):
     body_2_remoteaddrs = argToList(args.get('body_2_remoteaddrs', []))
     body_2_jointoken = str(args.get('body_2_jointoken', ''))
 
-    response = client.swarm_join_request(body_2_listenaddr, body_2_advertiseaddr, body_2_datapathaddr, body_2_remoteaddrs, body_2_jointoken)
+    response = client.swarm_join_request(body_2_listenaddr, body_2_advertiseaddr, body_2_datapathaddr,
+                                         body_2_remoteaddrs, body_2_jointoken)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2657,14 +3035,19 @@ def swarm_unlockkey_command(client, args):
 def swarm_update_command(client, args):
     swarmspec_name = str(args.get('swarmspec_name', ''))
     swarmspec_labels = str(args.get('swarmspec_labels', ''))
-    swarmspec_orchestration_taskhistoryretentionlimit = args.get('swarmspec_orchestration_taskhistoryretentionlimit', None)
+    swarmspec_orchestration_taskhistoryretentionlimit = args.get('swarmspec_orchestration_taskhistoryretentionlimit',
+                                                                 None)
     swarmspec_orchestration = assign_params(TaskHistoryRetentionLimit=swarmspec_orchestration_taskhistoryretentionlimit)
     swarmspec_raft_snapshotinterval = args.get('swarmspec_raft_snapshotinterval', None)
     swarmspec_raft_keepoldsnapshots = args.get('swarmspec_raft_keepoldsnapshots', None)
     swarmspec_raft_logentriesforslowfollowers = args.get('swarmspec_raft_logentriesforslowfollowers', None)
     swarmspec_raft_electiontick = args.get('swarmspec_raft_electiontick', None)
     swarmspec_raft_heartbeattick = args.get('swarmspec_raft_heartbeattick', None)
-    swarmspec_raft = assign_params(SnapshotInterval=swarmspec_raft_snapshotinterval, KeepOldSnapshots=swarmspec_raft_keepoldsnapshots, LogEntriesForSlowFollowers=swarmspec_raft_logentriesforslowfollowers, ElectionTick=swarmspec_raft_electiontick, HeartbeatTick=swarmspec_raft_heartbeattick)
+    swarmspec_raft = assign_params(SnapshotInterval=swarmspec_raft_snapshotinterval,
+                                   KeepOldSnapshots=swarmspec_raft_keepoldsnapshots,
+                                   LogEntriesForSlowFollowers=swarmspec_raft_logentriesforslowfollowers,
+                                   ElectionTick=swarmspec_raft_electiontick,
+                                   HeartbeatTick=swarmspec_raft_heartbeattick)
     swarmspec_dispatcher_heartbeatperiod = args.get('swarmspec_dispatcher_heartbeatperiod', None)
     swarmspec_dispatcher = assign_params(HeartbeatPeriod=swarmspec_dispatcher_heartbeatperiod)
     swarmspec_caconfig_nodecertexpiry = args.get('swarmspec_caconfig_nodecertexpiry', None)
@@ -2672,17 +3055,25 @@ def swarm_update_command(client, args):
     swarmspec_caconfig_signingcacert = str(args.get('swarmspec_caconfig_signingcacert', ''))
     swarmspec_caconfig_signingcakey = str(args.get('swarmspec_caconfig_signingcakey', ''))
     swarmspec_caconfig_forcerotate = args.get('swarmspec_caconfig_forcerotate', None)
-    swarmspec_caconfig = assign_params(NodeCertExpiry=swarmspec_caconfig_nodecertexpiry, ExternalCAs=swarmspec_caconfig_externalcas, SigningCACert=swarmspec_caconfig_signingcacert, SigningCAKey=swarmspec_caconfig_signingcakey, ForceRotate=swarmspec_caconfig_forcerotate)
-    swarmspec_encryptionconfig_autolockmanagers = argToBoolean(args.get('swarmspec_encryptionconfig_autolockmanagers', False))
+    swarmspec_caconfig = assign_params(NodeCertExpiry=swarmspec_caconfig_nodecertexpiry,
+                                       ExternalCAs=swarmspec_caconfig_externalcas,
+                                       SigningCACert=swarmspec_caconfig_signingcacert,
+                                       SigningCAKey=swarmspec_caconfig_signingcakey,
+                                       ForceRotate=swarmspec_caconfig_forcerotate)
+    swarmspec_encryptionconfig_autolockmanagers = argToBoolean(args.get('swarmspec_encryptionconfig_autolockmanagers',
+                                                                        False))
     swarmspec_encryptionconfig = assign_params(AutoLockManagers=swarmspec_encryptionconfig_autolockmanagers)
     swarmspec_taskdefaults_logdriver = str(args.get('swarmspec_taskdefaults_logdriver', ''))
     swarmspec_taskdefaults = assign_params(LogDriver=swarmspec_taskdefaults_logdriver)
     version = args.get('version', None)
-    rotateWorkerToken = argToBoolean(args.get('rotateWorkerToken', False))
+    rotate_worker_token = argToBoolean(args.get('rotate_worker_token', False))
     rotateManagerToken = argToBoolean(args.get('rotateManagerToken', False))
     rotateManagerUnlockKey = argToBoolean(args.get('rotateManagerUnlockKey', False))
 
-    response = client.swarm_update_request(swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft, swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig, swarmspec_taskdefaults, version, rotateWorkerToken, rotateManagerToken, rotateManagerUnlockKey)
+    response = client.swarm_update_request(swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft,
+                                           swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,
+                                           swarmspec_taskdefaults, version, rotate_worker_token, rotateManagerToken,
+                                           rotateManagerUnlockKey)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2699,7 +3090,8 @@ def system_auth_command(client, args):
     authconfig_email = str(args.get('authconfig_email', ''))
     authconfig_serveraddress = str(args.get('authconfig_serveraddress', ''))
 
-    response = client.system_auth_request(authconfig_username, authconfig_password, authconfig_email, authconfig_serveraddress)
+    response = client.system_auth_request(authconfig_username, authconfig_password, authconfig_email,
+                                          authconfig_serveraddress)
     command_results = CommandResults(
         outputs_prefix='Docker.SystemAuthResponse',
         outputs_key_field='',
@@ -2846,7 +3238,8 @@ def volume_create_command(client, args):
     volumeconfig_driveropts = str(args.get('volumeconfig_driveropts', ''))
     volumeconfig_labels = str(args.get('volumeconfig_labels', ''))
 
-    response = client.volume_create_request(volumeconfig_name, volumeconfig_driver, volumeconfig_driveropts, volumeconfig_labels)
+    response = client.volume_create_request(volumeconfig_name, volumeconfig_driver, volumeconfig_driveropts,
+                                            volumeconfig_labels)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2926,8 +3319,7 @@ def main():
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    headers = {}
-    headers['Authorization'] = f'{params["api_key"]}'
+    headers = {'Authorization': f'{params["api_key"]}'}
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -2936,112 +3328,112 @@ def main():
         urllib3.disable_warnings()
         client = Client(urljoin(url, "/v1.41"), verify_certificate, proxy, headers=headers, auth=None)
         commands = {
-    		'docker-build-prune': build_prune_command,
-			'docker-config-create': config_create_command,
-			'docker-config-delete': config_delete_command,
-			'docker-config-inspect': config_inspect_command,
-			'docker-config-list': config_list_command,
-			'docker-config-update': config_update_command,
-			'docker-container-archive': container_archive_command,
-			'docker-container-archive-info': container_archive_info_command,
-			'docker-container-attach': container_attach_command,
-			'docker-container-attach-websocket': container_attach_websocket_command,
-			'docker-container-changes': container_changes_command,
-			'docker-container-create': container_create_command,
-			'docker-container-delete': container_delete_command,
-			'docker-container-exec': container_exec_command,
-			'docker-container-export': container_export_command,
-			'docker-container-inspect': container_inspect_command,
-			'docker-container-kill': container_kill_command,
-			'docker-container-list': container_list_command,
-			'docker-container-logs': container_logs_command,
-			'docker-container-pause': container_pause_command,
-			'docker-container-prune': container_prune_command,
-			'docker-container-rename': container_rename_command,
-			'docker-container-resize': container_resize_command,
-			'docker-container-restart': container_restart_command,
-			'docker-container-start': container_start_command,
-			'docker-container-stats': container_stats_command,
-			'docker-container-stop': container_stop_command,
-			'docker-container-top': container_top_command,
-			'docker-container-unpause': container_unpause_command,
-			'docker-container-update': container_update_command,
-			'docker-container-wait': container_wait_command,
-			'docker-distribution-inspect': distribution_inspect_command,
-			'docker-exec-inspect': exec_inspect_command,
-			'docker-exec-resize': exec_resize_command,
-			'docker-exec-start': exec_start_command,
-			'docker-get-plugin-privileges': get_plugin_privileges_command,
-			'docker-image-build': image_build_command,
-			'docker-image-commit': image_commit_command,
-			'docker-image-create': image_create_command,
-			'docker-image-delete': image_delete_command,
-			'docker-image-get': image_get_command,
-			'docker-image-get-all': image_get_all_command,
-			'docker-image-history': image_history_command,
-			'docker-image-inspect': image_inspect_command,
-			'docker-image-list': image_list_command,
-			'docker-image-load': image_load_command,
-			'docker-image-prune': image_prune_command,
-			'docker-image-push': image_push_command,
-			'docker-image-search': image_search_command,
-			'docker-image-tag': image_tag_command,
-			'docker-network-connect': network_connect_command,
-			'docker-network-create': network_create_command,
-			'docker-network-delete': network_delete_command,
-			'docker-network-disconnect': network_disconnect_command,
-			'docker-network-inspect': network_inspect_command,
-			'docker-network-list': network_list_command,
-			'docker-network-prune': network_prune_command,
-			'docker-node-delete': node_delete_command,
-			'docker-node-inspect': node_inspect_command,
-			'docker-node-list': node_list_command,
-			'docker-node-update': node_update_command,
-			'docker-plugin-create': plugin_create_command,
-			'docker-plugin-delete': plugin_delete_command,
-			'docker-plugin-disable': plugin_disable_command,
-			'docker-plugin-enable': plugin_enable_command,
-			'docker-plugin-inspect': plugin_inspect_command,
-			'docker-plugin-list': plugin_list_command,
-			'docker-plugin-pull': plugin_pull_command,
-			'docker-plugin-push': plugin_push_command,
-			'docker-plugin-set': plugin_set_command,
-			'docker-plugin-upgrade': plugin_upgrade_command,
-			'docker-put-container-archive': put_container_archive_command,
-			'docker-secret-create': secret_create_command,
-			'docker-secret-delete': secret_delete_command,
-			'docker-secret-inspect': secret_inspect_command,
-			'docker-secret-list': secret_list_command,
-			'docker-secret-update': secret_update_command,
-			'docker-service-create': service_create_command,
-			'docker-service-delete': service_delete_command,
-			'docker-service-inspect': service_inspect_command,
-			'docker-service-list': service_list_command,
-			'docker-service-logs': service_logs_command,
-			'docker-service-update': service_update_command,
-			'docker-session': session_command,
-			'docker-swarm-init': swarm_init_command,
-			'docker-swarm-inspect': swarm_inspect_command,
-			'docker-swarm-join': swarm_join_command,
-			'docker-swarm-leave': swarm_leave_command,
-			'docker-swarm-unlock': swarm_unlock_command,
-			'docker-swarm-unlockkey': swarm_unlockkey_command,
-			'docker-swarm-update': swarm_update_command,
-			'docker-system-auth': system_auth_command,
-			'docker-system-data-usage': system_data_usage_command,
-			'docker-system-events': system_events_command,
-			'docker-system-info': system_info_command,
-			'docker-system-ping': system_ping_command,
-			'docker-system-ping-head': system_ping_head_command,
-			'docker-system-version': system_version_command,
-			'docker-task-inspect': task_inspect_command,
-			'docker-task-list': task_list_command,
-			'docker-task-logs': task_logs_command,
-			'docker-volume-create': volume_create_command,
-			'docker-volume-delete': volume_delete_command,
-			'docker-volume-inspect': volume_inspect_command,
-			'docker-volume-list': volume_list_command,
-			'docker-volume-prune': volume_prune_command,
+            'docker-build-prune': build_prune_command,
+            'docker-config-create': config_create_command,
+            'docker-config-delete': config_delete_command,
+            'docker-config-inspect': config_inspect_command,
+            'docker-config-list': config_list_command,
+            'docker-config-update': config_update_command,
+            'docker-container-archive': container_archive_command,
+            'docker-container-archive-info': container_archive_info_command,
+            'docker-container-attach': container_attach_command,
+            'docker-container-attach-websocket': container_attach_websocket_command,
+            'docker-container-changes': container_changes_command,
+            'docker-container-create': container_create_command,
+            'docker-container-delete': container_delete_command,
+            'docker-container-exec': container_exec_command,
+            'docker-container-export': container_export_command,
+            'docker-container-inspect': container_inspect_command,
+            'docker-container-kill': container_kill_command,
+            'docker-container-list': container_list_command,
+            'docker-container-logs': container_logs_command,
+            'docker-container-pause': container_pause_command,
+            'docker-container-prune': container_prune_command,
+            'docker-container-rename': container_rename_command,
+            'docker-container-resize': container_resize_command,
+            'docker-container-restart': container_restart_command,
+            'docker-container-start': container_start_command,
+            'docker-container-stats': container_stats_command,
+            'docker-container-stop': container_stop_command,
+            'docker-container-top': container_top_command,
+            'docker-container-unpause': container_unpause_command,
+            'docker-container-update': container_update_command,
+            'docker-container-wait': container_wait_command,
+            'docker-distribution-inspect': distribution_inspect_command,
+            'docker-exec-inspect': exec_inspect_command,
+            'docker-exec-resize': exec_resize_command,
+            'docker-exec-start': exec_start_command,
+            'docker-get-plugin-privileges': get_plugin_privileges_command,
+            'docker-image-build': image_build_command,
+            'docker-image-commit': image_commit_command,
+            'docker-image-create': image_create_command,
+            'docker-image-delete': image_delete_command,
+            'docker-image-get': image_get_command,
+            'docker-image-get-all': image_get_all_command,
+            'docker-image-history': image_history_command,
+            'docker-image-inspect': image_inspect_command,
+            'docker-image-list': image_list_command,
+            'docker-image-load': image_load_command,
+            'docker-image-prune': image_prune_command,
+            'docker-image-push': image_push_command,
+            'docker-image-search': image_search_command,
+            'docker-image-tag': image_tag_command,
+            'docker-network-connect': network_connect_command,
+            'docker-network-create': network_create_command,
+            'docker-network-delete': network_delete_command,
+            'docker-network-disconnect': network_disconnect_command,
+            'docker-network-inspect': network_inspect_command,
+            'docker-network-list': network_list_command,
+            'docker-network-prune': network_prune_command,
+            'docker-node-delete': node_delete_command,
+            'docker-node-inspect': node_inspect_command,
+            'docker-node-list': node_list_command,
+            'docker-node-update': node_update_command,
+            'docker-plugin-create': plugin_create_command,
+            'docker-plugin-delete': plugin_delete_command,
+            'docker-plugin-disable': plugin_disable_command,
+            'docker-plugin-enable': plugin_enable_command,
+            'docker-plugin-inspect': plugin_inspect_command,
+            'docker-plugin-list': plugin_list_command,
+            'docker-plugin-pull': plugin_pull_command,
+            'docker-plugin-push': plugin_push_command,
+            'docker-plugin-set': plugin_set_command,
+            'docker-plugin-upgrade': plugin_upgrade_command,
+            'docker-put-container-archive': put_container_archive_command,
+            'docker-secret-create': secret_create_command,
+            'docker-secret-delete': secret_delete_command,
+            'docker-secret-inspect': secret_inspect_command,
+            'docker-secret-list': secret_list_command,
+            'docker-secret-update': secret_update_command,
+            'docker-service-create': service_create_command,
+            'docker-service-delete': service_delete_command,
+            'docker-service-inspect': service_inspect_command,
+            'docker-service-list': service_list_command,
+            'docker-service-logs': service_logs_command,
+            'docker-service-update': service_update_command,
+            'docker-session': session_command,
+            'docker-swarm-init': swarm_init_command,
+            'docker-swarm-inspect': swarm_inspect_command,
+            'docker-swarm-join': swarm_join_command,
+            'docker-swarm-leave': swarm_leave_command,
+            'docker-swarm-unlock': swarm_unlock_command,
+            'docker-swarm-unlockkey': swarm_unlockkey_command,
+            'docker-swarm-update': swarm_update_command,
+            'docker-system-auth': system_auth_command,
+            'docker-system-data-usage': system_data_usage_command,
+            'docker-system-events': system_events_command,
+            'docker-system-info': system_info_command,
+            'docker-system-ping': system_ping_command,
+            'docker-system-ping-head': system_ping_head_command,
+            'docker-system-version': system_version_command,
+            'docker-task-inspect': task_inspect_command,
+            'docker-task-list': task_list_command,
+            'docker-task-logs': task_logs_command,
+            'docker-volume-create': volume_create_command,
+            'docker-volume-delete': volume_delete_command,
+            'docker-volume-inspect': volume_inspect_command,
+            'docker-volume-list': volume_list_command,
+            'docker-volume-prune': volume_prune_command,
         }
 
         if command == 'test-module':
@@ -3055,4 +3447,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
