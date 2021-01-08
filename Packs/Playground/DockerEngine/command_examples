@@ -1,0 +1,12 @@
+!docker-build-prune
+!docker-swarm-init listenaddr="192.168.20.210" advertiseaddr="192.168.20.210"
+!docker-swarm-inspect
+!docker-swarm-join
+!docker-swarm-unlock
+!docker-swarm-unlockkey
+!docker-config-create configspec_name="test_config" configspec_data="VEhJUyBJUyBOT1QgQSBSRUFMIENFUlRJRklDQVRFCg=="
+!docker-config-list
+!docker-config-inspect id="ud0ychozv55f7n0pzk6qo9kq9"
+!docker-container-list
+
+!docker-swarm-leave force="True"

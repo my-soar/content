@@ -3,12 +3,11 @@ commonfields:
   id: Docker Engine API
   version: -1
 configuration:
-- defaultvalue: https://www.example.com/api
-  display: Server URL (e.g. https://www.example.com/api)
+- display: Server URL (e.g. https://www.example.com:1000)
   name: url
   required: true
   type: 0
-- display: Docker Client Certificate (PEM)
+- display: Docker Client Certificate
   hidden: false
   name: client_certificate
   required: true
@@ -108,17 +107,6 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a config
-    execution: false
-    name: docker-config-delete
-  - arguments:
-    - default: false
-      description: ID of the config
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
     description: Inspect a config
     execution: false
     name: docker-config-inspect
@@ -150,55 +138,6 @@ script:
       type: String
     - contextPath: Docker.Config.UpdatedAt
       type: String
-  - arguments:
-    - default: false
-      description: The ID or name of the config
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: User-defined name of the config.
-      isArray: false
-      name: configspec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: configspec_labels
-      required: false
-      secret: false
-    - default: false
-      description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
-        config data. '
-      isArray: false
-      name: configspec_data
-      required: false
-      secret: false
-    - default: false
-      description: configspec_templating Name
-      isArray: false
-      name: configspec_templating_Name
-      required: false
-      secret: false
-    - default: false
-      description: configspec_templating Options
-      isArray: false
-      name: configspec_templating_Options
-      required: false
-      secret: false
-    - default: false
-      description: 'The version number of the config object being updated. This is
-        required to avoid conflicting writes. '
-      isArray: false
-      name: version
-      required: true
-      secret: false
-    deprecated: false
-    description: Update a Config
-    execution: false
-    name: docker-config-update
   - arguments:
     - default: false
       description: ID or name of the container
@@ -3951,7 +3890,7 @@ script:
         or an interface followed by a port number, like `eth0:4567`. If the port number
         is omitted, the default swarm listening port is used. '
       isArray: false
-      name: body_1_listenaddr
+      name: listenaddr
       required: false
       secret: false
     - default: false
@@ -3961,7 +3900,7 @@ script:
         is omitted, the port number from the listen address is used. If `AdvertiseAddr`
         is not specified, it will be automatically detected when possible. '
       isArray: false
-      name: body_1_advertiseaddr
+      name: advertiseaddr
       required: false
       secret: false
     - default: false
@@ -3973,7 +3912,7 @@ script:
         this  meter it is possible to se te the container data traffic from the management
         traffic of the cluster. '
       isArray: false
-      name: body_1_datapathaddr
+      name: datapathaddr
       required: false
       secret: false
     - default: false
@@ -3981,75 +3920,75 @@ script:
         Acceptable port range is 1024 to 49151. if no port is set or is set to 0,
         default port 4789 will be used. '
       isArray: false
-      name: body_1_datapathport
+      name: datapathport
       required: false
       secret: false
     - default: false
       description: 'Default Address Pool specifies default subnet pools for global
         scope networks. '
       isArray: true
-      name: body_1_defaultaddrpool
+      name: defaultaddrpool
       required: false
       secret: false
     - default: false
       description: Force creation of a new swarm.
       isArray: false
-      name: body_1_forcenewcluster
+      name: forcenewcluster
       required: false
       secret: false
     - default: false
       description: 'SubnetSize specifies the subnet size of the networks created from
         the default subnet pool. '
       isArray: false
-      name: body_1_subnetsize
+      name: subnetsize
       required: false
       secret: false
     - default: false
-      description: body_1_spec Name
+      description: spec Name
       isArray: false
-      name: body_1_spec_Name
+      name: spec_Name
       required: false
       secret: false
     - default: false
-      description: body_1_spec Labels
+      description: spec Labels
       isArray: false
-      name: body_1_spec_Labels
+      name: spec_Labels
       required: false
       secret: false
     - default: false
-      description: body_1_spec Orchestration
+      description: spec Orchestration
       isArray: false
-      name: body_1_spec_Orchestration
+      name: spec_Orchestration
       required: false
       secret: false
     - default: false
-      description: body_1_spec Raft
+      description: spec Raft
       isArray: false
-      name: body_1_spec_Raft
+      name: spec_Raft
       required: false
       secret: false
     - default: false
-      description: body_1_spec Dispatcher
+      description: spec Dispatcher
       isArray: false
-      name: body_1_spec_Dispatcher
+      name: spec_Dispatcher
       required: false
       secret: false
     - default: false
-      description: body_1_spec CAConfig
+      description: spec CAConfig
       isArray: false
-      name: body_1_spec_CAConfig
+      name: spec_CAConfig
       required: false
       secret: false
     - default: false
-      description: body_1_spec EncryptionConfig
+      description: spec EncryptionConfig
       isArray: false
-      name: body_1_spec_EncryptionConfig
+      name: spec_EncryptionConfig
       required: false
       secret: false
     - default: false
-      description: body_1_spec TaskDefaults
+      description: spec TaskDefaults
       isArray: false
-      name: body_1_spec_TaskDefaults
+      name: spec_TaskDefaults
       required: false
       secret: false
     deprecated: false
@@ -4066,7 +4005,7 @@ script:
         gets promoted to manager, as well as determining the networking interface
         used for the VXLAN Tunnel Endpoint (VTEP). '
       isArray: false
-      name: body_2_listenaddr
+      name: listenaddr
       required: false
       secret: false
     - default: false
@@ -4076,7 +4015,7 @@ script:
         is omitted, the port number from the listen address is used. If `AdvertiseAddr`
         is not specified, it will be automatically detected when possible. '
       isArray: false
-      name: body_2_advertiseaddr
+      name: advertiseaddr
       required: false
       secret: false
     - default: false
@@ -4088,19 +4027,19 @@ script:
         it is possible to se te the container data traffic from the management traffic
         of the cluster. '
       isArray: false
-      name: body_2_datapathaddr
+      name: datapathaddr
       required: false
       secret: false
     - default: false
       description: 'Addresses of manager nodes already participating in the swarm. '
       isArray: true
-      name: body_2_remoteaddrs
+      name: remoteaddrs
       required: false
       secret: false
     - default: false
       description: Secret token for joining this swarm.
       isArray: false
-      name: body_2_jointoken
+      name: jointoken
       required: false
       secret: false
     deprecated: false
@@ -4123,7 +4062,7 @@ script:
     - default: false
       description: The swarm's unlock key.
       isArray: false
-      name: body_3_unlockkey
+      name: unlockkey
       required: false
       secret: false
     deprecated: false
@@ -4138,132 +4077,6 @@ script:
     - contextPath: Docker.UnlockKeyResponse.UnlockKey
       description: The swarm's unlock key.
       type: String
-  - arguments:
-    - default: false
-      description: Name of the swarm.
-      isArray: false
-      name: swarmspec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: swarmspec_labels
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_orchestration TaskHistoryRetentionLimit
-      isArray: false
-      name: swarmspec_orchestration_TaskHistoryRetentionLimit
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft SnapshotInterval
-      isArray: false
-      name: swarmspec_raft_SnapshotInterval
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft KeepOldSnapshots
-      isArray: false
-      name: swarmspec_raft_KeepOldSnapshots
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft LogEntriesForSlowFollowers
-      isArray: false
-      name: swarmspec_raft_LogEntriesForSlowFollowers
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft ElectionTick
-      isArray: false
-      name: swarmspec_raft_ElectionTick
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft HeartbeatTick
-      isArray: false
-      name: swarmspec_raft_HeartbeatTick
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_dispatcher HeartbeatPeriod
-      isArray: false
-      name: swarmspec_dispatcher_HeartbeatPeriod
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig NodeCertExpiry
-      isArray: false
-      name: swarmspec_caconfig_NodeCertExpiry
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig ExternalCAs
-      isArray: false
-      name: swarmspec_caconfig_ExternalCAs
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig SigningCACert
-      isArray: false
-      name: swarmspec_caconfig_SigningCACert
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig SigningCAKey
-      isArray: false
-      name: swarmspec_caconfig_SigningCAKey
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig ForceRotate
-      isArray: false
-      name: swarmspec_caconfig_ForceRotate
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_encryptionconfig AutoLockManagers
-      isArray: false
-      name: swarmspec_encryptionconfig_AutoLockManagers
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_taskdefaults LogDriver
-      isArray: false
-      name: swarmspec_taskdefaults_LogDriver
-      required: false
-      secret: false
-    - default: false
-      description: 'The version number of the swarm object being updated. This is
-        required to avoid conflicting writes. '
-      isArray: false
-      name: version
-      required: true
-      secret: false
-    - default: false
-      description: Rotate the worker join token.
-      isArray: false
-      name: rotate_worker_token
-      required: false
-      secret: false
-    - default: false
-      description: Rotate the manager join token.
-      isArray: false
-      name: rotate_manager_token
-      required: false
-      secret: false
-    - default: false
-      description: Rotate the manager unlock key.
-      isArray: false
-      name: rotate_manager_unlock_key
-      required: false
-      secret: false
-    deprecated: false
-    description: Update a swarm
-    execution: false
-    name: docker-swarm-update
   - arguments:
     - default: false
       isArray: false

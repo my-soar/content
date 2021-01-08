@@ -16,6 +16,16 @@ class Client:
     def _http_request(self, method, url_suffix='', full_url=None, params=None, headers=None, data=None, json_data=None):
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
         headers = headers if headers else self._headers
+        client_cert_path = None
+        client_key_path = None
+        if self._client_cert:
+            client_cert_path = 'client.cert'
+            with open(client_cert_path, 'wb') as file:
+                file.write(self._client_cert.encode())
+        if self._client_key:
+            client_key_path = 'client_key.key'
+            with open(client_key_path, 'wb') as file:
+                file.write(self._client_key.encode())
         response = requests.session().request(
             method,
             address,
@@ -24,8 +34,19 @@ class Client:
             data=data,
             json=json_data,
             headers=headers,
-            cert=(self._client_cert, self._client_key)
+            cert=(client_cert_path, client_key_path),
+            timeout=2,
+
         )
+        if response.headers.get('Content-Type') == 'application/json':
+            return json.loads(response.content)
+        else:
+            return response.content
+
+    def test_request(self):
+        response = self._http_request('get', 'version')
+
+        return response
 
     def build_prune_request(self, keep_storage, prune_all, filters):
         params = assign_params(keep_storage=keep_storage, prune_all=prune_all, filters=filters)
@@ -47,14 +68,6 @@ class Client:
 
         return response
 
-    def config_delete_request(self, id_):
-
-        headers = self._headers
-
-        response = self._http_request('delete', f'configs/{id_}', headers=headers)
-
-        return response
-
     def config_inspect_request(self, id_):
 
         headers = self._headers
@@ -69,18 +82,6 @@ class Client:
         headers = self._headers
 
         response = self._http_request('get', 'configs', params=params, headers=headers)
-
-        return response
-
-    def config_update_request(self, id_, configspec_name, configspec_labels,
-                              configspec_data, configspec_templating, version):
-        params = assign_params(version=version)
-        data = assign_params(Name=configspec_name, Labels=configspec_labels,
-                             Data=configspec_data, Templating=configspec_templating)
-
-        headers = self._headers
-
-        response = self._http_request('post', f'configs/{id_}/update', params=params, json_data=data, headers=headers)
 
         return response
 
@@ -950,12 +951,12 @@ class Client:
 
         return response
 
-    def swarm_init_request(self, body_1_listenaddr, body_1_advertiseaddr, body_1_datapathaddr, body_1_datapathport,
-                           body_1_defaultaddrpool, body_1_forcenewcluster, body_1_subnetsize, body_1_spec):
-        data = assign_params(ListenAddr=body_1_listenaddr, AdvertiseAddr=body_1_advertiseaddr,
-                             DataPathAddr=body_1_datapathaddr, DataPathPort=body_1_datapathport,
-                             DefaultAddrPool=body_1_defaultaddrpool, ForceNewCluster=body_1_forcenewcluster,
-                             SubnetSize=body_1_subnetsize, Spec=body_1_spec)
+    def swarm_init_request(self, listenaddr, advertiseaddr, datapathaddr, datapathport,
+                           defaultaddrpool, forcenewcluster, subnetsize, spec):
+        data = assign_params(ListenAddr=listenaddr, AdvertiseAddr=advertiseaddr,
+                             DataPathAddr=datapathaddr, DataPathPort=datapathport,
+                             DefaultAddrPool=defaultaddrpool, ForceNewCluster=forcenewcluster,
+                             SubnetSize=subnetsize, Spec=spec)
 
         headers = self._headers
 
@@ -971,11 +972,11 @@ class Client:
 
         return response
 
-    def swarm_join_request(self, body_2_listenaddr, body_2_advertiseaddr, body_2_datapathaddr, body_2_remoteaddrs,
-                           body_2_jointoken):
-        data = assign_params(ListenAddr=body_2_listenaddr, AdvertiseAddr=body_2_advertiseaddr,
-                             DataPathAddr=body_2_datapathaddr, RemoteAddrs=body_2_remoteaddrs,
-                             JoinToken=body_2_jointoken)
+    def swarm_join_request(self, listenaddr, advertiseaddr, datapathaddr, remoteaddrs,
+                           jointoken):
+        data = assign_params(ListenAddr=listenaddr, AdvertiseAddr=advertiseaddr,
+                             DataPathAddr=datapathaddr, RemoteAddrs=remoteaddrs,
+                             JoinToken=jointoken)
 
         headers = self._headers
 
@@ -985,15 +986,14 @@ class Client:
 
     def swarm_leave_request(self, force):
         params = assign_params(force=force)
-
         headers = self._headers
 
         response = self._http_request('post', 'swarm/leave', params=params, headers=headers)
 
         return response
 
-    def swarm_unlock_request(self, body_3_unlockkey):
-        data = assign_params(UnlockKey=body_3_unlockkey)
+    def swarm_unlock_request(self, unlockkey):
+        data = assign_params(UnlockKey=unlockkey)
 
         headers = self._headers
 
@@ -1006,24 +1006,6 @@ class Client:
         headers = self._headers
 
         response = self._http_request('get', 'swarm/unlockkey', headers=headers)
-
-        return response
-
-    def swarm_update_request(self, swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft,
-                             swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,
-                             swarmspec_taskdefaults, version, rotate_worker_token, rotate_manager_token,
-                             rotate_manager_unlock_key):
-        params = assign_params(version=version, rotate_worker_token=rotate_worker_token,
-                               rotate_manager_token=rotate_manager_token,
-                               rotate_manager_unlock_key=rotate_manager_unlock_key)
-        data = assign_params(Name=swarmspec_name, Labels=swarmspec_labels, Orchestration=swarmspec_orchestration,
-                             Raft=swarmspec_raft, Dispatcher=swarmspec_dispatcher,
-                             CAConfig=swarmspec_caconfig, EncryptionConfig=swarmspec_encryptionconfig,
-                             TaskDefaults=swarmspec_taskdefaults)
-
-        headers = self._headers
-
-        response = self._http_request('post', 'swarm/update', params=params, json_data=data, headers=headers)
 
         return response
 
@@ -1197,20 +1179,6 @@ def config_create_command(client, args):
     return command_results
 
 
-def config_delete_command(client, args):
-    id_ = str(args.get('id', ''))
-
-    response = client.config_delete_request(id_)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
 def config_inspect_command(client, args):
     id_ = str(args.get('id', ''))
 
@@ -1231,28 +1199,6 @@ def config_list_command(client, args):
     response = client.config_list_request(filters)
     command_results = CommandResults(
         outputs_prefix='Docker.Config',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def config_update_command(client, args):
-    id_ = str(args.get('id', ''))
-    configspec_name = str(args.get('configspec_name', ''))
-    configspec_labels = str(args.get('configspec_labels', ''))
-    configspec_data = str(args.get('configspec_data', ''))
-    configspec_templating_name = str(args.get('configspec_templating_name', ''))
-    configspec_templating_options = str(args.get('configspec_templating_options', ''))
-    configspec_templating = assign_params(Name=configspec_templating_name, Options=configspec_templating_options)
-    version = args.get('version', None)
-
-    response = client.config_update_request(id_, configspec_name, configspec_labels, configspec_data,
-                                            configspec_templating, version)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -2944,39 +2890,49 @@ def session_command(client, args):
 
 
 def swarm_init_command(client, args):
-    body_1_listenaddr = str(args.get('body_1_listenaddr', ''))
-    body_1_advertiseaddr = str(args.get('body_1_advertiseaddr', ''))
-    body_1_datapathaddr = str(args.get('body_1_datapathaddr', ''))
-    body_1_datapathport = args.get('body_1_datapathport', None)
-    body_1_defaultaddrpool = argToList(args.get('body_1_defaultaddrpool', []))
-    body_1_forcenewcluster = argToBoolean(args.get('body_1_forcenewcluster', False))
-    body_1_subnetsize = args.get('body_1_subnetsize', None)
-    body_1_spec_name = str(args.get('body_1_spec_name', ''))
-    body_1_spec_labels = str(args.get('body_1_spec_labels', ''))
-    body_1_spec_orchestration = str(args.get('body_1_spec_orchestration', ''))
-    body_1_spec_raft = str(args.get('body_1_spec_raft', ''))
-    body_1_spec_dispatcher = str(args.get('body_1_spec_dispatcher', ''))
-    body_1_spec_caconfig = str(args.get('body_1_spec_caconfig', ''))
-    body_1_spec_encryptionconfig = str(args.get('body_1_spec_encryptionconfig', ''))
-    body_1_spec_taskdefaults = str(args.get('body_1_spec_taskdefaults', ''))
-    body_1_spec = assign_params(Name=body_1_spec_name, Labels=body_1_spec_labels,
-                                Orchestration=body_1_spec_orchestration,
-                                Raft=body_1_spec_raft,
-                                Dispatcher=body_1_spec_dispatcher,
-                                CAConfig=body_1_spec_caconfig,
-                                EncryptionConfig=body_1_spec_encryptionconfig,
-                                TaskDefaults=body_1_spec_taskdefaults)
+    listenaddr = str(args.get('listenaddr', ''))
+    advertiseaddr = str(args.get('advertiseaddr', ''))
+    datapathaddr = str(args.get('datapathaddr', ''))
+    datapathport = args.get('datapathport', None)
+    defaultaddrpool = argToList(args.get('defaultaddrpool', []))
+    forcenewcluster = argToBoolean(args.get('forcenewcluster', False))
+    subnetsize = args.get('subnetsize', None)
+    spec_name = str(args.get('spec_name', ''))
+    spec_labels = str(args.get('spec_labels', ''))
+    spec_orchestration = str(args.get('spec_orchestration', ''))
+    spec_raft = str(args.get('spec_raft', ''))
+    spec_dispatcher = str(args.get('spec_dispatcher', ''))
+    spec_caconfig = str(args.get('spec_caconfig', ''))
+    spec_encryptionconfig = str(args.get('spec_encryptionconfig', ''))
+    spec_taskdefaults = str(args.get('spec_taskdefaults', ''))
+    spec = assign_params(Name=spec_name, Labels=spec_labels,
+                         Orchestration=spec_orchestration,
+                         Raft=spec_raft,
+                         Dispatcher=spec_dispatcher,
+                         CAConfig=spec_caconfig,
+                         EncryptionConfig=spec_encryptionconfig,
+                         TaskDefaults=spec_taskdefaults)
 
-    response = client.swarm_init_request(body_1_listenaddr, body_1_advertiseaddr, body_1_datapathaddr,
-                                         body_1_datapathport, body_1_defaultaddrpool, body_1_forcenewcluster,
-                                         body_1_subnetsize, body_1_spec)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
+    response = client.swarm_init_request(listenaddr, advertiseaddr, datapathaddr,
+                                         datapathport, defaultaddrpool, forcenewcluster,
+                                         subnetsize, spec)
+    if type(response) == str:
+        response = {
+            "Node ID": response
+        }
+        command_results = CommandResults(
+            outputs_prefix='Docker.Swarm.Token',
+            outputs_key_field='',
+            outputs=response,
+            raw_response=response
+        )
+    else:
+        command_results = CommandResults(
+            outputs_prefix='Docker.Swarm.Token',
+            outputs_key_field='',
+            outputs=response,
+            raw_response=response
+        )
     return command_results
 
 
@@ -2994,14 +2950,14 @@ def swarm_inspect_command(client, args):
 
 
 def swarm_join_command(client, args):
-    body_2_listenaddr = str(args.get('body_2_listenaddr', ''))
-    body_2_advertiseaddr = str(args.get('body_2_advertiseaddr', ''))
-    body_2_datapathaddr = str(args.get('body_2_datapathaddr', ''))
-    body_2_remoteaddrs = argToList(args.get('body_2_remoteaddrs', []))
-    body_2_jointoken = str(args.get('body_2_jointoken', ''))
+    listenaddr = str(args.get('listenaddr', ''))
+    advertiseaddr = str(args.get('advertiseaddr', ''))
+    datapathaddr = str(args.get('datapathaddr', ''))
+    remoteaddrs = argToList(args.get('remoteaddrs', []))
+    jointoken = str(args.get('jointoken', ''))
 
-    response = client.swarm_join_request(body_2_listenaddr, body_2_advertiseaddr, body_2_datapathaddr,
-                                         body_2_remoteaddrs, body_2_jointoken)
+    response = client.swarm_join_request(listenaddr, advertiseaddr, datapathaddr,
+                                         remoteaddrs, jointoken)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -3016,20 +2972,32 @@ def swarm_leave_command(client, args):
     force = argToBoolean(args.get('force', False))
 
     response = client.swarm_leave_request(force)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+
+    if type(response) == dict:
+        command_results = CommandResults(
+            outputs_prefix='Docker',
+            outputs_key_field='',
+            outputs=response,
+            raw_response=response
+        )
+    else:
+        response = {
+            "message": "Swarm node left."
+        }
+        command_results = CommandResults(
+            outputs_prefix='Docker',
+            outputs_key_field='',
+            outputs=response,
+            raw_response=response
+        )
 
     return command_results
 
 
 def swarm_unlock_command(client, args):
-    body_3_unlockkey = str(args.get('body_3_unlockkey', ''))
+    unlockkey = str(args.get('unlockkey', ''))
 
-    response = client.swarm_unlock_request(body_3_unlockkey)
+    response = client.swarm_unlock_request(unlockkey)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -3051,59 +3019,6 @@ def swarm_unlockkey_command(client, args):
     )
 
     return command_results
-
-
-def swarm_update_command(client, args):
-    swarmspec_name = str(args.get('swarmspec_name', ''))
-    swarmspec_labels = str(args.get('swarmspec_labels', ''))
-    swarmspec_orchestration_taskhistoryretentionlimit = args.get('swarmspec_orchestration_taskhistoryretentionlimit',
-                                                                 None)
-    swarmspec_orchestration = assign_params(TaskHistoryRetentionLimit=swarmspec_orchestration_taskhistoryretentionlimit)
-    swarmspec_raft_snapshotinterval = args.get('swarmspec_raft_snapshotinterval', None)
-    swarmspec_raft_keepoldsnapshots = args.get('swarmspec_raft_keepoldsnapshots', None)
-    swarmspec_raft_logentriesforslowfollowers = args.get('swarmspec_raft_logentriesforslowfollowers', None)
-    swarmspec_raft_electiontick = args.get('swarmspec_raft_electiontick', None)
-    swarmspec_raft_heartbeattick = args.get('swarmspec_raft_heartbeattick', None)
-    swarmspec_raft = assign_params(SnapshotInterval=swarmspec_raft_snapshotinterval,
-                                   KeepOldSnapshots=swarmspec_raft_keepoldsnapshots,
-                                   LogEntriesForSlowFollowers=swarmspec_raft_logentriesforslowfollowers,
-                                   ElectionTick=swarmspec_raft_electiontick,
-                                   HeartbeatTick=swarmspec_raft_heartbeattick)
-    swarmspec_dispatcher_heartbeatperiod = args.get('swarmspec_dispatcher_heartbeatperiod', None)
-    swarmspec_dispatcher = assign_params(HeartbeatPeriod=swarmspec_dispatcher_heartbeatperiod)
-    swarmspec_caconfig_nodecertexpiry = args.get('swarmspec_caconfig_nodecertexpiry', None)
-    swarmspec_caconfig_externalcas = str(args.get('swarmspec_caconfig_externalcas', ''))
-    swarmspec_caconfig_signingcacert = str(args.get('swarmspec_caconfig_signingcacert', ''))
-    swarmspec_caconfig_signingcakey = str(args.get('swarmspec_caconfig_signingcakey', ''))
-    swarmspec_caconfig_forcerotate = args.get('swarmspec_caconfig_forcerotate', None)
-    swarmspec_caconfig = assign_params(NodeCertExpiry=swarmspec_caconfig_nodecertexpiry,
-                                       ExternalCAs=swarmspec_caconfig_externalcas,
-                                       SigningCACert=swarmspec_caconfig_signingcacert,
-                                       SigningCAKey=swarmspec_caconfig_signingcakey,
-                                       ForceRotate=swarmspec_caconfig_forcerotate)
-    swarmspec_encryptionconfig_autolockmanagers = argToBoolean(args.get('swarmspec_encryptionconfig_autolockmanagers',
-                                                                        False))
-    swarmspec_encryptionconfig = assign_params(AutoLockManagers=swarmspec_encryptionconfig_autolockmanagers)
-    swarmspec_taskdefaults_logdriver = str(args.get('swarmspec_taskdefaults_logdriver', ''))
-    swarmspec_taskdefaults = assign_params(LogDriver=swarmspec_taskdefaults_logdriver)
-    version = args.get('version', None)
-    rotate_worker_token = argToBoolean(args.get('rotate_worker_token', False))
-    rotate_manager_token = argToBoolean(args.get('rotate_manager_token', False))
-    rotate_manager_unlock_key = argToBoolean(args.get('rotate_manager_unlock_key', False))
-
-    response = client.swarm_update_request(swarmspec_name, swarmspec_labels, swarmspec_orchestration, swarmspec_raft,
-                                           swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,
-                                           swarmspec_taskdefaults, version, rotate_worker_token, rotate_manager_token,
-                                           rotate_manager_unlock_key)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
 
 def system_auth_command(client, args):
     authconfig_username = str(args.get('authconfig_username', ''))
@@ -3330,7 +3245,11 @@ def volume_prune_command(client, args):
 
 def test_module(client):
     # Test functions here
-    demisto.results('ok')
+    response = client.test_request()
+    if response.get('Platform'):
+        demisto.results('ok')
+    else:
+        demisto.results(response)
 
 
 def main():
@@ -3338,26 +3257,23 @@ def main():
     params = demisto.params()
     args = demisto.args()
     url = params.get('url')
-    client_cert = demisto.params().get('client_certificate')
-    client_key = demisto.params().get('client_key')
+    client_cert = params.get('client_certificate')
+    client_key = params.get('client_key')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    headers = {'Authorization': f'{params["api_key"]}'}
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
 
     try:
         urllib3.disable_warnings()
-        client = Client(urljoin(url, "/v1.41"), verify_certificate, proxy, headers=headers,
+        client = Client(urljoin(url, "/v1.41"), verify_certificate, proxy, headers=None,
                         client_cert=client_cert, client_key=client_key)
         commands = {
             'docker-build-prune': build_prune_command,
             'docker-config-create': config_create_command,
-            'docker-config-delete': config_delete_command,
             'docker-config-inspect': config_inspect_command,
             'docker-config-list': config_list_command,
-            'docker-config-update': config_update_command,
             'docker-container-archive': container_archive_command,
             'docker-container-archive-info': container_archive_info_command,
             'docker-container-attach': container_attach_command,
@@ -3442,7 +3358,6 @@ def main():
             'docker-swarm-leave': swarm_leave_command,
             'docker-swarm-unlock': swarm_unlock_command,
             'docker-swarm-unlockkey': swarm_unlockkey_command,
-            'docker-swarm-update': swarm_update_command,
             'docker-system-auth': system_auth_command,
             'docker-system-data-usage': system_data_usage_command,
             'docker-system-events': system_events_command,
@@ -3471,3 +3386,6 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+
+
+

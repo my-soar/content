@@ -3,20 +3,11 @@ commonfields:
   id: Docker Engine API
   version: -1
 configuration:
-- defaultvalue: https://www.example.com/api
-  display: Server URL (e.g. https://www.example.com/api)
+- display: Server URL (e.g. https://www.example.com:1000)
   name: url
   required: true
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Docker Client Certificate (PEM)
+- display: Docker Client Certificate
   hidden: false
   name: client_certificate
   required: true
@@ -26,6 +17,14 @@ configuration:
   name: client_key
   required: true
   type: 12
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: The Engine API is an HTTP API served by Docker Engine. It is the API
   the Docker client uses to communicate with the Engine, so everything the Docker
   client can do can be done with the API.
@@ -111,17 +110,6 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a config
-    execution: false
-    name: docker-config-delete
-  - arguments:
-    - default: false
-      description: ID of the config
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
     description: Inspect a config
     execution: false
     name: docker-config-inspect
@@ -153,55 +141,6 @@ script:
       type: String
     - contextPath: Docker.Config.UpdatedAt
       type: String
-  - arguments:
-    - default: false
-      description: The ID or name of the config
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: User-defined name of the config.
-      isArray: false
-      name: configspec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: configspec_labels
-      required: false
-      secret: false
-    - default: false
-      description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
-        config data. '
-      isArray: false
-      name: configspec_data
-      required: false
-      secret: false
-    - default: false
-      description: configspec_templating Name
-      isArray: false
-      name: configspec_templating_Name
-      required: false
-      secret: false
-    - default: false
-      description: configspec_templating Options
-      isArray: false
-      name: configspec_templating_Options
-      required: false
-      secret: false
-    - default: false
-      description: 'The version number of the config object being updated. This is
-        required to avoid conflicting writes. '
-      isArray: false
-      name: version
-      required: true
-      secret: false
-    deprecated: false
-    description: Update a Config
-    execution: false
-    name: docker-config-update
   - arguments:
     - default: false
       description: ID or name of the container
@@ -2169,7 +2108,7 @@ script:
         This  meter may only be used when pulling an image. The pull is cancelled
         if the HTTP connection is closed.
       isArray: false
-      name: fromImage
+      name: from_image
       required: false
       secret: false
     - default: false
@@ -2177,7 +2116,7 @@ script:
         be retrieved or `-` to read the image from the request body. This  meter may
         only be used when importing an image.
       isArray: false
-      name: fromSrc
+      name: from_src
       required: false
       secret: false
     - default: false
@@ -2201,9 +2140,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Image content if the value `-` has been specified in fromSrc query  meter
+      description: Image content if the value `-` has been specified in from_src query  meter
       isArray: false
-      name: inputImage
+      name: input_image
       required: false
       secret: false
     - default: false
@@ -2381,7 +2320,7 @@ script:
     - default: false
       description: Tar archive containing images
       isArray: false
-      name: imagesTarball
+      name: images_tarball
       required: false
       secret: false
     - default: false
@@ -2963,7 +2902,7 @@ script:
     - default: false
       description: Path to tar containing plugin rootfs and manifest
       isArray: false
-      name: tarContext
+      name: tar_content
       required: false
       secret: false
     deprecated: false
@@ -3212,14 +3151,14 @@ script:
         the given content would cause an existing directory to be replaced with a
         non-directory and vice versa. '
       isArray: false
-      name: noOverwriteDirNonDir
+      name: no_overwrite
       required: false
       secret: false
     - default: false
       description: 'If `1`, `true`, then it will copy UID/GID maps to the dest file
         or dir '
       isArray: false
-      name: copyUIDGID
+      name: copy_uid_gid
       required: false
       secret: false
     - default: false
@@ -3615,7 +3554,7 @@ script:
     - default: false
       description: Fill empty fields with default values.
       isArray: false
-      name: insertDefaults
+      name: insert_defaults
       required: false
       secret: false
     deprecated: false
@@ -3917,7 +3856,7 @@ script:
       description: 'If the `X-Registry-Auth` header is not specified, this  meter
         indicates where to find registry authorization credentials. '
       isArray: false
-      name: registryAuthFrom
+      name: registery_auth_from
       predefined:
       - spec
       - previous-spec
@@ -3954,7 +3893,7 @@ script:
         or an interface followed by a port number, like `eth0:4567`. If the port number
         is omitted, the default swarm listening port is used. '
       isArray: false
-      name: body_1_listenaddr
+      name: listenaddr
       required: false
       secret: false
     - default: false
@@ -3964,7 +3903,7 @@ script:
         is omitted, the port number from the listen address is used. If `AdvertiseAddr`
         is not specified, it will be automatically detected when possible. '
       isArray: false
-      name: body_1_advertiseaddr
+      name: advertiseaddr
       required: false
       secret: false
     - default: false
@@ -3976,7 +3915,7 @@ script:
         this  meter it is possible to se te the container data traffic from the management
         traffic of the cluster. '
       isArray: false
-      name: body_1_datapathaddr
+      name: datapathaddr
       required: false
       secret: false
     - default: false
@@ -3984,75 +3923,75 @@ script:
         Acceptable port range is 1024 to 49151. if no port is set or is set to 0,
         default port 4789 will be used. '
       isArray: false
-      name: body_1_datapathport
+      name: datapathport
       required: false
       secret: false
     - default: false
       description: 'Default Address Pool specifies default subnet pools for global
         scope networks. '
       isArray: true
-      name: body_1_defaultaddrpool
+      name: defaultaddrpool
       required: false
       secret: false
     - default: false
       description: Force creation of a new swarm.
       isArray: false
-      name: body_1_forcenewcluster
+      name: forcenewcluster
       required: false
       secret: false
     - default: false
       description: 'SubnetSize specifies the subnet size of the networks created from
         the default subnet pool. '
       isArray: false
-      name: body_1_subnetsize
+      name: subnetsize
       required: false
       secret: false
     - default: false
-      description: body_1_spec Name
+      description: spec Name
       isArray: false
-      name: body_1_spec_Name
+      name: spec_Name
       required: false
       secret: false
     - default: false
-      description: body_1_spec Labels
+      description: spec Labels
       isArray: false
-      name: body_1_spec_Labels
+      name: spec_Labels
       required: false
       secret: false
     - default: false
-      description: body_1_spec Orchestration
+      description: spec Orchestration
       isArray: false
-      name: body_1_spec_Orchestration
+      name: spec_Orchestration
       required: false
       secret: false
     - default: false
-      description: body_1_spec Raft
+      description: spec Raft
       isArray: false
-      name: body_1_spec_Raft
+      name: spec_Raft
       required: false
       secret: false
     - default: false
-      description: body_1_spec Dispatcher
+      description: spec Dispatcher
       isArray: false
-      name: body_1_spec_Dispatcher
+      name: spec_Dispatcher
       required: false
       secret: false
     - default: false
-      description: body_1_spec CAConfig
+      description: spec CAConfig
       isArray: false
-      name: body_1_spec_CAConfig
+      name: spec_CAConfig
       required: false
       secret: false
     - default: false
-      description: body_1_spec EncryptionConfig
+      description: spec EncryptionConfig
       isArray: false
-      name: body_1_spec_EncryptionConfig
+      name: spec_EncryptionConfig
       required: false
       secret: false
     - default: false
-      description: body_1_spec TaskDefaults
+      description: spec TaskDefaults
       isArray: false
-      name: body_1_spec_TaskDefaults
+      name: spec_TaskDefaults
       required: false
       secret: false
     deprecated: false
@@ -4069,7 +4008,7 @@ script:
         gets promoted to manager, as well as determining the networking interface
         used for the VXLAN Tunnel Endpoint (VTEP). '
       isArray: false
-      name: body_2_listenaddr
+      name: listenaddr
       required: false
       secret: false
     - default: false
@@ -4079,7 +4018,7 @@ script:
         is omitted, the port number from the listen address is used. If `AdvertiseAddr`
         is not specified, it will be automatically detected when possible. '
       isArray: false
-      name: body_2_advertiseaddr
+      name: advertiseaddr
       required: false
       secret: false
     - default: false
@@ -4091,19 +4030,19 @@ script:
         it is possible to se te the container data traffic from the management traffic
         of the cluster. '
       isArray: false
-      name: body_2_datapathaddr
+      name: datapathaddr
       required: false
       secret: false
     - default: false
       description: 'Addresses of manager nodes already participating in the swarm. '
       isArray: true
-      name: body_2_remoteaddrs
+      name: remoteaddrs
       required: false
       secret: false
     - default: false
       description: Secret token for joining this swarm.
       isArray: false
-      name: body_2_jointoken
+      name: jointoken
       required: false
       secret: false
     deprecated: false
@@ -4126,7 +4065,7 @@ script:
     - default: false
       description: The swarm's unlock key.
       isArray: false
-      name: body_3_unlockkey
+      name: unlockkey
       required: false
       secret: false
     deprecated: false
@@ -4141,132 +4080,6 @@ script:
     - contextPath: Docker.UnlockKeyResponse.UnlockKey
       description: The swarm's unlock key.
       type: String
-  - arguments:
-    - default: false
-      description: Name of the swarm.
-      isArray: false
-      name: swarmspec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: swarmspec_labels
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_orchestration TaskHistoryRetentionLimit
-      isArray: false
-      name: swarmspec_orchestration_TaskHistoryRetentionLimit
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft SnapshotInterval
-      isArray: false
-      name: swarmspec_raft_SnapshotInterval
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft KeepOldSnapshots
-      isArray: false
-      name: swarmspec_raft_KeepOldSnapshots
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft LogEntriesForSlowFollowers
-      isArray: false
-      name: swarmspec_raft_LogEntriesForSlowFollowers
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft ElectionTick
-      isArray: false
-      name: swarmspec_raft_ElectionTick
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_raft HeartbeatTick
-      isArray: false
-      name: swarmspec_raft_HeartbeatTick
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_dispatcher HeartbeatPeriod
-      isArray: false
-      name: swarmspec_dispatcher_HeartbeatPeriod
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig NodeCertExpiry
-      isArray: false
-      name: swarmspec_caconfig_NodeCertExpiry
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig ExternalCAs
-      isArray: false
-      name: swarmspec_caconfig_ExternalCAs
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig SigningCACert
-      isArray: false
-      name: swarmspec_caconfig_SigningCACert
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig SigningCAKey
-      isArray: false
-      name: swarmspec_caconfig_SigningCAKey
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_caconfig ForceRotate
-      isArray: false
-      name: swarmspec_caconfig_ForceRotate
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_encryptionconfig AutoLockManagers
-      isArray: false
-      name: swarmspec_encryptionconfig_AutoLockManagers
-      required: false
-      secret: false
-    - default: false
-      description: swarmspec_taskdefaults LogDriver
-      isArray: false
-      name: swarmspec_taskdefaults_LogDriver
-      required: false
-      secret: false
-    - default: false
-      description: 'The version number of the swarm object being updated. This is
-        required to avoid conflicting writes. '
-      isArray: false
-      name: version
-      required: true
-      secret: false
-    - default: false
-      description: Rotate the worker join token.
-      isArray: false
-      name: rotateWorkerToken
-      required: false
-      secret: false
-    - default: false
-      description: Rotate the manager join token.
-      isArray: false
-      name: rotateManagerToken
-      required: false
-      secret: false
-    - default: false
-      description: Rotate the manager unlock key.
-      isArray: false
-      name: rotateManagerUnlockKey
-      required: false
-      secret: false
-    deprecated: false
-    description: Update a swarm
-    execution: false
-    name: docker-swarm-update
   - arguments:
     - default: false
       isArray: false
@@ -4935,10 +4748,28 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: "import urllib3\n\n\n\n\nclass Client(BaseClient):\n    def __init__(self,\
-    \ server_url, verify, proxy, headers, auth):\n        super().__init__(base_url=server_url,\
-    \ verify=verify, proxy=proxy, headers=headers, auth=auth)\n\n    def build_prune_request(self,\
-    \ keep_storage, prune_all, filters):\n        params = assign_params(keep_storage=keep_storage,\
+  script: "import urllib3\nimport requests\n\n\n\n\nclass Client:\n    def __init__(self,\
+    \ server_url, verify, proxy, headers, client_cert, client_key):\n        self._base_url\
+    \ = server_url\n        self._verify = verify\n        self._proxy = proxy\n \
+    \       self._headers = headers\n        self._client_cert = client_cert\n   \
+    \     self._client_key = client_key\n\n    def _http_request(self, method, url_suffix='',\
+    \ full_url=None, params=None, headers=None, data=None, json_data=None):\n    \
+    \    address = full_url if full_url else urljoin(self._base_url, url_suffix)\n\
+    \        headers = headers if headers else self._headers\n        client_cert_path\
+    \ = None\n        client_key_path = None\n        if self._client_cert:\n    \
+    \        client_cert_path = 'client.cert'\n            with open(client_cert_path,\
+    \ 'wb') as file:\n                file.write(self._client_cert.encode())\n   \
+    \     if self._client_key:\n            client_key_path = 'client_key.key'\n \
+    \           with open(client_key_path, 'wb') as file:\n                file.write(self._client_key.encode())\n\
+    \        response = requests.session().request(\n            method,\n       \
+    \     address,\n            verify=self._verify,\n            params=params,\n\
+    \            data=data,\n            json=json_data,\n            headers=headers,\n\
+    \            cert=(client_cert_path, client_key_path),\n            timeout=2,\n\
+    \n        )\n        if response.headers.get('Content-Type') == 'application/json':\n\
+    \            return json.loads(response.content)\n        else:\n            return\
+    \ response.content\n\n    def test_request(self):\n        response = self._http_request('get',\
+    \ 'version')\n\n        return response\n\n    def build_prune_request(self, keep_storage,\
+    \ prune_all, filters):\n        params = assign_params(keep_storage=keep_storage,\
     \ prune_all=prune_all, filters=filters)\n\n        headers = self._headers\n\n\
     \        response = self._http_request('post', 'build/prune', params=params, headers=headers)\n\
     \n        return response\n\n    def config_create_request(self, configspec_name,\
@@ -4947,21 +4778,12 @@ script:
     \                             Data=configspec_data, Templating=configspec_templating)\n\
     \n        headers = self._headers\n\n        response = self._http_request('post',\
     \ 'configs/create', json_data=data, headers=headers)\n\n        return response\n\
-    \n    def config_delete_request(self, id_):\n\n        headers = self._headers\n\
-    \n        response = self._http_request('delete', f'configs/{id_}', headers=headers)\n\
-    \n        return response\n\n    def config_inspect_request(self, id_):\n\n  \
-    \      headers = self._headers\n\n        response = self._http_request('get',\
-    \ f'configs/{id_}', headers=headers)\n\n        return response\n\n    def config_list_request(self,\
-    \ filters):\n        params = assign_params(filters=filters)\n\n        headers\
-    \ = self._headers\n\n        response = self._http_request('get', 'configs', params=params,\
-    \ headers=headers)\n\n        return response\n\n    def config_update_request(self,\
-    \ id_, configspec_name, configspec_labels,\n                              configspec_data,\
-    \ configspec_templating, version):\n        params = assign_params(version=version)\n\
-    \        data = assign_params(Name=configspec_name, Labels=configspec_labels,\n\
-    \                             Data=configspec_data, Templating=configspec_templating)\n\
-    \n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ f'configs/{id_}/update', params=params, json_data=data, headers=headers)\n\n\
-    \        return response\n\n    def container_archive_request(self, id_, path):\n\
+    \n    def config_inspect_request(self, id_):\n\n        headers = self._headers\n\
+    \n        response = self._http_request('get', f'configs/{id_}', headers=headers)\n\
+    \n        return response\n\n    def config_list_request(self, filters):\n   \
+    \     params = assign_params(filters=filters)\n\n        headers = self._headers\n\
+    \n        response = self._http_request('get', 'configs', params=params, headers=headers)\n\
+    \n        return response\n\n    def container_archive_request(self, id_, path):\n\
     \        params = assign_params(path=path)\n\n        headers = self._headers\n\
     \        headers['Accept'] = 'application/x-tar'\n\n        response = self._http_request('get',\
     \ f'containers/{id_}/archive', params=params, headers=headers)\n\n        return\
@@ -5212,10 +5034,10 @@ script:
     \                             StopTimeout=containerconfig_stoptimeout, Shell=containerconfig_shell)\n\
     \n        headers = self._headers\n\n        response = self._http_request('post',\
     \ 'commit', params=params, json_data=data, headers=headers)\n\n        return\
-    \ response\n\n    def image_create_request(self, fromImage, fromSrc, repo, tag,\
-    \ message, inputImage, platform):\n        params = assign_params(fromImage=fromImage,\
-    \ fromSrc=fromSrc, repo=repo, tag=tag, message=message,\n                    \
-    \           platform=platform)\n        data = assign_params(inputImage=inputImage)\n\
+    \ response\n\n    def image_create_request(self, from_image, from_src, repo, tag,\
+    \ message, input_image, platform):\n        params = assign_params(from_image=from_image,\
+    \ from_src=from_src, repo=repo, tag=tag, message=message,\n                  \
+    \             platform=platform)\n        data = assign_params(input_image=input_image)\n\
     \n        headers = self._headers\n        headers['Content-Type'] = 'text/plain'\n\
     \n        response = self._http_request('post', 'images/create', params=params,\
     \ json_data=data, headers=headers)\n\n        return response\n\n    def image_delete_request(self,\
@@ -5237,8 +5059,8 @@ script:
     \ digests):\n        params = assign_params(prune_all=prune_all, filters=filters,\
     \ digests=digests)\n\n        headers = self._headers\n\n        response = self._http_request('get',\
     \ 'images/json', params=params, headers=headers)\n\n        return response\n\n\
-    \    def image_load_request(self, imagesTarball, quiet):\n        params = assign_params(quiet=quiet)\n\
-    \        data = assign_params(imagesTarball=imagesTarball)\n\n        headers\
+    \    def image_load_request(self, images_tarball, quiet):\n        params = assign_params(quiet=quiet)\n\
+    \        data = assign_params(images_tarball=images_tarball)\n\n        headers\
     \ = self._headers\n        headers['Content-Type'] = 'application/x-tar'\n\n \
     \       response = self._http_request('post', 'images/load', params=params, json_data=data,\
     \ headers=headers)\n\n        return response\n\n    def image_prune_request(self,\
@@ -5300,8 +5122,8 @@ script:
     \ Labels=nodespec_labels, Role=nodespec_role,\n                             Availability=nodespec_availability)\n\
     \n        headers = self._headers\n\n        response = self._http_request('post',\
     \ f'nodes/{id_}/update', params=params, json_data=data, headers=headers)\n\n \
-    \       return response\n\n    def plugin_create_request(self, name, tarContext):\n\
-    \        params = assign_params(name=name)\n        data = assign_params(tarContext=tarContext)\n\
+    \       return response\n\n    def plugin_create_request(self, name, tar_content):\n\
+    \        params = assign_params(name=name)\n        data = assign_params(tar_content=tar_content)\n\
     \n        headers = self._headers\n        headers['Content-Type'] = 'application/x-tar'\n\
     \n        response = self._http_request('post', 'plugins/create', params=params,\
     \ json_data=data, headers=headers)\n\n        return response\n\n    def plugin_delete_request(self,\
@@ -5334,19 +5156,18 @@ script:
     \n        headers = self._headers\n\n        response = self._http_request('post',\
     \ f'plugins/{name}/upgrade', params=params, json_data=data, headers=headers)\n\
     \n        return response\n\n    def put_container_archive_request(self, id_,\
-    \ path, noOverwriteDirNonDir, copyUIDGID, input_stream):\n        params = assign_params(path=path,\
-    \ noOverwriteDirNonDir=noOverwriteDirNonDir, copyUIDGID=copyUIDGID)\n        data\
-    \ = assign_params(input_stream=input_stream)\n\n        headers = self._headers\n\
-    \        headers['Content-Type'] = 'application/x-tar'\n\n        response = self._http_request('put',\
-    \ f'containers/{id_}/archive', params=params, json_data=data,\n              \
-    \                        headers=headers)\n\n        return response\n\n    def\
-    \ secret_create_request(self, secretspec_name, secretspec_labels, secretspec_data,\
-    \ secretspec_driver,\n                              secretspec_templating):\n\
-    \        data = assign_params(Name=secretspec_name, Labels=secretspec_labels,\
-    \ Data=secretspec_data,\n                             Driver=secretspec_driver,\
-    \ Templating=secretspec_templating)\n\n        headers = self._headers\n\n   \
-    \     response = self._http_request('post', 'secrets/create', json_data=data,\
-    \ headers=headers)\n\n        return response\n\n    def secret_delete_request(self,\
+    \ path, no_overwrite, copy_uid_gid, input_stream):\n        params = assign_params(path=path,\
+    \ no_overwrite=no_overwrite, copy_uid_gid=copy_uid_gid)\n        data = assign_params(input_stream=input_stream)\n\
+    \n        headers = self._headers\n        headers['Content-Type'] = 'application/x-tar'\n\
+    \n        response = self._http_request('put', f'containers/{id_}/archive', params=params,\
+    \ json_data=data,\n                                      headers=headers)\n\n\
+    \        return response\n\n    def secret_create_request(self, secretspec_name,\
+    \ secretspec_labels, secretspec_data, secretspec_driver,\n                   \
+    \           secretspec_templating):\n        data = assign_params(Name=secretspec_name,\
+    \ Labels=secretspec_labels, Data=secretspec_data,\n                          \
+    \   Driver=secretspec_driver, Templating=secretspec_templating)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('post', 'secrets/create',\
+    \ json_data=data, headers=headers)\n\n        return response\n\n    def secret_delete_request(self,\
     \ id_):\n\n        headers = self._headers\n\n        response = self._http_request('delete',\
     \ f'secrets/{id_}', headers=headers)\n\n        return response\n\n    def secret_inspect_request(self,\
     \ id_):\n\n        headers = self._headers\n\n        response = self._http_request('get',\
@@ -5373,7 +5194,7 @@ script:
     \ json_data=data, headers=headers)\n\n        return response\n\n    def service_delete_request(self,\
     \ id_):\n\n        headers = self._headers\n\n        response = self._http_request('delete',\
     \ f'services/{id_}', headers=headers)\n\n        return response\n\n    def service_inspect_request(self,\
-    \ id_, insertDefaults):\n        params = assign_params(insertDefaults=insertDefaults)\n\
+    \ id_, insert_defaults):\n        params = assign_params(insert_defaults=insert_defaults)\n\
     \n        headers = self._headers\n\n        response = self._http_request('get',\
     \ f'services/{id_}', params=params, headers=headers)\n\n        return response\n\
     \n    def service_list_request(self, filters, status):\n        params = assign_params(filters=filters,\
@@ -5387,8 +5208,8 @@ script:
     \n    def service_update_request(self, id_, servicespec_name, servicespec_labels,\
     \ servicespec_tasktemplate,\n                               servicespec_mode,\
     \ servicespec_updateconfig, servicespec_rollbackconfig,\n                    \
-    \           servicespec_networks, servicespec_endpointspec, version, registryAuthFrom,\
-    \ rollback):\n        params = assign_params(version=version, registryAuthFrom=registryAuthFrom,\
+    \           servicespec_networks, servicespec_endpointspec, version, registery_auth_from,\
+    \ rollback):\n        params = assign_params(version=version, registery_auth_from=registery_auth_from,\
     \ rollback=rollback)\n        data = assign_params(Name=servicespec_name, Labels=servicespec_labels,\
     \ TaskTemplate=servicespec_tasktemplate,\n                             Mode=servicespec_mode,\
     \ UpdateConfig=servicespec_updateconfig,\n                             RollbackConfig=servicespec_rollbackconfig,\
@@ -5398,55 +5219,40 @@ script:
     \        return response\n\n    def session_request(self):\n\n        headers\
     \ = self._headers\n        headers['Accept'] = 'application/vnd.docker.raw-stream'\n\
     \n        response = self._http_request('post', 'session', headers=headers)\n\n\
-    \        return response\n\n    def swarm_init_request(self, body_1_listenaddr,\
-    \ body_1_advertiseaddr, body_1_datapathaddr, body_1_datapathport,\n          \
-    \                 body_1_defaultaddrpool, body_1_forcenewcluster, body_1_subnetsize,\
-    \ body_1_spec):\n        data = assign_params(ListenAddr=body_1_listenaddr, AdvertiseAddr=body_1_advertiseaddr,\n\
-    \                             DataPathAddr=body_1_datapathaddr, DataPathPort=body_1_datapathport,\n\
-    \                             DefaultAddrPool=body_1_defaultaddrpool, ForceNewCluster=body_1_forcenewcluster,\n\
-    \                             SubnetSize=body_1_subnetsize, Spec=body_1_spec)\n\
-    \n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ 'swarm/init', json_data=data, headers=headers)\n\n        return response\n\n\
-    \    def swarm_inspect_request(self):\n\n        headers = self._headers\n\n \
-    \       response = self._http_request('get', 'swarm', headers=headers)\n\n   \
-    \     return response\n\n    def swarm_join_request(self, body_2_listenaddr, body_2_advertiseaddr,\
-    \ body_2_datapathaddr, body_2_remoteaddrs,\n                           body_2_jointoken):\n\
-    \        data = assign_params(ListenAddr=body_2_listenaddr, AdvertiseAddr=body_2_advertiseaddr,\n\
-    \                             DataPathAddr=body_2_datapathaddr, RemoteAddrs=body_2_remoteaddrs,\n\
-    \                             JoinToken=body_2_jointoken)\n\n        headers =\
-    \ self._headers\n\n        response = self._http_request('post', 'swarm/join',\
-    \ json_data=data, headers=headers)\n\n        return response\n\n    def swarm_leave_request(self,\
-    \ force):\n        params = assign_params(force=force)\n\n        headers = self._headers\n\
+    \        return response\n\n    def swarm_init_request(self, listenaddr, advertiseaddr,\
+    \ datapathaddr, datapathport,\n                           defaultaddrpool, forcenewcluster,\
+    \ subnetsize, spec):\n        data = assign_params(ListenAddr=listenaddr, AdvertiseAddr=advertiseaddr,\n\
+    \                             DataPathAddr=datapathaddr, DataPathPort=datapathport,\n\
+    \                             DefaultAddrPool=defaultaddrpool, ForceNewCluster=forcenewcluster,\n\
+    \                             SubnetSize=subnetsize, Spec=spec)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('post', 'swarm/init',\
+    \ json_data=data, headers=headers)\n\n        return response\n\n    def swarm_inspect_request(self):\n\
+    \n        headers = self._headers\n\n        response = self._http_request('get',\
+    \ 'swarm', headers=headers)\n\n        return response\n\n    def swarm_join_request(self,\
+    \ listenaddr, advertiseaddr, datapathaddr, remoteaddrs,\n                    \
+    \       jointoken):\n        data = assign_params(ListenAddr=listenaddr, AdvertiseAddr=advertiseaddr,\n\
+    \                             DataPathAddr=datapathaddr, RemoteAddrs=remoteaddrs,\n\
+    \                             JoinToken=jointoken)\n\n        headers = self._headers\n\
+    \n        response = self._http_request('post', 'swarm/join', json_data=data,\
+    \ headers=headers)\n\n        return response\n\n    def swarm_leave_request(self,\
+    \ force):\n        params = assign_params(force=force)\n        headers = self._headers\n\
     \n        response = self._http_request('post', 'swarm/leave', params=params,\
     \ headers=headers)\n\n        return response\n\n    def swarm_unlock_request(self,\
-    \ body_3_unlockkey):\n        data = assign_params(UnlockKey=body_3_unlockkey)\n\
+    \ unlockkey):\n        data = assign_params(UnlockKey=unlockkey)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('post', 'swarm/unlock',\
+    \ json_data=data, headers=headers)\n\n        return response\n\n    def swarm_unlockkey_request(self):\n\
+    \n        headers = self._headers\n\n        response = self._http_request('get',\
+    \ 'swarm/unlockkey', headers=headers)\n\n        return response\n\n    def system_auth_request(self,\
+    \ authconfig_username, authconfig_password, authconfig_email, authconfig_serveraddress):\n\
+    \        data = assign_params(username=authconfig_username, password=authconfig_password,\
+    \ email=authconfig_email,\n                             serveraddress=authconfig_serveraddress)\n\
     \n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ 'swarm/unlock', json_data=data, headers=headers)\n\n        return response\n\
-    \n    def swarm_unlockkey_request(self):\n\n        headers = self._headers\n\n\
-    \        response = self._http_request('get', 'swarm/unlockkey', headers=headers)\n\
-    \n        return response\n\n    def swarm_update_request(self, swarmspec_name,\
-    \ swarmspec_labels, swarmspec_orchestration, swarmspec_raft,\n               \
-    \              swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,\n\
-    \                             swarmspec_taskdefaults, version, rotateWorkerToken,\
-    \ rotateManagerToken,\n                             rotateManagerUnlockKey):\n\
-    \        params = assign_params(version=version, rotateWorkerToken=rotateWorkerToken,\n\
-    \                               rotateManagerToken=rotateManagerToken, rotateManagerUnlockKey=rotateManagerUnlockKey)\n\
-    \        data = assign_params(Name=swarmspec_name, Labels=swarmspec_labels, Orchestration=swarmspec_orchestration,\n\
-    \                             Raft=swarmspec_raft, Dispatcher=swarmspec_dispatcher,\n\
-    \                             CAConfig=swarmspec_caconfig, EncryptionConfig=swarmspec_encryptionconfig,\n\
-    \                             TaskDefaults=swarmspec_taskdefaults)\n\n       \
-    \ headers = self._headers\n\n        response = self._http_request('post', 'swarm/update',\
-    \ params=params, json_data=data, headers=headers)\n\n        return response\n\
-    \n    def system_auth_request(self, authconfig_username, authconfig_password,\
-    \ authconfig_email, authconfig_serveraddress):\n        data = assign_params(username=authconfig_username,\
-    \ password=authconfig_password, email=authconfig_email,\n                    \
-    \         serveraddress=authconfig_serveraddress)\n\n        headers = self._headers\n\
-    \n        response = self._http_request('post', 'auth', json_data=data, headers=headers)\n\
-    \n        return response\n\n    def system_data_usage_request(self):\n\n    \
-    \    headers = self._headers\n\n        response = self._http_request('get', 'system/df',\
-    \ headers=headers)\n\n        return response\n\n    def system_events_request(self,\
-    \ since, until, filters):\n        params = assign_params(since=since, until=until,\
-    \ filters=filters)\n\n        headers = self._headers\n\n        response = self._http_request('get',\
+    \ 'auth', json_data=data, headers=headers)\n\n        return response\n\n    def\
+    \ system_data_usage_request(self):\n\n        headers = self._headers\n\n    \
+    \    response = self._http_request('get', 'system/df', headers=headers)\n\n  \
+    \      return response\n\n    def system_events_request(self, since, until, filters):\n\
+    \        params = assign_params(since=since, until=until, filters=filters)\n\n\
+    \        headers = self._headers\n\n        response = self._http_request('get',\
     \ 'events', params=params, headers=headers)\n\n        return response\n\n   \
     \ def system_info_request(self):\n\n        headers = self._headers\n\n      \
     \  response = self._http_request('get', 'info', headers=headers)\n\n        return\
@@ -5500,10 +5306,6 @@ script:
     \ configspec_labels, configspec_data, configspec_templating)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef config_delete_command(client, args):\n    id_ = str(args.get('id',\
-    \ ''))\n\n    response = client.config_delete_request(id_)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
     \ command_results\n\n\ndef config_inspect_command(client, args):\n    id_ = str(args.get('id',\
     \ ''))\n\n    response = client.config_inspect_request(id_)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker.Config',\n        outputs_key_field='',\n\
@@ -5512,29 +5314,18 @@ script:
     \ ''))\n\n    response = client.config_list_request(filters)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker.Config',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef config_update_command(client, args):\n    id_ = str(args.get('id',\
-    \ ''))\n    configspec_name = str(args.get('configspec_name', ''))\n    configspec_labels\
-    \ = str(args.get('configspec_labels', ''))\n    configspec_data = str(args.get('configspec_data',\
-    \ ''))\n    configspec_templating_name = str(args.get('configspec_templating_name',\
-    \ ''))\n    configspec_templating_options = str(args.get('configspec_templating_options',\
-    \ ''))\n    configspec_templating = assign_params(Name=configspec_templating_name,\
-    \ Options=configspec_templating_options)\n    version = args.get('version', None)\n\
-    \n    response = client.config_update_request(id_, configspec_name, configspec_labels,\
-    \ configspec_data,\n                                            configspec_templating,\
-    \ version)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef container_archive_command(client,\
+    \ command_results\n\n\ndef container_archive_command(client, args):\n    id_ =\
+    \ str(args.get('id', ''))\n    path = str(args.get('path', ''))\n\n    response\
+    \ = client.container_archive_request(id_, path)\n    command_results = CommandResults(\n\
+    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
+    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef container_archive_info_command(client,\
     \ args):\n    id_ = str(args.get('id', ''))\n    path = str(args.get('path', ''))\n\
-    \n    response = client.container_archive_request(id_, path)\n    command_results\
+    \n    response = client.container_archive_info_request(id_, path)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef container_archive_info_command(client, args):\n   \
-    \ id_ = str(args.get('id', ''))\n    path = str(args.get('path', ''))\n\n    response\
-    \ = client.container_archive_info_request(id_, path)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef container_attach_command(client,\
-    \ args):\n    id_ = str(args.get('id', ''))\n    detach_keys = str(args.get('detach_keys',\
-    \ ''))\n    logs = argToBoolean(args.get('logs', False))\n    stream = argToBoolean(args.get('stream',\
+    \ command_results\n\n\ndef container_attach_command(client, args):\n    id_ =\
+    \ str(args.get('id', ''))\n    detach_keys = str(args.get('detach_keys', ''))\n\
+    \    logs = argToBoolean(args.get('logs', False))\n    stream = argToBoolean(args.get('stream',\
     \ False))\n    stdin = argToBoolean(args.get('stdin', False))\n    stdout = argToBoolean(args.get('stdout',\
     \ False))\n    stderr = argToBoolean(args.get('stderr', False))\n\n    response\
     \ = client.container_attach_request(id_, detach_keys, logs, stream, stdin, stdout,\
@@ -5961,31 +5752,31 @@ script:
     \                repo, tag, comment, author, pause, changes)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef image_create_command(client, args):\n    fromImage\
-    \ = str(args.get('fromImage', ''))\n    fromSrc = str(args.get('fromSrc', ''))\n\
+    \ command_results\n\n\ndef image_create_command(client, args):\n    from_image\
+    \ = str(args.get('from_image', ''))\n    from_src = str(args.get('from_src', ''))\n\
     \    repo = str(args.get('repo', ''))\n    tag = str(args.get('tag', ''))\n  \
-    \  message = str(args.get('message', ''))\n    inputImage = str(args.get('inputImage',\
-    \ ''))\n    platform = str(args.get('platform', ''))\n\n    response = client.image_create_request(fromImage,\
-    \ fromSrc, repo, tag, message, inputImage, platform)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef image_delete_command(client,\
-    \ args):\n    name = str(args.get('name', ''))\n    force = argToBoolean(args.get('force',\
-    \ False))\n    noprune = argToBoolean(args.get('noprune', False))\n\n    response\
-    \ = client.image_delete_request(name, force, noprune)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker.ImageDeleteResponseItem',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef image_get_command(client, args):\n    name = str(args.get('name',\
-    \ ''))\n\n    response = client.image_get_request(name)\n    command_results =\
+    \  message = str(args.get('message', ''))\n    input_image = str(args.get('input_image',\
+    \ ''))\n    platform = str(args.get('platform', ''))\n\n    response = client.image_create_request(from_image,\
+    \ from_src, repo, tag, message, input_image, platform)\n    command_results =\
     \ CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef image_get_all_command(client, args):\n    names = argToList(args.get('names',\
-    \ []))\n\n    response = client.image_get_all_request(names)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef image_history_command(client, args):\n    name = str(args.get('name',\
-    \ ''))\n\n    response = client.image_history_request(name)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker.HistoryResponseItem',\n  \
-    \      outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \ command_results\n\n\ndef image_delete_command(client, args):\n    name = str(args.get('name',\
+    \ ''))\n    force = argToBoolean(args.get('force', False))\n    noprune = argToBoolean(args.get('noprune',\
+    \ False))\n\n    response = client.image_delete_request(name, force, noprune)\n\
+    \    command_results = CommandResults(\n        outputs_prefix='Docker.ImageDeleteResponseItem',\n\
+    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\n\ndef image_get_command(client, args):\n\
+    \    name = str(args.get('name', ''))\n\n    response = client.image_get_request(name)\n\
+    \    print (response)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
+    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\n\ndef image_get_all_command(client, args):\n\
+    \    names = argToList(args.get('names', []))\n\n    response = client.image_get_all_request(names)\n\
+    \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
+    \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\n\ndef image_history_command(client, args):\n\
+    \    name = str(args.get('name', ''))\n\n    response = client.image_history_request(name)\n\
+    \    command_results = CommandResults(\n        outputs_prefix='Docker.HistoryResponseItem',\n\
+    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef image_inspect_command(client, args):\n\
     \    name = str(args.get('name', ''))\n\n    response = client.image_inspect_request(name)\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker.Image',\n\
@@ -5996,9 +5787,9 @@ script:
     \ = client.image_list_request(list_all, filters, digests)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker.ImageSummary',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef image_load_command(client, args):\n    imagesTarball\
-    \ = str(args.get('imagesTarball', ''))\n    quiet = argToBoolean(args.get('quiet',\
-    \ False))\n\n    response = client.image_load_request(imagesTarball, quiet)\n\
+    \ command_results\n\n\ndef image_load_command(client, args):\n    images_tarball\
+    \ = str(args.get('images_tarball', ''))\n    quiet = argToBoolean(args.get('quiet',\
+    \ False))\n\n    response = client.image_load_request(images_tarball, quiet)\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
     \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef image_prune_command(client, args):\n\
@@ -6117,39 +5908,40 @@ script:
     \                                      version)\n    command_results = CommandResults(\n\
     \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
     \        raw_response=response\n    )\n\n    return command_results\n\n\ndef plugin_create_command(client,\
-    \ args):\n    name = str(args.get('name', ''))\n    tarContext = str(args.get('tarContext',\
-    \ ''))\n\n    response = client.plugin_create_request(name, tarContext)\n    command_results\
+    \ args):\n    name = str(args.get('name', ''))\n    tar_content = str(args.get('tar_content',\
+    \ ''))\n\n    response = client.plugin_create_request(name, tar_content)\n   \
+    \ command_results = CommandResults(\n        outputs_prefix='Docker',\n      \
+    \  outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\n\ndef plugin_delete_command(client, args):\n\
+    \    name = str(args.get('name', ''))\n    force = argToBoolean(args.get('force',\
+    \ False))\n\n    response = client.plugin_delete_request(name, force)\n    command_results\
+    \ = CommandResults(\n        outputs_prefix='Docker.Plugin',\n        outputs_key_field='',\n\
+    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
+    \ command_results\n\n\ndef plugin_disable_command(client, args):\n    name = str(args.get('name',\
+    \ ''))\n\n    response = client.plugin_disable_request(name)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef plugin_delete_command(client, args):\n    name = str(args.get('name',\
-    \ ''))\n    force = argToBoolean(args.get('force', False))\n\n    response = client.plugin_delete_request(name,\
-    \ force)\n    command_results = CommandResults(\n        outputs_prefix='Docker.Plugin',\n\
+    \ command_results\n\n\ndef plugin_enable_command(client, args):\n    name = str(args.get('name',\
+    \ ''))\n    timeout = int(args.get('timeout', 0))\n\n    response = client.plugin_enable_request(name,\
+    \ timeout)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
     \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_disable_command(client, args):\n\
-    \    name = str(args.get('name', ''))\n\n    response = client.plugin_disable_request(name)\n\
+    \    )\n\n    return command_results\n\n\ndef plugin_inspect_command(client, args):\n\
+    \    name = str(args.get('name', ''))\n\n    response = client.plugin_inspect_request(name)\n\
+    \    command_results = CommandResults(\n        outputs_prefix='Docker.Plugin',\n\
+    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\n\ndef plugin_list_command(client, args):\n\
+    \    filters = str(args.get('filters', ''))\n\n    response = client.plugin_list_request(filters)\n\
+    \    command_results = CommandResults(\n        outputs_prefix='Docker.Plugin',\n\
+    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\n\ndef plugin_pull_command(client, args):\n\
+    \    remote = str(args.get('remote', ''))\n    name = str(args.get('name', ''))\n\
+    \    body_name = str(args.get('body_name', ''))\n    body_description = str(args.get('body_description',\
+    \ ''))\n    body_value = argToList(args.get('body_value', []))\n\n    response\
+    \ = client.plugin_pull_request(remote, name, body_name, body_description, body_value)\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
     \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_enable_command(client, args):\n\
-    \    name = str(args.get('name', ''))\n    timeout = int(args.get('timeout', 0))\n\
-    \n    response = client.plugin_enable_request(name, timeout)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef plugin_inspect_command(client, args):\n    name = str(args.get('name',\
-    \ ''))\n\n    response = client.plugin_inspect_request(name)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker.Plugin',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef plugin_list_command(client, args):\n    filters = str(args.get('filters',\
-    \ ''))\n\n    response = client.plugin_list_request(filters)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker.Plugin',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef plugin_pull_command(client, args):\n    remote = str(args.get('remote',\
-    \ ''))\n    name = str(args.get('name', ''))\n    body_name = str(args.get('body_name',\
-    \ ''))\n    body_description = str(args.get('body_description', ''))\n    body_value\
-    \ = argToList(args.get('body_value', []))\n\n    response = client.plugin_pull_request(remote,\
-    \ name, body_name, body_description, body_value)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef plugin_push_command(client,\
-    \ args):\n    name = str(args.get('name', ''))\n\n    response = client.plugin_push_request(name)\n\
+    \    )\n\n    return command_results\n\n\ndef plugin_push_command(client, args):\n\
+    \    name = str(args.get('name', ''))\n\n    response = client.plugin_push_request(name)\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
     \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef plugin_set_command(client, args):\n\
@@ -6165,10 +5957,10 @@ script:
     \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
     \        raw_response=response\n    )\n\n    return command_results\n\n\ndef put_container_archive_command(client,\
     \ args):\n    id_ = str(args.get('id', ''))\n    path = str(args.get('path', ''))\n\
-    \    noOverwriteDirNonDir = str(args.get('noOverwriteDirNonDir', ''))\n    copyUIDGID\
-    \ = str(args.get('copyUIDGID', ''))\n    input_stream = str(args.get('input_stream',\
-    \ ''))\n\n    response = client.put_container_archive_request(id_, path, noOverwriteDirNonDir,\
-    \ copyUIDGID, input_stream)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
+    \    no_overwrite = str(args.get('no_overwrite', ''))\n    copy_uid_gid = str(args.get('copy_uid_gid',\
+    \ ''))\n    input_stream = str(args.get('input_stream', ''))\n\n    response =\
+    \ client.put_container_archive_request(id_, path, no_overwrite, copy_uid_gid,\
+    \ input_stream)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
     \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef secret_create_command(client, args):\n\
     \    secretspec_name = str(args.get('secretspec_name', ''))\n    secretspec_labels\
@@ -6279,8 +6071,8 @@ script:
     \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
     \ command_results\n\n\ndef service_inspect_command(client, args):\n    id_ = str(args.get('id',\
-    \ ''))\n    insertDefaults = argToBoolean(args.get('insertDefaults', False))\n\
-    \n    response = client.service_inspect_request(id_, insertDefaults)\n    command_results\
+    \ ''))\n    insert_defaults = argToBoolean(args.get('insert_defaults', False))\n\
+    \n    response = client.service_inspect_request(id_, insert_defaults)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker.Service',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
     \ command_results\n\n\ndef service_list_command(client, args):\n    filters =\
@@ -6355,7 +6147,7 @@ script:
     \ ''))\n    servicespec_endpointspec_ports = str(args.get('servicespec_endpointspec_ports',\
     \ ''))\n    servicespec_endpointspec = assign_params(Mode=servicespec_endpointspec_mode,\
     \ Ports=servicespec_endpointspec_ports)\n    version = args.get('version', None)\n\
-    \    registryAuthFrom = str(args.get('registryAuthFrom', 'spec'))\n    rollback\
+    \    registery_auth_from = str(args.get('registery_auth_from', 'spec'))\n    rollback\
     \ = str(args.get('rollback', ''))\n\n    response = client.service_update_request(id_,\
     \ servicespec_name, servicespec_labels, servicespec_tasktemplate,\n          \
     \                                   servicespec_mode,\n                      \
@@ -6363,104 +6155,65 @@ script:
     \                   servicespec_rollbackconfig,\n                            \
     \                 servicespec_networks,\n                                    \
     \         servicespec_endpointspec,\n                                        \
-    \     version, registryAuthFrom, rollback)\n    command_results = CommandResults(\n\
+    \     version, registery_auth_from, rollback)\n    command_results = CommandResults(\n\
     \        outputs_prefix='Docker.ServiceUpdateResponse',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
     \ command_results\n\n\ndef session_command(client, args):\n\n    response = client.session_request()\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
     \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef swarm_init_command(client, args):\n\
-    \    body_1_listenaddr = str(args.get('body_1_listenaddr', ''))\n    body_1_advertiseaddr\
-    \ = str(args.get('body_1_advertiseaddr', ''))\n    body_1_datapathaddr = str(args.get('body_1_datapathaddr',\
-    \ ''))\n    body_1_datapathport = args.get('body_1_datapathport', None)\n    body_1_defaultaddrpool\
-    \ = argToList(args.get('body_1_defaultaddrpool', []))\n    body_1_forcenewcluster\
-    \ = argToBoolean(args.get('body_1_forcenewcluster', False))\n    body_1_subnetsize\
-    \ = args.get('body_1_subnetsize', None)\n    body_1_spec_name = str(args.get('body_1_spec_name',\
-    \ ''))\n    body_1_spec_labels = str(args.get('body_1_spec_labels', ''))\n   \
-    \ body_1_spec_orchestration = str(args.get('body_1_spec_orchestration', ''))\n\
-    \    body_1_spec_raft = str(args.get('body_1_spec_raft', ''))\n    body_1_spec_dispatcher\
-    \ = str(args.get('body_1_spec_dispatcher', ''))\n    body_1_spec_caconfig = str(args.get('body_1_spec_caconfig',\
-    \ ''))\n    body_1_spec_encryptionconfig = str(args.get('body_1_spec_encryptionconfig',\
-    \ ''))\n    body_1_spec_taskdefaults = str(args.get('body_1_spec_taskdefaults',\
-    \ ''))\n    body_1_spec = assign_params(Name=body_1_spec_name, Labels=body_1_spec_labels,\n\
-    \                                Orchestration=body_1_spec_orchestration,\n  \
-    \                              Raft=body_1_spec_raft,\n                      \
-    \          Dispatcher=body_1_spec_dispatcher,\n                              \
-    \  CAConfig=body_1_spec_caconfig,\n                                EncryptionConfig=body_1_spec_encryptionconfig,\n\
-    \                                TaskDefaults=body_1_spec_taskdefaults)\n\n  \
-    \  response = client.swarm_init_request(body_1_listenaddr, body_1_advertiseaddr,\
-    \ body_1_datapathaddr,\n                                         body_1_datapathport,\
-    \ body_1_defaultaddrpool, body_1_forcenewcluster,\n                          \
-    \               body_1_subnetsize, body_1_spec)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef swarm_inspect_command(client,\
+    \    listenaddr = str(args.get('listenaddr', ''))\n    advertiseaddr = str(args.get('advertiseaddr',\
+    \ ''))\n    datapathaddr = str(args.get('datapathaddr', ''))\n    datapathport\
+    \ = args.get('datapathport', None)\n    defaultaddrpool = argToList(args.get('defaultaddrpool',\
+    \ []))\n    forcenewcluster = argToBoolean(args.get('forcenewcluster', False))\n\
+    \    subnetsize = args.get('subnetsize', None)\n    spec_name = str(args.get('spec_name',\
+    \ ''))\n    spec_labels = str(args.get('spec_labels', ''))\n    spec_orchestration\
+    \ = str(args.get('spec_orchestration', ''))\n    spec_raft = str(args.get('spec_raft',\
+    \ ''))\n    spec_dispatcher = str(args.get('spec_dispatcher', ''))\n    spec_caconfig\
+    \ = str(args.get('spec_caconfig', ''))\n    spec_encryptionconfig = str(args.get('spec_encryptionconfig',\
+    \ ''))\n    spec_taskdefaults = str(args.get('spec_taskdefaults', ''))\n    spec\
+    \ = assign_params(Name=spec_name, Labels=spec_labels,\n                      \
+    \   Orchestration=spec_orchestration,\n                         Raft=spec_raft,\n\
+    \                         Dispatcher=spec_dispatcher,\n                      \
+    \   CAConfig=spec_caconfig,\n                         EncryptionConfig=spec_encryptionconfig,\n\
+    \                         TaskDefaults=spec_taskdefaults)\n\n    response = client.swarm_init_request(listenaddr,\
+    \ advertiseaddr, datapathaddr,\n                                         datapathport,\
+    \ defaultaddrpool, forcenewcluster,\n                                        \
+    \ subnetsize, spec)\n    if type(response) == str:\n        response = {\n   \
+    \         \"Node ID\": response\n        }\n        command_results = CommandResults(\n\
+    \            outputs_prefix='Docker.Swarm.Token',\n            outputs_key_field='',\n\
+    \            outputs=response,\n            raw_response=response\n        )\n\
+    \    else:\n        command_results = CommandResults(\n            outputs_prefix='Docker.Swarm.Token',\n\
+    \            outputs_key_field='',\n            outputs=response,\n          \
+    \  raw_response=response\n        )\n    return command_results\n\n\ndef swarm_inspect_command(client,\
     \ args):\n\n    response = client.swarm_inspect_request()\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker.Swarm',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef swarm_join_command(client, args):\n    body_2_listenaddr\
-    \ = str(args.get('body_2_listenaddr', ''))\n    body_2_advertiseaddr = str(args.get('body_2_advertiseaddr',\
-    \ ''))\n    body_2_datapathaddr = str(args.get('body_2_datapathaddr', ''))\n \
-    \   body_2_remoteaddrs = argToList(args.get('body_2_remoteaddrs', []))\n    body_2_jointoken\
-    \ = str(args.get('body_2_jointoken', ''))\n\n    response = client.swarm_join_request(body_2_listenaddr,\
-    \ body_2_advertiseaddr, body_2_datapathaddr,\n                               \
-    \          body_2_remoteaddrs, body_2_jointoken)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef swarm_leave_command(client,\
-    \ args):\n    force = argToBoolean(args.get('force', False))\n\n    response =\
-    \ client.swarm_leave_request(force)\n    command_results = CommandResults(\n \
-    \       outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef swarm_unlock_command(client,\
-    \ args):\n    body_3_unlockkey = str(args.get('body_3_unlockkey', ''))\n\n   \
-    \ response = client.swarm_unlock_request(body_3_unlockkey)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef swarm_unlockkey_command(client, args):\n\n    response\
-    \ = client.swarm_unlockkey_request()\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker.UnlockKeyResponse',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef swarm_update_command(client, args):\n    swarmspec_name\
-    \ = str(args.get('swarmspec_name', ''))\n    swarmspec_labels = str(args.get('swarmspec_labels',\
-    \ ''))\n    swarmspec_orchestration_taskhistoryretentionlimit = args.get('swarmspec_orchestration_taskhistoryretentionlimit',\n\
-    \                                                                 None)\n    swarmspec_orchestration\
-    \ = assign_params(TaskHistoryRetentionLimit=swarmspec_orchestration_taskhistoryretentionlimit)\n\
-    \    swarmspec_raft_snapshotinterval = args.get('swarmspec_raft_snapshotinterval',\
-    \ None)\n    swarmspec_raft_keepoldsnapshots = args.get('swarmspec_raft_keepoldsnapshots',\
-    \ None)\n    swarmspec_raft_logentriesforslowfollowers = args.get('swarmspec_raft_logentriesforslowfollowers',\
-    \ None)\n    swarmspec_raft_electiontick = args.get('swarmspec_raft_electiontick',\
-    \ None)\n    swarmspec_raft_heartbeattick = args.get('swarmspec_raft_heartbeattick',\
-    \ None)\n    swarmspec_raft = assign_params(SnapshotInterval=swarmspec_raft_snapshotinterval,\n\
-    \                                   KeepOldSnapshots=swarmspec_raft_keepoldsnapshots,\n\
-    \                                   LogEntriesForSlowFollowers=swarmspec_raft_logentriesforslowfollowers,\n\
-    \                                   ElectionTick=swarmspec_raft_electiontick,\n\
-    \                                   HeartbeatTick=swarmspec_raft_heartbeattick)\n\
-    \    swarmspec_dispatcher_heartbeatperiod = args.get('swarmspec_dispatcher_heartbeatperiod',\
-    \ None)\n    swarmspec_dispatcher = assign_params(HeartbeatPeriod=swarmspec_dispatcher_heartbeatperiod)\n\
-    \    swarmspec_caconfig_nodecertexpiry = args.get('swarmspec_caconfig_nodecertexpiry',\
-    \ None)\n    swarmspec_caconfig_externalcas = str(args.get('swarmspec_caconfig_externalcas',\
-    \ ''))\n    swarmspec_caconfig_signingcacert = str(args.get('swarmspec_caconfig_signingcacert',\
-    \ ''))\n    swarmspec_caconfig_signingcakey = str(args.get('swarmspec_caconfig_signingcakey',\
-    \ ''))\n    swarmspec_caconfig_forcerotate = args.get('swarmspec_caconfig_forcerotate',\
-    \ None)\n    swarmspec_caconfig = assign_params(NodeCertExpiry=swarmspec_caconfig_nodecertexpiry,\n\
-    \                                       ExternalCAs=swarmspec_caconfig_externalcas,\n\
-    \                                       SigningCACert=swarmspec_caconfig_signingcacert,\n\
-    \                                       SigningCAKey=swarmspec_caconfig_signingcakey,\n\
-    \                                       ForceRotate=swarmspec_caconfig_forcerotate)\n\
-    \    swarmspec_encryptionconfig_autolockmanagers = argToBoolean(args.get('swarmspec_encryptionconfig_autolockmanagers',\n\
-    \                                                                        False))\n\
-    \    swarmspec_encryptionconfig = assign_params(AutoLockManagers=swarmspec_encryptionconfig_autolockmanagers)\n\
-    \    swarmspec_taskdefaults_logdriver = str(args.get('swarmspec_taskdefaults_logdriver',\
-    \ ''))\n    swarmspec_taskdefaults = assign_params(LogDriver=swarmspec_taskdefaults_logdriver)\n\
-    \    version = args.get('version', None)\n    rotateWorkerToken = argToBoolean(args.get('rotateWorkerToken',\
-    \ False))\n    rotateManagerToken = argToBoolean(args.get('rotateManagerToken',\
-    \ False))\n    rotateManagerUnlockKey = argToBoolean(args.get('rotateManagerUnlockKey',\
-    \ False))\n\n    response = client.swarm_update_request(swarmspec_name, swarmspec_labels,\
-    \ swarmspec_orchestration, swarmspec_raft,\n                                 \
-    \          swarmspec_dispatcher, swarmspec_caconfig, swarmspec_encryptionconfig,\n\
-    \                                           swarmspec_taskdefaults, version, rotateWorkerToken,\
-    \ rotateManagerToken,\n                                           rotateManagerUnlockKey)\n\
+    \ command_results\n\n\ndef swarm_join_command(client, args):\n    listenaddr =\
+    \ str(args.get('listenaddr', ''))\n    advertiseaddr = str(args.get('advertiseaddr',\
+    \ ''))\n    datapathaddr = str(args.get('datapathaddr', ''))\n    remoteaddrs\
+    \ = argToList(args.get('remoteaddrs', []))\n    jointoken = str(args.get('jointoken',\
+    \ ''))\n\n    response = client.swarm_join_request(listenaddr, advertiseaddr,\
+    \ datapathaddr,\n                                         remoteaddrs, jointoken)\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
     \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef system_auth_command(client, args):\n\
+    \    )\n\n    return command_results\n\n\ndef swarm_leave_command(client, args):\n\
+    \    force = argToBoolean(args.get('force', False))\n\n    response = client.swarm_leave_request(force)\n\
+    \n    if type(response) == dict:\n        command_results = CommandResults(\n\
+    \            outputs_prefix='Docker',\n            outputs_key_field='',\n   \
+    \         outputs=response,\n            raw_response=response\n        )\n  \
+    \  else:\n        response = {\n            \"message\": \"Swarm node left.\"\n\
+    \        }\n        command_results = CommandResults(\n            outputs_prefix='Docker',\n\
+    \            outputs_key_field='',\n            outputs=response,\n          \
+    \  raw_response=response\n        )\n\n    return command_results\n\n\ndef swarm_unlock_command(client,\
+    \ args):\n    unlockkey = str(args.get('unlockkey', ''))\n\n    response = client.swarm_unlock_request(unlockkey)\n\
+    \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
+    \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\n\ndef swarm_unlockkey_command(client,\
+    \ args):\n\n    response = client.swarm_unlockkey_request()\n    command_results\
+    \ = CommandResults(\n        outputs_prefix='Docker.UnlockKeyResponse',\n    \
+    \    outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    )\n\n    return command_results\n\ndef system_auth_command(client, args):\n\
     \    authconfig_username = str(args.get('authconfig_username', ''))\n    authconfig_password\
     \ = str(args.get('authconfig_password', ''))\n    authconfig_email = str(args.get('authconfig_email',\
     \ ''))\n    authconfig_serveraddress = str(args.get('authconfig_serveraddress',\
@@ -6534,39 +6287,40 @@ script:
     \    command_results = CommandResults(\n        outputs_prefix='Docker.VolumePruneResponse',\n\
     \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef test_module(client):\n    # Test\
-    \ functions here\n    demisto.results('ok')\n\n\ndef main():\n\n    params = demisto.params()\n\
-    \    args = demisto.args()\n    url = params.get('url')\n    verify_certificate\
-    \ = not params.get('insecure', False)\n    proxy = params.get('proxy', False)\n\
-    \    headers = {'Authorization': f'{params[\"api_key\"]}'}\n\n    command = demisto.command()\n\
+    \ functions here\n    response = client.test_request()\n    if response.get('Platform'):\n\
+    \        demisto.results('ok')\n    else:\n        demisto.results(response)\n\
+    \n\ndef main():\n\n    params = demisto.params()\n    args = demisto.args()\n\
+    \    url = params.get('url')\n    client_cert = params.get('client_certificate')\n\
+    \    client_key = params.get('client_key')\n    verify_certificate = not params.get('insecure',\
+    \ False)\n    proxy = params.get('proxy', False)\n\n    command = demisto.command()\n\
     \    LOG(f'Command being called is {command}')\n\n    try:\n        urllib3.disable_warnings()\n\
     \        client = Client(urljoin(url, \"/v1.41\"), verify_certificate, proxy,\
-    \ headers=headers, auth=None)\n        commands = {\n            'docker-build-prune':\
-    \ build_prune_command,\n            'docker-config-create': config_create_command,\n\
-    \            'docker-config-delete': config_delete_command,\n            'docker-config-inspect':\
+    \ headers=None,\n                        client_cert=client_cert, client_key=client_key)\n\
+    \        commands = {\n            'docker-build-prune': build_prune_command,\n\
+    \            'docker-config-create': config_create_command,\n            'docker-config-inspect':\
     \ config_inspect_command,\n            'docker-config-list': config_list_command,\n\
-    \            'docker-config-update': config_update_command,\n            'docker-container-archive':\
-    \ container_archive_command,\n            'docker-container-archive-info': container_archive_info_command,\n\
-    \            'docker-container-attach': container_attach_command,\n          \
-    \  'docker-container-attach-websocket': container_attach_websocket_command,\n\
-    \            'docker-container-changes': container_changes_command,\n        \
-    \    'docker-container-create': container_create_command,\n            'docker-container-delete':\
-    \ container_delete_command,\n            'docker-container-exec': container_exec_command,\n\
-    \            'docker-container-export': container_export_command,\n          \
-    \  'docker-container-inspect': container_inspect_command,\n            'docker-container-kill':\
-    \ container_kill_command,\n            'docker-container-list': container_list_command,\n\
-    \            'docker-container-logs': container_logs_command,\n            'docker-container-pause':\
-    \ container_pause_command,\n            'docker-container-prune': container_prune_command,\n\
-    \            'docker-container-rename': container_rename_command,\n          \
-    \  'docker-container-resize': container_resize_command,\n            'docker-container-restart':\
-    \ container_restart_command,\n            'docker-container-start': container_start_command,\n\
-    \            'docker-container-stats': container_stats_command,\n            'docker-container-stop':\
-    \ container_stop_command,\n            'docker-container-top': container_top_command,\n\
-    \            'docker-container-unpause': container_unpause_command,\n        \
-    \    'docker-container-update': container_update_command,\n            'docker-container-wait':\
-    \ container_wait_command,\n            'docker-distribution-inspect': distribution_inspect_command,\n\
-    \            'docker-exec-inspect': exec_inspect_command,\n            'docker-exec-resize':\
-    \ exec_resize_command,\n            'docker-exec-start': exec_start_command,\n\
-    \            'docker-get-plugin-privileges': get_plugin_privileges_command,\n\
+    \            'docker-container-archive': container_archive_command,\n        \
+    \    'docker-container-archive-info': container_archive_info_command,\n      \
+    \      'docker-container-attach': container_attach_command,\n            'docker-container-attach-websocket':\
+    \ container_attach_websocket_command,\n            'docker-container-changes':\
+    \ container_changes_command,\n            'docker-container-create': container_create_command,\n\
+    \            'docker-container-delete': container_delete_command,\n          \
+    \  'docker-container-exec': container_exec_command,\n            'docker-container-export':\
+    \ container_export_command,\n            'docker-container-inspect': container_inspect_command,\n\
+    \            'docker-container-kill': container_kill_command,\n            'docker-container-list':\
+    \ container_list_command,\n            'docker-container-logs': container_logs_command,\n\
+    \            'docker-container-pause': container_pause_command,\n            'docker-container-prune':\
+    \ container_prune_command,\n            'docker-container-rename': container_rename_command,\n\
+    \            'docker-container-resize': container_resize_command,\n          \
+    \  'docker-container-restart': container_restart_command,\n            'docker-container-start':\
+    \ container_start_command,\n            'docker-container-stats': container_stats_command,\n\
+    \            'docker-container-stop': container_stop_command,\n            'docker-container-top':\
+    \ container_top_command,\n            'docker-container-unpause': container_unpause_command,\n\
+    \            'docker-container-update': container_update_command,\n          \
+    \  'docker-container-wait': container_wait_command,\n            'docker-distribution-inspect':\
+    \ distribution_inspect_command,\n            'docker-exec-inspect': exec_inspect_command,\n\
+    \            'docker-exec-resize': exec_resize_command,\n            'docker-exec-start':\
+    \ exec_start_command,\n            'docker-get-plugin-privileges': get_plugin_privileges_command,\n\
     \            'docker-image-build': image_build_command,\n            'docker-image-commit':\
     \ image_commit_command,\n            'docker-image-create': image_create_command,\n\
     \            'docker-image-delete': image_delete_command,\n            'docker-image-get':\
@@ -6603,12 +6357,11 @@ script:
     \ swarm_inspect_command,\n            'docker-swarm-join': swarm_join_command,\n\
     \            'docker-swarm-leave': swarm_leave_command,\n            'docker-swarm-unlock':\
     \ swarm_unlock_command,\n            'docker-swarm-unlockkey': swarm_unlockkey_command,\n\
-    \            'docker-swarm-update': swarm_update_command,\n            'docker-system-auth':\
-    \ system_auth_command,\n            'docker-system-data-usage': system_data_usage_command,\n\
-    \            'docker-system-events': system_events_command,\n            'docker-system-info':\
-    \ system_info_command,\n            'docker-system-ping': system_ping_command,\n\
-    \            'docker-system-ping-head': system_ping_head_command,\n          \
-    \  'docker-system-version': system_version_command,\n            'docker-task-inspect':\
+    \            'docker-system-auth': system_auth_command,\n            'docker-system-data-usage':\
+    \ system_data_usage_command,\n            'docker-system-events': system_events_command,\n\
+    \            'docker-system-info': system_info_command,\n            'docker-system-ping':\
+    \ system_ping_command,\n            'docker-system-ping-head': system_ping_head_command,\n\
+    \            'docker-system-version': system_version_command,\n            'docker-task-inspect':\
     \ task_inspect_command,\n            'docker-task-list': task_list_command,\n\
     \            'docker-task-logs': task_logs_command,\n            'docker-volume-create':\
     \ volume_create_command,\n            'docker-volume-delete': volume_delete_command,\n\
