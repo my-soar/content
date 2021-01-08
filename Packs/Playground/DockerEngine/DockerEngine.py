@@ -85,46 +85,6 @@ class Client:
 
         return response
 
-    def container_archive_request(self, id_, path):
-        params = assign_params(path=path)
-
-        headers = self._headers
-        headers['Accept'] = 'application/x-tar'
-
-        response = self._http_request('get', f'containers/{id_}/archive', params=params, headers=headers)
-
-        return response
-
-    def container_archive_info_request(self, id_, path):
-        params = assign_params(path=path)
-
-        headers = self._headers
-
-        response = self._http_request('head', f'containers/{id_}/archive', params=params, headers=headers)
-
-        return response
-
-    def container_attach_request(self, id_, detach_keys, logs, stream, stdin, stdout, stderr):
-        params = assign_params(detach_keys=detach_keys, logs=logs,
-                               stream=stream, stdin=stdin, stdout=stdout, stderr=stderr)
-
-        headers = self._headers
-        headers['Accept'] = 'application/vnd.docker.raw-stream'
-
-        response = self._http_request('post', f'containers/{id_}/attach', params=params, headers=headers)
-
-        return response
-
-    def container_attach_websocket_request(self, id_, detach_keys, logs, stream, stdin, stdout, stderr):
-        params = assign_params(detach_keys=detach_keys, logs=logs,
-                               stream=stream, stdin=stdin, stdout=stdout, stderr=stderr)
-
-        headers = self._headers
-
-        response = self._http_request('get', f'containers/{id_}/attach/ws', params=params, headers=headers)
-
-        return response
-
     def container_changes_request(self, id_):
 
         headers = self._headers
@@ -449,15 +409,6 @@ class Client:
 
         return response
 
-    def get_plugin_privileges_request(self, remote):
-        params = assign_params(remote=remote)
-
-        headers = self._headers
-
-        response = self._http_request('get', 'plugins/privileges', params=params, headers=headers)
-
-        return response
-
     def image_build_request(self, input_stream, dockerfile, t, extrahosts, remote, q, nocache, cachefrom, pull, rm,
                             forcerm, memory, memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize,
                             squash, labels, networkmode, platform, target, outputs):
@@ -653,8 +604,8 @@ class Client:
 
         return response
 
-    def network_disconnect_request(self, id_, container_1_container, container_1_force):
-        data = assign_params(Container=container_1_container, Force=container_1_force)
+    def network_disconnect_request(self, id_, container, force):
+        data = assign_params(Container=container, Force=force)
 
         headers = self._headers
 
@@ -723,109 +674,6 @@ class Client:
         headers = self._headers
 
         response = self._http_request('post', f'nodes/{id_}/update', params=params, json_data=data, headers=headers)
-
-        return response
-
-    def plugin_create_request(self, name, tar_content):
-        params = assign_params(name=name)
-        data = assign_params(tar_content=tar_content)
-
-        headers = self._headers
-        headers['Content-Type'] = 'application/x-tar'
-
-        response = self._http_request('post', 'plugins/create', params=params, json_data=data, headers=headers)
-
-        return response
-
-    def plugin_delete_request(self, name, force):
-        params = assign_params(force=force)
-
-        headers = self._headers
-
-        response = self._http_request('delete', f'plugins/{name}', params=params, headers=headers)
-
-        return response
-
-    def plugin_disable_request(self, name):
-
-        headers = self._headers
-
-        response = self._http_request('post', f'plugins/{name}/disable', headers=headers)
-
-        return response
-
-    def plugin_enable_request(self, name, timeout):
-        params = assign_params(timeout=timeout)
-
-        headers = self._headers
-
-        response = self._http_request('post', f'plugins/{name}/enable', params=params, headers=headers)
-
-        return response
-
-    def plugin_inspect_request(self, name):
-
-        headers = self._headers
-
-        response = self._http_request('get', f'plugins/{name}/json', headers=headers)
-
-        return response
-
-    def plugin_list_request(self, filters):
-        params = assign_params(filters=filters)
-
-        headers = self._headers
-
-        response = self._http_request('get', 'plugins', params=params, headers=headers)
-
-        return response
-
-    def plugin_pull_request(self, remote, name, body_name, body_description, body_value):
-        params = assign_params(remote=remote, name=name)
-        data = assign_params(Name=body_name, Description=body_description, Value=body_value)
-
-        headers = self._headers
-
-        response = self._http_request('post', 'plugins/pull', params=params, json_data=data, headers=headers)
-
-        return response
-
-    def plugin_push_request(self, name):
-
-        headers = self._headers
-
-        response = self._http_request('post', f'plugins/{name}/push', headers=headers)
-
-        return response
-
-    def plugin_set_request(self, name, body):
-        data = assign_params(body=body)
-
-        headers = self._headers
-
-        response = self._http_request('post', f'plugins/{name}/set', json_data=data, headers=headers)
-
-        return response
-
-    def plugin_upgrade_request(self, name, remote, body_name, body_description, body_value):
-        params = assign_params(remote=remote)
-        data = assign_params(Name=body_name, Description=body_description, Value=body_value)
-
-        headers = self._headers
-
-        response = self._http_request('post', f'plugins/{name}/upgrade', params=params, json_data=data, headers=headers)
-
-        return response
-
-    def put_container_archive_request(self, id_, path, no_overwrite, copy_uid_gid, input_stream):
-        params = assign_params(path=path, no_overwrite=no_overwrite, copy_uid_gid=copy_uid_gid)
-        data = assign_params(input_stream=input_stream)
-
-        headers = self._headers
-        headers['Content-Type'] = 'application/x-tar'
-
-        response = self._http_request('put', f'containers/{id_}/archive', params=params, json_data=data,
-                                      headers=headers)
 
         return response
 
@@ -1199,76 +1047,6 @@ def config_list_command(client, args):
     response = client.config_list_request(filters)
     command_results = CommandResults(
         outputs_prefix='Docker.Config',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def container_archive_command(client, args):
-    id_ = str(args.get('id', ''))
-    path = str(args.get('path', ''))
-
-    response = client.container_archive_request(id_, path)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def container_archive_info_command(client, args):
-    id_ = str(args.get('id', ''))
-    path = str(args.get('path', ''))
-
-    response = client.container_archive_info_request(id_, path)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def container_attach_command(client, args):
-    id_ = str(args.get('id', ''))
-    detach_keys = str(args.get('detach_keys', ''))
-    logs = argToBoolean(args.get('logs', False))
-    stream = argToBoolean(args.get('stream', False))
-    stdin = argToBoolean(args.get('stdin', False))
-    stdout = argToBoolean(args.get('stdout', False))
-    stderr = argToBoolean(args.get('stderr', False))
-
-    response = client.container_attach_request(id_, detach_keys, logs, stream, stdin, stdout, stderr)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def container_attach_websocket_command(client, args):
-    id_ = str(args.get('id', ''))
-    detach_keys = str(args.get('detach_keys', ''))
-    logs = argToBoolean(args.get('logs', False))
-    stream = argToBoolean(args.get('stream', False))
-    stdin = argToBoolean(args.get('stdin', False))
-    stdout = argToBoolean(args.get('stdout', False))
-    stderr = argToBoolean(args.get('stderr', False))
-
-    response = client.container_attach_websocket_request(id_, detach_keys, logs, stream, stdin, stdout, stderr)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -2277,10 +2055,10 @@ def network_delete_command(client, args):
 
 def network_disconnect_command(client, args):
     id_ = str(args.get('id', ''))
-    container_1_container = str(args.get('container_1_container', ''))
-    container_1_force = argToBoolean(args.get('container_1_force', False))
+    container = str(args.get('container', ''))
+    force = argToBoolean(args.get('force', False))
 
-    response = client.network_disconnect_request(id_, container_1_container, container_1_force)
+    response = client.network_disconnect_request(id_, container, force)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -2388,176 +2166,6 @@ def node_update_command(client, args):
 
     response = client.node_update_request(id_, nodespec_name, nodespec_labels, nodespec_role, nodespec_availability,
                                           version)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_create_command(client, args):
-    name = str(args.get('name', ''))
-    tar_content = str(args.get('tar_content', ''))
-
-    response = client.plugin_create_request(name, tar_content)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_delete_command(client, args):
-    name = str(args.get('name', ''))
-    force = argToBoolean(args.get('force', False))
-
-    response = client.plugin_delete_request(name, force)
-    command_results = CommandResults(
-        outputs_prefix='Docker.Plugin',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_disable_command(client, args):
-    name = str(args.get('name', ''))
-
-    response = client.plugin_disable_request(name)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_enable_command(client, args):
-    name = str(args.get('name', ''))
-    timeout = int(args.get('timeout', 0))
-
-    response = client.plugin_enable_request(name, timeout)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_inspect_command(client, args):
-    name = str(args.get('name', ''))
-
-    response = client.plugin_inspect_request(name)
-    command_results = CommandResults(
-        outputs_prefix='Docker.Plugin',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_list_command(client, args):
-    filters = str(args.get('filters', ''))
-
-    response = client.plugin_list_request(filters)
-    command_results = CommandResults(
-        outputs_prefix='Docker.Plugin',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_pull_command(client, args):
-    remote = str(args.get('remote', ''))
-    name = str(args.get('name', ''))
-    body_name = str(args.get('body_name', ''))
-    body_description = str(args.get('body_description', ''))
-    body_value = argToList(args.get('body_value', []))
-
-    response = client.plugin_pull_request(remote, name, body_name, body_description, body_value)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_push_command(client, args):
-    name = str(args.get('name', ''))
-
-    response = client.plugin_push_request(name)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_set_command(client, args):
-    name = str(args.get('name', ''))
-    body = argToList(args.get('body', []))
-
-    response = client.plugin_set_request(name, body)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def plugin_upgrade_command(client, args):
-    name = str(args.get('name', ''))
-    remote = str(args.get('remote', ''))
-    body_name = str(args.get('body_name', ''))
-    body_description = str(args.get('body_description', ''))
-    body_value = argToList(args.get('body_value', []))
-
-    response = client.plugin_upgrade_request(name, remote, body_name, body_description, body_value)
-    command_results = CommandResults(
-        outputs_prefix='Docker',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def put_container_archive_command(client, args):
-    id_ = str(args.get('id', ''))
-    path = str(args.get('path', ''))
-    no_overwrite = str(args.get('no_overwrite', ''))
-    copy_uid_gid = str(args.get('copy_uid_gid', ''))
-    input_stream = str(args.get('input_stream', ''))
-
-    response = client.put_container_archive_request(id_, path, no_overwrite, copy_uid_gid, input_stream)
     command_results = CommandResults(
         outputs_prefix='Docker',
         outputs_key_field='',
@@ -3274,10 +2882,6 @@ def main():
             'docker-config-create': config_create_command,
             'docker-config-inspect': config_inspect_command,
             'docker-config-list': config_list_command,
-            'docker-container-archive': container_archive_command,
-            'docker-container-archive-info': container_archive_info_command,
-            'docker-container-attach': container_attach_command,
-            'docker-container-attach-websocket': container_attach_websocket_command,
             'docker-container-changes': container_changes_command,
             'docker-container-create': container_create_command,
             'docker-container-delete': container_delete_command,
@@ -3303,7 +2907,6 @@ def main():
             'docker-exec-inspect': exec_inspect_command,
             'docker-exec-resize': exec_resize_command,
             'docker-exec-start': exec_start_command,
-            'docker-get-plugin-privileges': get_plugin_privileges_command,
             'docker-image-build': image_build_command,
             'docker-image-commit': image_commit_command,
             'docker-image-create': image_create_command,
@@ -3329,17 +2932,6 @@ def main():
             'docker-node-inspect': node_inspect_command,
             'docker-node-list': node_list_command,
             'docker-node-update': node_update_command,
-            'docker-plugin-create': plugin_create_command,
-            'docker-plugin-delete': plugin_delete_command,
-            'docker-plugin-disable': plugin_disable_command,
-            'docker-plugin-enable': plugin_enable_command,
-            'docker-plugin-inspect': plugin_inspect_command,
-            'docker-plugin-list': plugin_list_command,
-            'docker-plugin-pull': plugin_pull_command,
-            'docker-plugin-push': plugin_push_command,
-            'docker-plugin-set': plugin_set_command,
-            'docker-plugin-upgrade': plugin_upgrade_command,
-            'docker-put-container-archive': put_container_archive_command,
             'docker-secret-create': secret_create_command,
             'docker-secret-delete': secret_delete_command,
             'docker-secret-inspect': secret_inspect_command,
@@ -3386,6 +2978,7 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+
 
 
 

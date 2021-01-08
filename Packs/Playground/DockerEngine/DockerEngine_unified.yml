@@ -148,141 +148,6 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
-      description: Resource in the container’s filesystem to archive.
-      isArray: false
-      name: path
-      required: true
-      secret: false
-    deprecated: false
-    description: Get an archive of a filesystem resource in a container
-    execution: false
-    name: docker-container-archive
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Resource in the container’s filesystem to archive.
-      isArray: false
-      name: path
-      required: true
-      secret: false
-    deprecated: false
-    description: Get information about files in a container
-    execution: false
-    name: docker-container-archive-info
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: 'Override the key sequence for detaching a container.Format is
-        a single character `[a-Z]` or `ctrl- value ` where ` value ` is one of: `a-z`,
-        `@`, `^`, `[`, `,` or `_`. '
-      isArray: false
-      name: detach_keys
-      required: false
-      secret: false
-    - default: false
-      description: 'Replay previous logs from the container.  This is useful for attaching
-        to a container that has started and you want to output everything since the
-        container started.  If `stream` is also enabled, once all the previous output
-        has been returned, it will seamlessly transition into streaming current output. '
-      isArray: false
-      name: logs
-      required: false
-      secret: false
-    - default: false
-      description: 'Stream attached streams from the time the request was made onwards. '
-      isArray: false
-      name: stream
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stdin`
-      isArray: false
-      name: stdin
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stdout`
-      isArray: false
-      name: stdout
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stderr`
-      isArray: false
-      name: stderr
-      required: false
-      secret: false
-    deprecated: false
-    description: Attach to a container
-    execution: false
-    name: docker-container-attach
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: 'Override the key sequence for detaching a container.Format is
-        a single character `[a-Z]` or `ctrl- value ` where ` value ` is one of: `a-z`,
-        `@`, `^`, `[`, `,`, or `_`. '
-      isArray: false
-      name: detach_keys
-      required: false
-      secret: false
-    - default: false
-      description: Return logs
-      isArray: false
-      name: logs
-      required: false
-      secret: false
-    - default: false
-      description: Return stream
-      isArray: false
-      name: stream
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stdin`
-      isArray: false
-      name: stdin
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stdout`
-      isArray: false
-      name: stdout
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stderr`
-      isArray: false
-      name: stderr
-      required: false
-      secret: false
-    deprecated: false
-    description: Attach to a container via a websocket
-    execution: false
-    name: docker-container-attach-websocket
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
     deprecated: false
     description: Get changes on a container’s filesystem
     execution: false
@@ -1656,23 +1521,6 @@ script:
     name: docker-exec-start
   - arguments:
     - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: remote
-      required: true
-      secret: false
-    deprecated: false
-    description: Get plugin privileges
-    execution: false
-    name: docker-get-plugin-privileges
-    outputs:
-    - contextPath: Docker.PluginPrivilegeItem.Name
-      type: String
-    - contextPath: Docker.PluginPrivilegeItem.Description
-      type: String
-  - arguments:
-    - default: false
       description: 'A tar archive compressed with one of the following algorithms:
         identity (no compression), gzip, bzip2, xz.'
       isArray: false
@@ -2646,13 +2494,13 @@ script:
     - default: false
       description: 'The ID or name of the container to disconnect from the network. '
       isArray: false
-      name: container_1_container
+      name: container
       required: false
       secret: false
     - default: false
       description: 'Force the container to disconnect from the network. '
       isArray: false
-      name: container_1_force
+      name: force
       required: false
       secret: false
     deprecated: false
@@ -2891,288 +2739,6 @@ script:
     description: Update a node
     execution: false
     name: docker-node-update
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: Path to tar containing plugin rootfs and manifest
-      isArray: false
-      name: tar_content
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a plugin
-    execution: false
-    name: docker-plugin-create
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: 'Disable the plugin before removing. This may result in issues
-        if the plugin is in use by a container. '
-      isArray: false
-      name: force
-      required: false
-      secret: false
-    deprecated: false
-    description: Remove a plugin
-    execution: false
-    name: docker-plugin-delete
-    outputs:
-    - contextPath: Docker.Plugin.Id
-      type: String
-    - contextPath: Docker.Plugin.Name
-      type: String
-    - contextPath: Docker.Plugin.Enabled
-      description: True if the plugin is running. False if the plugin is not running,
-        only installed.
-      type: Boolean
-    - contextPath: Docker.Plugin.PluginReference
-      description: plugin remote reference used to push/pull the plugin
-      type: String
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: false
-    description: Disable a plugin
-    execution: false
-    name: docker-plugin-disable
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: Set the HTTP client timeout (in seconds)
-      isArray: false
-      name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Enable a plugin
-    execution: false
-    name: docker-plugin-enable
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: false
-    description: Inspect a plugin
-    execution: false
-    name: docker-plugin-inspect
-    outputs:
-    - contextPath: Docker.Plugin.Id
-      type: String
-    - contextPath: Docker.Plugin.Name
-      type: String
-    - contextPath: Docker.Plugin.Enabled
-      description: True if the plugin is running. False if the plugin is not running,
-        only installed.
-      type: Boolean
-    - contextPath: Docker.Plugin.PluginReference
-      description: plugin remote reference used to push/pull the plugin
-      type: String
-  - arguments:
-    - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the plugin list.  Available filters:  - `capability= capability
-        name ` - `enable= true | false ` '
-      isArray: false
-      name: filters
-      required: false
-      secret: false
-    deprecated: false
-    description: List plugins
-    execution: false
-    name: docker-plugin-list
-    outputs:
-    - contextPath: Docker.Plugin.Id
-      type: String
-    - contextPath: Docker.Plugin.Name
-      type: String
-    - contextPath: Docker.Plugin.Enabled
-      description: True if the plugin is running. False if the plugin is not running,
-        only installed.
-      type: Boolean
-    - contextPath: Docker.Plugin.PluginReference
-      description: plugin remote reference used to push/pull the plugin
-      type: String
-  - arguments:
-    - default: false
-      description: 'Remote reference for plugin to install.  The `:latest` tag is
-        optional, and is used as the default if omitted. '
-      isArray: false
-      name: remote
-      required: true
-      secret: false
-    - default: false
-      description: 'Local name for the pulled plugin.  The `:latest` tag is optional,
-        and is used as the default if omitted. '
-      isArray: false
-      name: name
-      required: false
-      secret: false
-    - default: false
-      description: 'A base64url-encoded auth configuration to use when pulling a plugin
-        from a registry.  Refer to the [authentication section](#section/Authentication)
-        for details. '
-      isArray: false
-      name: X-Registry-Auth
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: body_name
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: body_description
-      required: false
-      secret: false
-    - default: false
-      isArray: true
-      name: body_value
-      required: false
-      secret: false
-    deprecated: false
-    description: Install a plugin
-    execution: false
-    name: docker-plugin-pull
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: false
-    description: Push a plugin
-    execution: false
-    name: docker-plugin-push
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      isArray: true
-      name: body
-      required: false
-      secret: false
-    deprecated: false
-    description: Configure a plugin
-    execution: false
-    name: docker-plugin-set
-  - arguments:
-    - default: false
-      description: 'The name of the plugin. The `:latest` tag is optional, and is
-        the default if omitted. '
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: 'Remote reference to upgrade to.  The `:latest` tag is optional,
-        and is used as the default if omitted. '
-      isArray: false
-      name: remote
-      required: true
-      secret: false
-    - default: false
-      description: 'A base64url-encoded auth configuration to use when pulling a plugin
-        from a registry.  Refer to the [authentication section](#section/Authentication)
-        for details. '
-      isArray: false
-      name: X-Registry-Auth
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: body_name
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: body_description
-      required: false
-      secret: false
-    - default: false
-      isArray: true
-      name: body_value
-      required: false
-      secret: false
-    deprecated: false
-    description: Upgrade a plugin
-    execution: false
-    name: docker-plugin-upgrade
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: 'Path to a directory in the container to extract the archive’s
-        contents into. '
-      isArray: false
-      name: path
-      required: true
-      secret: false
-    - default: false
-      description: 'If `1`, `true`, or `True` then it will be an error if unpacking
-        the given content would cause an existing directory to be replaced with a
-        non-directory and vice versa. '
-      isArray: false
-      name: no_overwrite
-      required: false
-      secret: false
-    - default: false
-      description: 'If `1`, `true`, then it will copy UID/GID maps to the dest file
-        or dir '
-      isArray: false
-      name: copy_uid_gid
-      required: false
-      secret: false
-    - default: false
-      description: 'The input stream must be a tar archive compressed with one of
-        the following algorithms: `identity` (no compression), `gzip`, `bzip2`, or
-        `xz`. '
-      isArray: false
-      name: input_stream
-      required: true
-      secret: false
-    deprecated: false
-    description: Extract an archive of files or folders to a directory in a container
-    execution: false
-    name: docker-put-container-archive
   - arguments:
     - default: false
       description: User-defined name of the secret.
@@ -4783,65 +4349,48 @@ script:
     \n        return response\n\n    def config_list_request(self, filters):\n   \
     \     params = assign_params(filters=filters)\n\n        headers = self._headers\n\
     \n        response = self._http_request('get', 'configs', params=params, headers=headers)\n\
-    \n        return response\n\n    def container_archive_request(self, id_, path):\n\
-    \        params = assign_params(path=path)\n\n        headers = self._headers\n\
-    \        headers['Accept'] = 'application/x-tar'\n\n        response = self._http_request('get',\
-    \ f'containers/{id_}/archive', params=params, headers=headers)\n\n        return\
-    \ response\n\n    def container_archive_info_request(self, id_, path):\n     \
-    \   params = assign_params(path=path)\n\n        headers = self._headers\n\n \
-    \       response = self._http_request('head', f'containers/{id_}/archive', params=params,\
-    \ headers=headers)\n\n        return response\n\n    def container_attach_request(self,\
-    \ id_, detach_keys, logs, stream, stdin, stdout, stderr):\n        params = assign_params(detach_keys=detach_keys,\
-    \ logs=logs,\n                               stream=stream, stdin=stdin, stdout=stdout,\
-    \ stderr=stderr)\n\n        headers = self._headers\n        headers['Accept']\
-    \ = 'application/vnd.docker.raw-stream'\n\n        response = self._http_request('post',\
-    \ f'containers/{id_}/attach', params=params, headers=headers)\n\n        return\
-    \ response\n\n    def container_attach_websocket_request(self, id_, detach_keys,\
-    \ logs, stream, stdin, stdout, stderr):\n        params = assign_params(detach_keys=detach_keys,\
-    \ logs=logs,\n                               stream=stream, stdin=stdin, stdout=stdout,\
-    \ stderr=stderr)\n\n        headers = self._headers\n\n        response = self._http_request('get',\
-    \ f'containers/{id_}/attach/ws', params=params, headers=headers)\n\n        return\
-    \ response\n\n    def container_changes_request(self, id_):\n\n        headers\
-    \ = self._headers\n\n        response = self._http_request('get', f'containers/{id_}/changes',\
-    \ headers=headers)\n\n        return response\n\n    def container_create_request(self,\
-    \ name, containerconfig_hostname,\n                                 containerconfig_domainname,\
-    \ containerconfig_user,\n                                 containerconfig_attachstdin,\
-    \ containerconfig_attachstdout,\n                                 containerconfig_attachstderr,\
-    \ containerconfig_exposedports,\n                                 containerconfig_tty,\
-    \ containerconfig_openstdin, containerconfig_stdinonce,\n                    \
-    \             containerconfig_env, containerconfig_cmd, containerconfig_healthcheck,\n\
-    \                                 containerconfig_argsescaped, containerconfig_image,\
-    \ containerconfig_volumes,\n                                 containerconfig_workingdir,\
-    \ containerconfig_entrypoint,\n                                 containerconfig_networkdisabled,\
-    \ containerconfig_macaddress,\n                                 containerconfig_onbuild,\
-    \ containerconfig_labels,\n                                 containerconfig_stopsignal,\
-    \ containerconfig_stoptimeout,\n                                 containerconfig_shell,\
-    \ hostconfig_binds, hostconfig_containeridfile,\n                            \
-    \     hostconfig_logconfig, hostconfig_networkmode, hostconfig_portbindings,\n\
-    \                                 hostconfig_restartpolicy, hostconfig_autoremove,\
-    \ hostconfig_volumedriver,\n                                 hostconfig_volumesfrom,\
-    \ hostconfig_mounts, hostconfig_capadd,\n                                 hostconfig_capdrop,\
-    \ hostconfig_cgroupnsmode, hostconfig_dns,\n                                 hostconfig_dnsoptions,\
-    \ hostconfig_dnssearch, hostconfig_extrahosts,\n                             \
-    \    hostconfig_groupadd, hostconfig_ipcmode, hostconfig_cgroup, hostconfig_links,\n\
-    \                                 hostconfig_oomscoreadj, hostconfig_pidmode,\
-    \ hostconfig_privileged,\n                                 hostconfig_publishallports,\
-    \ hostconfig_readonlyrootfs, hostconfig_securityopt,\n                       \
-    \          hostconfig_storageopt, hostconfig_tmpfs, hostconfig_utsmode,\n    \
-    \                             hostconfig_usernsmode, hostconfig_shmsize, hostconfig_sysctls,\n\
-    \                                 hostconfig_runtime, hostconfig_consolesize,\
-    \ hostconfig_isolation,\n                                 hostconfig_maskedpaths,\
-    \ hostconfig_readonlypaths,\n                                 networkingconfig_endpointsconfig):\n\
-    \        params = assign_params(name=name)\n        data = assign_params(Hostname=containerconfig_hostname,\
-    \ Domainname=containerconfig_domainname,\n                             User=containerconfig_user,\
-    \ AttachStdin=containerconfig_attachstdin,\n                             AttachStdout=containerconfig_attachstdout,\
-    \ AttachStderr=containerconfig_attachstderr,\n                             ExposedPorts=containerconfig_exposedports,\
-    \ Tty=containerconfig_tty,\n                             OpenStdin=containerconfig_openstdin,\
-    \ StdinOnce=containerconfig_stdinonce,\n                             Env=containerconfig_env,\
-    \ Cmd=containerconfig_cmd,\n                             Healthcheck=containerconfig_healthcheck,\
-    \ ArgsEscaped=containerconfig_argsescaped,\n                             Image=containerconfig_image,\
-    \ Volumes=containerconfig_volumes,\n                             WorkingDir=containerconfig_workingdir,\
-    \ Entrypoint=containerconfig_entrypoint,\n                             NetworkDisabled=containerconfig_networkdisabled,\n\
+    \n        return response\n\n    def container_changes_request(self, id_):\n\n\
+    \        headers = self._headers\n\n        response = self._http_request('get',\
+    \ f'containers/{id_}/changes', headers=headers)\n\n        return response\n\n\
+    \    def container_create_request(self, name, containerconfig_hostname,\n    \
+    \                             containerconfig_domainname, containerconfig_user,\n\
+    \                                 containerconfig_attachstdin, containerconfig_attachstdout,\n\
+    \                                 containerconfig_attachstderr, containerconfig_exposedports,\n\
+    \                                 containerconfig_tty, containerconfig_openstdin,\
+    \ containerconfig_stdinonce,\n                                 containerconfig_env,\
+    \ containerconfig_cmd, containerconfig_healthcheck,\n                        \
+    \         containerconfig_argsescaped, containerconfig_image, containerconfig_volumes,\n\
+    \                                 containerconfig_workingdir, containerconfig_entrypoint,\n\
+    \                                 containerconfig_networkdisabled, containerconfig_macaddress,\n\
+    \                                 containerconfig_onbuild, containerconfig_labels,\n\
+    \                                 containerconfig_stopsignal, containerconfig_stoptimeout,\n\
+    \                                 containerconfig_shell, hostconfig_binds, hostconfig_containeridfile,\n\
+    \                                 hostconfig_logconfig, hostconfig_networkmode,\
+    \ hostconfig_portbindings,\n                                 hostconfig_restartpolicy,\
+    \ hostconfig_autoremove, hostconfig_volumedriver,\n                          \
+    \       hostconfig_volumesfrom, hostconfig_mounts, hostconfig_capadd,\n      \
+    \                           hostconfig_capdrop, hostconfig_cgroupnsmode, hostconfig_dns,\n\
+    \                                 hostconfig_dnsoptions, hostconfig_dnssearch,\
+    \ hostconfig_extrahosts,\n                                 hostconfig_groupadd,\
+    \ hostconfig_ipcmode, hostconfig_cgroup, hostconfig_links,\n                 \
+    \                hostconfig_oomscoreadj, hostconfig_pidmode, hostconfig_privileged,\n\
+    \                                 hostconfig_publishallports, hostconfig_readonlyrootfs,\
+    \ hostconfig_securityopt,\n                                 hostconfig_storageopt,\
+    \ hostconfig_tmpfs, hostconfig_utsmode,\n                                 hostconfig_usernsmode,\
+    \ hostconfig_shmsize, hostconfig_sysctls,\n                                 hostconfig_runtime,\
+    \ hostconfig_consolesize, hostconfig_isolation,\n                            \
+    \     hostconfig_maskedpaths, hostconfig_readonlypaths,\n                    \
+    \             networkingconfig_endpointsconfig):\n        params = assign_params(name=name)\n\
+    \        data = assign_params(Hostname=containerconfig_hostname, Domainname=containerconfig_domainname,\n\
+    \                             User=containerconfig_user, AttachStdin=containerconfig_attachstdin,\n\
+    \                             AttachStdout=containerconfig_attachstdout, AttachStderr=containerconfig_attachstderr,\n\
+    \                             ExposedPorts=containerconfig_exposedports, Tty=containerconfig_tty,\n\
+    \                             OpenStdin=containerconfig_openstdin, StdinOnce=containerconfig_stdinonce,\n\
+    \                             Env=containerconfig_env, Cmd=containerconfig_cmd,\n\
+    \                             Healthcheck=containerconfig_healthcheck, ArgsEscaped=containerconfig_argsescaped,\n\
+    \                             Image=containerconfig_image, Volumes=containerconfig_volumes,\n\
+    \                             WorkingDir=containerconfig_workingdir, Entrypoint=containerconfig_entrypoint,\n\
+    \                             NetworkDisabled=containerconfig_networkdisabled,\n\
     \                             MacAddress=containerconfig_macaddress, OnBuild=containerconfig_onbuild,\n\
     \                             Labels=containerconfig_labels, StopSignal=containerconfig_stopsignal,\n\
     \                             StopTimeout=containerconfig_stoptimeout, Shell=containerconfig_shell,\n\
@@ -4988,9 +4537,6 @@ script:
     \ Tty=execstartconfig_tty)\n\n        headers = self._headers\n        headers['Accept']\
     \ = 'application/vnd.docker.raw-stream'\n\n        response = self._http_request('post',\
     \ f'exec/{id_}/start', json_data=data, headers=headers)\n\n        return response\n\
-    \n    def get_plugin_privileges_request(self, remote):\n        params = assign_params(remote=remote)\n\
-    \n        headers = self._headers\n\n        response = self._http_request('get',\
-    \ 'plugins/privileges', params=params, headers=headers)\n\n        return response\n\
     \n    def image_build_request(self, input_stream, dockerfile, t, extrahosts, remote,\
     \ q, nocache, cachefrom, pull, rm,\n                            forcerm, memory,\
     \ memswap, cpushares, cpusetcpus, cpuperiod, cpuquota, buildargs, shmsize,\n \
@@ -5095,73 +4641,33 @@ script:
     \n        return response\n\n    def network_delete_request(self, id_):\n\n  \
     \      headers = self._headers\n\n        response = self._http_request('delete',\
     \ f'networks/{id_}', headers=headers)\n\n        return response\n\n    def network_disconnect_request(self,\
-    \ id_, container_1_container, container_1_force):\n        data = assign_params(Container=container_1_container,\
-    \ Force=container_1_force)\n\n        headers = self._headers\n\n        response\
-    \ = self._http_request('post', f'networks/{id_}/disconnect', json_data=data, headers=headers)\n\
-    \n        return response\n\n    def network_inspect_request(self, id_, verbose,\
-    \ scope):\n        params = assign_params(verbose=verbose, scope=scope)\n\n  \
-    \      headers = self._headers\n\n        response = self._http_request('get',\
-    \ f'networks/{id_}', params=params, headers=headers)\n\n        return response\n\
-    \n    def network_list_request(self, filters):\n        params = assign_params(filters=filters)\n\
-    \n        headers = self._headers\n\n        response = self._http_request('get',\
-    \ 'networks', params=params, headers=headers)\n\n        return response\n\n \
-    \   def network_prune_request(self, filters):\n        params = assign_params(filters=filters)\n\
+    \ id_, container, force):\n        data = assign_params(Container=container, Force=force)\n\
     \n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ 'networks/prune', params=params, headers=headers)\n\n        return response\n\
-    \n    def node_delete_request(self, id_, force):\n        params = assign_params(force=force)\n\
-    \n        headers = self._headers\n\n        response = self._http_request('delete',\
-    \ f'nodes/{id_}', params=params, headers=headers)\n\n        return response\n\
-    \n    def node_inspect_request(self, id_):\n\n        headers = self._headers\n\
-    \n        response = self._http_request('get', f'nodes/{id_}', headers=headers)\n\
-    \n        return response\n\n    def node_list_request(self, filters):\n     \
-    \   params = assign_params(filters=filters)\n\n        headers = self._headers\n\
-    \n        response = self._http_request('get', 'nodes', params=params, headers=headers)\n\
-    \n        return response\n\n    def node_update_request(self, id_, nodespec_name,\
-    \ nodespec_labels, nodespec_role, nodespec_availability, version):\n        params\
-    \ = assign_params(version=version)\n        data = assign_params(Name=nodespec_name,\
+    \ f'networks/{id_}/disconnect', json_data=data, headers=headers)\n\n        return\
+    \ response\n\n    def network_inspect_request(self, id_, verbose, scope):\n  \
+    \      params = assign_params(verbose=verbose, scope=scope)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('get', f'networks/{id_}',\
+    \ params=params, headers=headers)\n\n        return response\n\n    def network_list_request(self,\
+    \ filters):\n        params = assign_params(filters=filters)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('get', 'networks',\
+    \ params=params, headers=headers)\n\n        return response\n\n    def network_prune_request(self,\
+    \ filters):\n        params = assign_params(filters=filters)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('post', 'networks/prune',\
+    \ params=params, headers=headers)\n\n        return response\n\n    def node_delete_request(self,\
+    \ id_, force):\n        params = assign_params(force=force)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('delete', f'nodes/{id_}',\
+    \ params=params, headers=headers)\n\n        return response\n\n    def node_inspect_request(self,\
+    \ id_):\n\n        headers = self._headers\n\n        response = self._http_request('get',\
+    \ f'nodes/{id_}', headers=headers)\n\n        return response\n\n    def node_list_request(self,\
+    \ filters):\n        params = assign_params(filters=filters)\n\n        headers\
+    \ = self._headers\n\n        response = self._http_request('get', 'nodes', params=params,\
+    \ headers=headers)\n\n        return response\n\n    def node_update_request(self,\
+    \ id_, nodespec_name, nodespec_labels, nodespec_role, nodespec_availability, version):\n\
+    \        params = assign_params(version=version)\n        data = assign_params(Name=nodespec_name,\
     \ Labels=nodespec_labels, Role=nodespec_role,\n                             Availability=nodespec_availability)\n\
     \n        headers = self._headers\n\n        response = self._http_request('post',\
     \ f'nodes/{id_}/update', params=params, json_data=data, headers=headers)\n\n \
-    \       return response\n\n    def plugin_create_request(self, name, tar_content):\n\
-    \        params = assign_params(name=name)\n        data = assign_params(tar_content=tar_content)\n\
-    \n        headers = self._headers\n        headers['Content-Type'] = 'application/x-tar'\n\
-    \n        response = self._http_request('post', 'plugins/create', params=params,\
-    \ json_data=data, headers=headers)\n\n        return response\n\n    def plugin_delete_request(self,\
-    \ name, force):\n        params = assign_params(force=force)\n\n        headers\
-    \ = self._headers\n\n        response = self._http_request('delete', f'plugins/{name}',\
-    \ params=params, headers=headers)\n\n        return response\n\n    def plugin_disable_request(self,\
-    \ name):\n\n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ f'plugins/{name}/disable', headers=headers)\n\n        return response\n\n \
-    \   def plugin_enable_request(self, name, timeout):\n        params = assign_params(timeout=timeout)\n\
-    \n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ f'plugins/{name}/enable', params=params, headers=headers)\n\n        return\
-    \ response\n\n    def plugin_inspect_request(self, name):\n\n        headers =\
-    \ self._headers\n\n        response = self._http_request('get', f'plugins/{name}/json',\
-    \ headers=headers)\n\n        return response\n\n    def plugin_list_request(self,\
-    \ filters):\n        params = assign_params(filters=filters)\n\n        headers\
-    \ = self._headers\n\n        response = self._http_request('get', 'plugins', params=params,\
-    \ headers=headers)\n\n        return response\n\n    def plugin_pull_request(self,\
-    \ remote, name, body_name, body_description, body_value):\n        params = assign_params(remote=remote,\
-    \ name=name)\n        data = assign_params(Name=body_name, Description=body_description,\
-    \ Value=body_value)\n\n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ 'plugins/pull', params=params, json_data=data, headers=headers)\n\n        return\
-    \ response\n\n    def plugin_push_request(self, name):\n\n        headers = self._headers\n\
-    \n        response = self._http_request('post', f'plugins/{name}/push', headers=headers)\n\
-    \n        return response\n\n    def plugin_set_request(self, name, body):\n \
-    \       data = assign_params(body=body)\n\n        headers = self._headers\n\n\
-    \        response = self._http_request('post', f'plugins/{name}/set', json_data=data,\
-    \ headers=headers)\n\n        return response\n\n    def plugin_upgrade_request(self,\
-    \ name, remote, body_name, body_description, body_value):\n        params = assign_params(remote=remote)\n\
-    \        data = assign_params(Name=body_name, Description=body_description, Value=body_value)\n\
-    \n        headers = self._headers\n\n        response = self._http_request('post',\
-    \ f'plugins/{name}/upgrade', params=params, json_data=data, headers=headers)\n\
-    \n        return response\n\n    def put_container_archive_request(self, id_,\
-    \ path, no_overwrite, copy_uid_gid, input_stream):\n        params = assign_params(path=path,\
-    \ no_overwrite=no_overwrite, copy_uid_gid=copy_uid_gid)\n        data = assign_params(input_stream=input_stream)\n\
-    \n        headers = self._headers\n        headers['Content-Type'] = 'application/x-tar'\n\
-    \n        response = self._http_request('put', f'containers/{id_}/archive', params=params,\
-    \ json_data=data,\n                                      headers=headers)\n\n\
-    \        return response\n\n    def secret_create_request(self, secretspec_name,\
+    \       return response\n\n    def secret_create_request(self, secretspec_name,\
     \ secretspec_labels, secretspec_data, secretspec_driver,\n                   \
     \           secretspec_templating):\n        data = assign_params(Name=secretspec_name,\
     \ Labels=secretspec_labels, Data=secretspec_data,\n                          \
@@ -5314,33 +4820,8 @@ script:
     \ ''))\n\n    response = client.config_list_request(filters)\n    command_results\
     \ = CommandResults(\n        outputs_prefix='Docker.Config',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef container_archive_command(client, args):\n    id_ =\
-    \ str(args.get('id', ''))\n    path = str(args.get('path', ''))\n\n    response\
-    \ = client.container_archive_request(id_, path)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef container_archive_info_command(client,\
-    \ args):\n    id_ = str(args.get('id', ''))\n    path = str(args.get('path', ''))\n\
-    \n    response = client.container_archive_info_request(id_, path)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef container_attach_command(client, args):\n    id_ =\
-    \ str(args.get('id', ''))\n    detach_keys = str(args.get('detach_keys', ''))\n\
-    \    logs = argToBoolean(args.get('logs', False))\n    stream = argToBoolean(args.get('stream',\
-    \ False))\n    stdin = argToBoolean(args.get('stdin', False))\n    stdout = argToBoolean(args.get('stdout',\
-    \ False))\n    stderr = argToBoolean(args.get('stderr', False))\n\n    response\
-    \ = client.container_attach_request(id_, detach_keys, logs, stream, stdin, stdout,\
-    \ stderr)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef container_attach_websocket_command(client,\
-    \ args):\n    id_ = str(args.get('id', ''))\n    detach_keys = str(args.get('detach_keys',\
-    \ ''))\n    logs = argToBoolean(args.get('logs', False))\n    stream = argToBoolean(args.get('stream',\
-    \ False))\n    stdin = argToBoolean(args.get('stdin', False))\n    stdout = argToBoolean(args.get('stdout',\
-    \ False))\n    stderr = argToBoolean(args.get('stderr', False))\n\n    response\
-    \ = client.container_attach_websocket_request(id_, detach_keys, logs, stream,\
-    \ stdin, stdout, stderr)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef container_changes_command(client,\
-    \ args):\n    id_ = str(args.get('id', ''))\n\n    response = client.container_changes_request(id_)\n\
+    \ command_results\n\n\ndef container_changes_command(client, args):\n    id_ =\
+    \ str(args.get('id', ''))\n\n    response = client.container_changes_request(id_)\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker.ContainerChangeResponseItem',\n\
     \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef container_create_command(client,\
@@ -5767,8 +5248,8 @@ script:
     \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef image_get_command(client, args):\n\
     \    name = str(args.get('name', ''))\n\n    response = client.image_get_request(name)\n\
-    \    print (response)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
+    \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
+    \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef image_get_all_command(client, args):\n\
     \    names = argToList(args.get('names', []))\n\n    response = client.image_get_all_request(names)\n\
     \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
@@ -5868,10 +5349,9 @@ script:
     \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
     \        outputs=response,\n        raw_response=response\n    )\n\n    return\
     \ command_results\n\n\ndef network_disconnect_command(client, args):\n    id_\
-    \ = str(args.get('id', ''))\n    container_1_container = str(args.get('container_1_container',\
-    \ ''))\n    container_1_force = argToBoolean(args.get('container_1_force', False))\n\
-    \n    response = client.network_disconnect_request(id_, container_1_container,\
-    \ container_1_force)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
+    \ = str(args.get('id', ''))\n    container = str(args.get('container', ''))\n\
+    \    force = argToBoolean(args.get('force', False))\n\n    response = client.network_disconnect_request(id_,\
+    \ container, force)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
     \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
     \    )\n\n    return command_results\n\n\ndef network_inspect_command(client,\
     \ args):\n    id_ = str(args.get('id', ''))\n    verbose = argToBoolean(args.get('verbose',\
@@ -5907,63 +5387,8 @@ script:
     \ nodespec_name, nodespec_labels, nodespec_role, nodespec_availability,\n    \
     \                                      version)\n    command_results = CommandResults(\n\
     \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef plugin_create_command(client,\
-    \ args):\n    name = str(args.get('name', ''))\n    tar_content = str(args.get('tar_content',\
-    \ ''))\n\n    response = client.plugin_create_request(name, tar_content)\n   \
-    \ command_results = CommandResults(\n        outputs_prefix='Docker',\n      \
-    \  outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_delete_command(client, args):\n\
-    \    name = str(args.get('name', ''))\n    force = argToBoolean(args.get('force',\
-    \ False))\n\n    response = client.plugin_delete_request(name, force)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker.Plugin',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef plugin_disable_command(client, args):\n    name = str(args.get('name',\
-    \ ''))\n\n    response = client.plugin_disable_request(name)\n    command_results\
-    \ = CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef plugin_enable_command(client, args):\n    name = str(args.get('name',\
-    \ ''))\n    timeout = int(args.get('timeout', 0))\n\n    response = client.plugin_enable_request(name,\
-    \ timeout)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_inspect_command(client, args):\n\
-    \    name = str(args.get('name', ''))\n\n    response = client.plugin_inspect_request(name)\n\
-    \    command_results = CommandResults(\n        outputs_prefix='Docker.Plugin',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_list_command(client, args):\n\
-    \    filters = str(args.get('filters', ''))\n\n    response = client.plugin_list_request(filters)\n\
-    \    command_results = CommandResults(\n        outputs_prefix='Docker.Plugin',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_pull_command(client, args):\n\
-    \    remote = str(args.get('remote', ''))\n    name = str(args.get('name', ''))\n\
-    \    body_name = str(args.get('body_name', ''))\n    body_description = str(args.get('body_description',\
-    \ ''))\n    body_value = argToList(args.get('body_value', []))\n\n    response\
-    \ = client.plugin_pull_request(remote, name, body_name, body_description, body_value)\n\
-    \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
-    \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_push_command(client, args):\n\
-    \    name = str(args.get('name', ''))\n\n    response = client.plugin_push_request(name)\n\
-    \    command_results = CommandResults(\n        outputs_prefix='Docker',\n   \
-    \     outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef plugin_set_command(client, args):\n\
-    \    name = str(args.get('name', ''))\n    body = argToList(args.get('body', []))\n\
-    \n    response = client.plugin_set_request(name, body)\n    command_results =\
-    \ CommandResults(\n        outputs_prefix='Docker',\n        outputs_key_field='',\n\
-    \        outputs=response,\n        raw_response=response\n    )\n\n    return\
-    \ command_results\n\n\ndef plugin_upgrade_command(client, args):\n    name = str(args.get('name',\
-    \ ''))\n    remote = str(args.get('remote', ''))\n    body_name = str(args.get('body_name',\
-    \ ''))\n    body_description = str(args.get('body_description', ''))\n    body_value\
-    \ = argToList(args.get('body_value', []))\n\n    response = client.plugin_upgrade_request(name,\
-    \ remote, body_name, body_description, body_value)\n    command_results = CommandResults(\n\
-    \        outputs_prefix='Docker',\n        outputs_key_field='',\n        outputs=response,\n\
-    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef put_container_archive_command(client,\
-    \ args):\n    id_ = str(args.get('id', ''))\n    path = str(args.get('path', ''))\n\
-    \    no_overwrite = str(args.get('no_overwrite', ''))\n    copy_uid_gid = str(args.get('copy_uid_gid',\
-    \ ''))\n    input_stream = str(args.get('input_stream', ''))\n\n    response =\
-    \ client.put_container_archive_request(id_, path, no_overwrite, copy_uid_gid,\
-    \ input_stream)\n    command_results = CommandResults(\n        outputs_prefix='Docker',\n\
-    \        outputs_key_field='',\n        outputs=response,\n        raw_response=response\n\
-    \    )\n\n    return command_results\n\n\ndef secret_create_command(client, args):\n\
-    \    secretspec_name = str(args.get('secretspec_name', ''))\n    secretspec_labels\
+    \        raw_response=response\n    )\n\n    return command_results\n\n\ndef secret_create_command(client,\
+    \ args):\n    secretspec_name = str(args.get('secretspec_name', ''))\n    secretspec_labels\
     \ = str(args.get('secretspec_labels', ''))\n    secretspec_data = str(args.get('secretspec_data',\
     \ ''))\n    secretspec_driver_name = str(args.get('secretspec_driver_name', ''))\n\
     \    secretspec_driver_options = str(args.get('secretspec_driver_options', ''))\n\
@@ -6299,28 +5724,24 @@ script:
     \        commands = {\n            'docker-build-prune': build_prune_command,\n\
     \            'docker-config-create': config_create_command,\n            'docker-config-inspect':\
     \ config_inspect_command,\n            'docker-config-list': config_list_command,\n\
-    \            'docker-container-archive': container_archive_command,\n        \
-    \    'docker-container-archive-info': container_archive_info_command,\n      \
-    \      'docker-container-attach': container_attach_command,\n            'docker-container-attach-websocket':\
-    \ container_attach_websocket_command,\n            'docker-container-changes':\
-    \ container_changes_command,\n            'docker-container-create': container_create_command,\n\
-    \            'docker-container-delete': container_delete_command,\n          \
-    \  'docker-container-exec': container_exec_command,\n            'docker-container-export':\
-    \ container_export_command,\n            'docker-container-inspect': container_inspect_command,\n\
-    \            'docker-container-kill': container_kill_command,\n            'docker-container-list':\
-    \ container_list_command,\n            'docker-container-logs': container_logs_command,\n\
-    \            'docker-container-pause': container_pause_command,\n            'docker-container-prune':\
-    \ container_prune_command,\n            'docker-container-rename': container_rename_command,\n\
-    \            'docker-container-resize': container_resize_command,\n          \
-    \  'docker-container-restart': container_restart_command,\n            'docker-container-start':\
-    \ container_start_command,\n            'docker-container-stats': container_stats_command,\n\
-    \            'docker-container-stop': container_stop_command,\n            'docker-container-top':\
-    \ container_top_command,\n            'docker-container-unpause': container_unpause_command,\n\
-    \            'docker-container-update': container_update_command,\n          \
-    \  'docker-container-wait': container_wait_command,\n            'docker-distribution-inspect':\
-    \ distribution_inspect_command,\n            'docker-exec-inspect': exec_inspect_command,\n\
-    \            'docker-exec-resize': exec_resize_command,\n            'docker-exec-start':\
-    \ exec_start_command,\n            'docker-get-plugin-privileges': get_plugin_privileges_command,\n\
+    \            'docker-container-changes': container_changes_command,\n        \
+    \    'docker-container-create': container_create_command,\n            'docker-container-delete':\
+    \ container_delete_command,\n            'docker-container-exec': container_exec_command,\n\
+    \            'docker-container-export': container_export_command,\n          \
+    \  'docker-container-inspect': container_inspect_command,\n            'docker-container-kill':\
+    \ container_kill_command,\n            'docker-container-list': container_list_command,\n\
+    \            'docker-container-logs': container_logs_command,\n            'docker-container-pause':\
+    \ container_pause_command,\n            'docker-container-prune': container_prune_command,\n\
+    \            'docker-container-rename': container_rename_command,\n          \
+    \  'docker-container-resize': container_resize_command,\n            'docker-container-restart':\
+    \ container_restart_command,\n            'docker-container-start': container_start_command,\n\
+    \            'docker-container-stats': container_stats_command,\n            'docker-container-stop':\
+    \ container_stop_command,\n            'docker-container-top': container_top_command,\n\
+    \            'docker-container-unpause': container_unpause_command,\n        \
+    \    'docker-container-update': container_update_command,\n            'docker-container-wait':\
+    \ container_wait_command,\n            'docker-distribution-inspect': distribution_inspect_command,\n\
+    \            'docker-exec-inspect': exec_inspect_command,\n            'docker-exec-resize':\
+    \ exec_resize_command,\n            'docker-exec-start': exec_start_command,\n\
     \            'docker-image-build': image_build_command,\n            'docker-image-commit':\
     \ image_commit_command,\n            'docker-image-create': image_create_command,\n\
     \            'docker-image-delete': image_delete_command,\n            'docker-image-get':\
@@ -6337,31 +5758,24 @@ script:
     \ network_list_command,\n            'docker-network-prune': network_prune_command,\n\
     \            'docker-node-delete': node_delete_command,\n            'docker-node-inspect':\
     \ node_inspect_command,\n            'docker-node-list': node_list_command,\n\
-    \            'docker-node-update': node_update_command,\n            'docker-plugin-create':\
-    \ plugin_create_command,\n            'docker-plugin-delete': plugin_delete_command,\n\
-    \            'docker-plugin-disable': plugin_disable_command,\n            'docker-plugin-enable':\
-    \ plugin_enable_command,\n            'docker-plugin-inspect': plugin_inspect_command,\n\
-    \            'docker-plugin-list': plugin_list_command,\n            'docker-plugin-pull':\
-    \ plugin_pull_command,\n            'docker-plugin-push': plugin_push_command,\n\
-    \            'docker-plugin-set': plugin_set_command,\n            'docker-plugin-upgrade':\
-    \ plugin_upgrade_command,\n            'docker-put-container-archive': put_container_archive_command,\n\
-    \            'docker-secret-create': secret_create_command,\n            'docker-secret-delete':\
-    \ secret_delete_command,\n            'docker-secret-inspect': secret_inspect_command,\n\
-    \            'docker-secret-list': secret_list_command,\n            'docker-secret-update':\
-    \ secret_update_command,\n            'docker-service-create': service_create_command,\n\
-    \            'docker-service-delete': service_delete_command,\n            'docker-service-inspect':\
-    \ service_inspect_command,\n            'docker-service-list': service_list_command,\n\
-    \            'docker-service-logs': service_logs_command,\n            'docker-service-update':\
-    \ service_update_command,\n            'docker-session': session_command,\n  \
-    \          'docker-swarm-init': swarm_init_command,\n            'docker-swarm-inspect':\
-    \ swarm_inspect_command,\n            'docker-swarm-join': swarm_join_command,\n\
-    \            'docker-swarm-leave': swarm_leave_command,\n            'docker-swarm-unlock':\
-    \ swarm_unlock_command,\n            'docker-swarm-unlockkey': swarm_unlockkey_command,\n\
-    \            'docker-system-auth': system_auth_command,\n            'docker-system-data-usage':\
-    \ system_data_usage_command,\n            'docker-system-events': system_events_command,\n\
-    \            'docker-system-info': system_info_command,\n            'docker-system-ping':\
-    \ system_ping_command,\n            'docker-system-ping-head': system_ping_head_command,\n\
-    \            'docker-system-version': system_version_command,\n            'docker-task-inspect':\
+    \            'docker-node-update': node_update_command,\n            'docker-secret-create':\
+    \ secret_create_command,\n            'docker-secret-delete': secret_delete_command,\n\
+    \            'docker-secret-inspect': secret_inspect_command,\n            'docker-secret-list':\
+    \ secret_list_command,\n            'docker-secret-update': secret_update_command,\n\
+    \            'docker-service-create': service_create_command,\n            'docker-service-delete':\
+    \ service_delete_command,\n            'docker-service-inspect': service_inspect_command,\n\
+    \            'docker-service-list': service_list_command,\n            'docker-service-logs':\
+    \ service_logs_command,\n            'docker-service-update': service_update_command,\n\
+    \            'docker-session': session_command,\n            'docker-swarm-init':\
+    \ swarm_init_command,\n            'docker-swarm-inspect': swarm_inspect_command,\n\
+    \            'docker-swarm-join': swarm_join_command,\n            'docker-swarm-leave':\
+    \ swarm_leave_command,\n            'docker-swarm-unlock': swarm_unlock_command,\n\
+    \            'docker-swarm-unlockkey': swarm_unlockkey_command,\n            'docker-system-auth':\
+    \ system_auth_command,\n            'docker-system-data-usage': system_data_usage_command,\n\
+    \            'docker-system-events': system_events_command,\n            'docker-system-info':\
+    \ system_info_command,\n            'docker-system-ping': system_ping_command,\n\
+    \            'docker-system-ping-head': system_ping_head_command,\n          \
+    \  'docker-system-version': system_version_command,\n            'docker-task-inspect':\
     \ task_inspect_command,\n            'docker-task-list': task_list_command,\n\
     \            'docker-task-logs': task_logs_command,\n            'docker-volume-create':\
     \ volume_create_command,\n            'docker-volume-delete': volume_delete_command,\n\
