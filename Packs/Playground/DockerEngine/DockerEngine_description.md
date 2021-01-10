@@ -62,4 +62,4 @@ Now, generate the signed certificate:
     Getting CA Private Key
     Enter pass phrase for ca-key.pem:
 
-You can then use the client certificate and private key to configure the XSOAR Docker Integration
+You can then use the client certificate and private key to configure the XSOAR Docker Integration.

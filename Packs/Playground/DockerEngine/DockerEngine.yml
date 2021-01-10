@@ -112,17 +112,17 @@ script:
     name: docker-config-inspect
     outputs:
     - contextPath: Docker.Config.ID
+      description: Docker Config ID
       type: String
     - contextPath: Docker.Config.CreatedAt
+      description: Docker Config CreatedAt
       type: String
     - contextPath: Docker.Config.UpdatedAt
+      description: Docker Config UpdatedAt
       type: String
   - arguments:
     - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the configs list.  Available filters:  - `id= config id ` -
-        `label= key  or label= key =value` - `name= config name ` - `names= config
-        name ` '
+      description: 'A JSON encoded value of the filters '
       isArray: false
       name: filters
       required: false
@@ -133,10 +133,13 @@ script:
     name: docker-config-list
     outputs:
     - contextPath: Docker.Config.ID
+      description: Docker Config ID
       type: String
     - contextPath: Docker.Config.CreatedAt
+      description: Docker Config CreatedAt
       type: String
     - contextPath: Docker.Config.UpdatedAt
+      description: Docker Config UpdatedAt
       type: String
   - arguments:
     - default: false
@@ -346,33 +349,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of volume bindings for this container. Each volume binding
-        is a string in one of these forms:  - `host-src:container-dest[:options]`
-        to bind-mount a host path   into the container. Both `host-src`, and `container-dest`
-        must   be an _absolute_ path. - `volume-name:container-dest[:options]` to
-        bind-mount a volume   managed by a volume driver into the container. `container-dest`   must
-        be an _absolute_ path.  `options` is an optional, comma-delimited list of:  -
-        `nocopy` disables automatic copying of data from the container   path to the
-        volume. The `nocopy` flag only applies to named volumes. - `[ro|rw]` mounts
-        a volume read-only or read-write, respectively.   If omitted or set to `rw`,
-        volumes are mounted read-write. - `[z|Z]` applies SELinux labels to allow
-        or deny multiple containers   to read and write to the same volume.     -
-        `z`: a _shared_ content label is applied to the content. This       label
-        indicates that multiple containers can share the volume       content, for
-        both reading and writing.     - `Z`: a _private unshared_ label is applied
-        to the content.       This label indicates that only the current container
-        can use       a private volume. Labeling systems such as SELinux require       proper
-        labels to be placed on volume content that is mounted       into a container.
-        Without a label, the security system can       prevent a container''s processes
-        from using the content. By       default, the labels set by the host operating
-        system are not       modified. - `[[r]shared|[r]slave|[r]private]` specifies
-        mount   [propagation behavior](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt).   This
-        only applies to bind-mounted volumes, not internal volumes   or named volumes.
-        Mount propagation requires the source mount   point (the location where the
-        source directory is mounted in the   host operating system) to have the correct
-        propagation properties.   For shared volumes, the source mount point must
-        be set to `shared`.   For slave volumes, the mount must be set to either `shared`
-        or   `slave`. '
+      description: A list of volume bindings for this container.
       isArray: true
       name: hostconfig_binds
       required: false
@@ -390,20 +367,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: hostconfig_logconfig Config
+      description: Log Config
       isArray: false
       name: hostconfig_logconfig_Config
       required: false
       secret: false
     - default: false
-      description: 'Network mode to use for this container. Supported standard values
-        are: ` idge`, `host`, `none`, and `container: name|id `. Any other value is
-        taken as a custom network''s name to which this container should connect to. '
+      description: Network mode to use for this container.
       isArray: false
       name: hostconfig_networkmode
       required: false
       secret: false
     - default: false
+      description: hostconfig port bindings
       isArray: false
       name: hostconfig_portbindings
       required: false
@@ -434,8 +410,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of volumes to inherit from another container, specified
-        in the form ` container name [: ro|rw ]`. '
+      description: A list of volumes to inherit from another container
       isArray: true
       name: hostconfig_volumesfrom
       required: false
@@ -671,120 +646,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Remove anonymous volumes associated with the container.
-      isArray: false
-      name: v
-      required: false
-      secret: false
-    - default: false
-      description: If the container is running, kill it before removing it.
-      isArray: false
-      name: force
-      required: false
-      secret: false
-    - default: false
-      description: Remove the specified link associated with the container.
-      isArray: false
-      name: link
-      required: false
-      secret: false
-    deprecated: false
-    description: Remove a container
-    execution: false
-    name: docker-container-delete
-  - arguments:
-    - default: false
-      description: Attach to `stdin` of the exec command.
-      isArray: false
-      name: execconfig_attachstdin
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stdout` of the exec command.
-      isArray: false
-      name: execconfig_attachstdout
-      required: false
-      secret: false
-    - default: false
-      description: Attach to `stderr` of the exec command.
-      isArray: false
-      name: execconfig_attachstderr
-      required: false
-      secret: false
-    - default: false
-      description: 'Override the key sequence for detaching a container. Format is
-        a single character `[a-Z]` or `ctrl- value ` where ` value ` is one of: `a-z`,
-        `@`, `^`, `[`, `,` or `_`. '
-      isArray: false
-      name: execconfig_detachkeys
-      required: false
-      secret: false
-    - default: false
-      description: Allocate a pseudo-TTY.
-      isArray: false
-      name: execconfig_tty
-      required: false
-      secret: false
-    - default: false
-      description: 'A list of environment variables in the form `["VAR=value", ...]`. '
-      isArray: true
-      name: execconfig_env
-      required: false
-      secret: false
-    - default: false
-      description: Command to run, as a string or array of strings.
-      isArray: true
-      name: execconfig_cmd
-      required: false
-      secret: false
-    - default: false
-      description: Runs the exec process with extended privileges.
-      isArray: false
-      name: execconfig_privileged
-      required: false
-      secret: false
-    - default: false
-      description: 'The user, and optionally, group to run the exec process inside
-        the container. Format is one of: `user`, `user:group`, `uid`, or `uid:gid`. '
-      isArray: false
-      name: execconfig_user
-      required: false
-      secret: false
-    - default: false
-      description: 'The working directory for the exec process inside the container. '
-      isArray: false
-      name: execconfig_workingdir
-      required: false
-      secret: false
-    - default: false
-      description: ID or name of container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Create an exec instance
-    execution: false
-    name: docker-container-exec
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Export a container
-    execution: false
-    name: docker-container-export
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
       description: Return the size of container as fields `SizeRw` and `SizeRootFs`
       isArray: false
       name: size
@@ -808,26 +669,37 @@ script:
       description: The container's image ID
       type: String
     - contextPath: Docker.ContainerInspectResponse.ResolvConfPath
+      description: Docker ContainerInspectResponse ResolvConfPath
       type: String
     - contextPath: Docker.ContainerInspectResponse.HostnamePath
+      description: Docker ContainerInspectResponse HostnamePath
       type: String
     - contextPath: Docker.ContainerInspectResponse.HostsPath
+      description: Docker ContainerInspectResponse HostsPath
       type: String
     - contextPath: Docker.ContainerInspectResponse.LogPath
+      description: Docker ContainerInspectResponse LogPath
       type: String
     - contextPath: Docker.ContainerInspectResponse.Name
+      description: Docker ContainerInspectResponse Name
       type: String
     - contextPath: Docker.ContainerInspectResponse.RestartCount
+      description: Docker ContainerInspectResponse RestartCount
       type: Number
     - contextPath: Docker.ContainerInspectResponse.Driver
+      description: Docker ContainerInspectResponse Driver
       type: String
     - contextPath: Docker.ContainerInspectResponse.Platform
+      description: Docker ContainerInspectResponse Platform
       type: String
     - contextPath: Docker.ContainerInspectResponse.MountLabel
+      description: Docker ContainerInspectResponse MountLabel
       type: String
     - contextPath: Docker.ContainerInspectResponse.ProcessLabel
+      description: Docker ContainerInspectResponse ProcessLabel
       type: String
     - contextPath: Docker.ContainerInspectResponse.AppArmorProfile
+      description: Docker ContainerInspectResponse AppArmorProfile
       type: String
     - contextPath: Docker.ContainerInspectResponse.SizeRw
       description: 'The size of files that have been created or changed by this container. '
@@ -836,38 +708,29 @@ script:
       description: The total size of all the files in this container.
       type: Number
     - contextPath: Docker.ContainerInspectResponse.Mounts.Type
+      description: Docker ContainerInspectResponse Mounts Type
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Name
+      description: Docker ContainerInspectResponse Mounts Name
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Source
+      description: Docker ContainerInspectResponse Mounts Source
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Destination
+      description: Docker ContainerInspectResponse Mounts Destination
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Driver
+      description: Docker ContainerInspectResponse Mounts Driver
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Mode
+      description: Docker ContainerInspectResponse Mounts Mode
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.RW
+      description: Docker ContainerInspectResponse Mounts RW
       type: Boolean
     - contextPath: Docker.ContainerInspectResponse.Mounts.Propagation
+      description: Docker ContainerInspectResponse Mounts Propagation
       type: String
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Signal to send to the container as an integer or string (e.g. `SIGINT`)
-      isArray: false
-      name: signal
-      required: false
-      secret: false
-    deprecated: false
-    description: Kill a container
-    execution: false
-    name: docker-container-kill
   - arguments:
     - default: false
       description: 'Return all containers. By default, only running containers are
@@ -918,168 +781,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Keep connection after returning logs.
-      isArray: false
-      name: follow
-      required: false
-      secret: false
-    - default: false
-      description: Return logs from `stdout`
-      isArray: false
-      name: stdout
-      required: false
-      secret: false
-    - default: false
-      description: Return logs from `stderr`
-      isArray: false
-      name: stderr
-      required: false
-      secret: false
-    - default: false
-      description: Only return logs since this time, as a UNIX timestamp
-      isArray: false
-      name: since
-      required: false
-      secret: false
-    - default: false
-      description: Only return logs before this time, as a UNIX timestamp
-      isArray: false
-      name: until
-      required: false
-      secret: false
-    - default: false
-      description: Add timestamps to every log line
-      isArray: false
-      name: timestamps
-      required: false
-      secret: false
-    - default: false
-      description: 'Only return this number of log lines from the end of the logs.
-        Specify as an integer or `all` to output all log lines. '
-      isArray: false
-      name: tail
-      required: false
-      secret: false
-    deprecated: false
-    description: Get container logs
-    execution: false
-    name: docker-container-logs
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Pause a container
-    execution: false
-    name: docker-container-pause
-  - arguments:
-    - default: false
-      description: 'Filters to process on the prune list, encoded as JSON (a `map[string][]string`).  Available
-        filters: - `until= timestamp ` Prune containers created before this timestamp.
-        The ` timestamp ` can be Unix timestamps, date formatted timestamps, or Go
-        duration strings (e.g. `10m`, `1h30m`) computed relative to the daemon machine’s
-        time. - `label` (`label= key `, `label= key = value `, `label!= key `, or
-        `label!= key = value `) Prune containers with (or without, in case `label!=...`
-        is used) the specified labels. '
-      isArray: false
-      name: filters
-      required: false
-      secret: false
-    deprecated: false
-    description: Delete stopped containers
-    execution: false
-    name: docker-container-prune
-    outputs:
-    - contextPath: Docker.ContainerPruneResponse.SpaceReclaimed
-      description: Disk space reclaimed in bytes
-      type: Number
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: New name for the container
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: false
-    description: Rename a container
-    execution: false
-    name: docker-container-rename
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Height of the TTY session in characters
-      isArray: false
-      name: h
-      required: false
-      secret: false
-    - default: false
-      description: Width of the TTY session in characters
-      isArray: false
-      name: w
-      required: false
-      secret: false
-    deprecated: false
-    description: Resize a container TTY
-    execution: false
-    name: docker-container-resize
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Number of seconds to wait before killing the container
-      isArray: false
-      name: t
-      required: false
-      secret: false
-    deprecated: false
-    description: Restart a container
-    execution: false
-    name: docker-container-restart
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: 'Override the key sequence for detaching a container. Format is
-        a single character `[a-Z]` or `ctrl- value ` where ` value ` is one of: `a-z`,
-        `@`, `^`, `[`, `,` or `_`. '
-      isArray: false
-      name: detach_keys
-      required: false
-      secret: false
-    deprecated: false
-    description: Start a container
-    execution: false
-    name: docker-container-start
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
       description: 'Stream the output. If false, the stats will be output once and
         then it will disconnect. '
       isArray: false
@@ -1105,23 +806,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of seconds to wait before killing the container
-      isArray: false
-      name: t
-      required: false
-      secret: false
-    deprecated: false
-    description: Stop a container
-    execution: false
-    name: docker-container-stop
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
       description: The arguments to pass to `ps`. For example, `aux`
       isArray: false
       name: ps_args
@@ -1133,933 +817,8 @@ script:
     name: docker-container-top
     outputs:
     - contextPath: Docker.ContainerTopResponse.Processes
+      description: Docker ContainerTopResponse Processes
       type: String
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Unpause a container
-    execution: false
-    name: docker-container-unpause
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: 'An integer value representing this container''s relative CPU weight
-        versus other containers. '
-      isArray: false
-      name: resources_cpushares
-      required: false
-      secret: false
-    - default: false
-      description: Memory limit in bytes.
-      isArray: false
-      name: resources_memory
-      required: false
-      secret: false
-    - default: false
-      description: 'Path to `cgroups` under which the container''s `cgroup` is created.
-        If the path is not absolute, the path is considered to be relative to the
-        `cgroups` path of the init process. Cgroups are created if they do not already
-        exist. '
-      isArray: false
-      name: resources_cgroupparent
-      required: false
-      secret: false
-    - default: false
-      description: Block IO weight (relative weight).
-      isArray: false
-      name: resources_blkioweight
-      required: false
-      secret: false
-    - default: false
-      description: 'Block IO weight (relative device weight) in the form:  ``` [{"Path":
-        "device_path", "Weight": weight}] ``` '
-      isArray: true
-      name: resources_blkioweightdevice
-      required: false
-      secret: false
-    - default: false
-      description: 'Limit read rate (bytes per second) from a device, in the form:  ```
-        [{"Path": "device_path", "Rate": rate}] ``` '
-      isArray: true
-      name: resources_blkiodevicereadbps
-      required: false
-      secret: false
-    - default: false
-      description: 'Limit write rate (bytes per second) to a device, in the form:  ```
-        [{"Path": "device_path", "Rate": rate}] ``` '
-      isArray: true
-      name: resources_blkiodevicewritebps
-      required: false
-      secret: false
-    - default: false
-      description: 'Limit read rate (IO per second) from a device, in the form:  ```
-        [{"Path": "device_path", "Rate": rate}] ``` '
-      isArray: true
-      name: resources_blkiodevicereadiops
-      required: false
-      secret: false
-    - default: false
-      description: 'Limit write rate (IO per second) to a device, in the form:  ```
-        [{"Path": "device_path", "Rate": rate}] ``` '
-      isArray: true
-      name: resources_blkiodevicewriteiops
-      required: false
-      secret: false
-    - default: false
-      description: The length of a CPU period in microseconds.
-      isArray: false
-      name: resources_cpuperiod
-      required: false
-      secret: false
-    - default: false
-      description: 'Microseconds of CPU time that the container can get in a CPU period. '
-      isArray: false
-      name: resources_cpuquota
-      required: false
-      secret: false
-    - default: false
-      description: 'The length of a CPU real-time period in microseconds. Set to 0
-        to allocate no time allocated to real-time tasks. '
-      isArray: false
-      name: resources_cpurealtimeperiod
-      required: false
-      secret: false
-    - default: false
-      description: 'The length of a CPU real-time runtime in microseconds. Set to
-        0 to allocate no time allocated to real-time tasks. '
-      isArray: false
-      name: resources_cpurealtimeruntime
-      required: false
-      secret: false
-    - default: false
-      description: 'CPUs in which to allow execution (e.g., `0-3`, `0,1`). '
-      isArray: false
-      name: resources_cpusetcpus
-      required: false
-      secret: false
-    - default: false
-      description: 'Memory nodes (MEMs) in which to allow execution (0-3, 0,1). Only
-        effective on NUMA systems. '
-      isArray: false
-      name: resources_cpusetmems
-      required: false
-      secret: false
-    - default: false
-      description: A list of devices to add to the container.
-      isArray: true
-      name: resources_devices
-      required: false
-      secret: false
-    - default: false
-      description: a list of cgroup rules to apply to the container
-      isArray: true
-      name: resources_devicecgrouprules
-      required: false
-      secret: false
-    - default: false
-      description: 'A list of requests for devices to be sent to device drivers. '
-      isArray: true
-      name: resources_devicerequests
-      required: false
-      secret: false
-    - default: false
-      description: 'Kernel memory limit in bytes.   p    /  /p       Deprecated  :
-        This field is deprecated as the kernel 5.4 deprecated   `kmem.limit_in_bytes`. '
-      isArray: false
-      name: resources_kernelmemory
-      required: false
-      secret: false
-    - default: false
-      description: Hard limit for kernel TCP buffer memory (in bytes).
-      isArray: false
-      name: resources_kernelmemorytcp
-      required: false
-      secret: false
-    - default: false
-      description: Memory soft limit in bytes.
-      isArray: false
-      name: resources_memoryreservation
-      required: false
-      secret: false
-    - default: false
-      description: 'Total memory limit (memory + swap). Set as `-1` to enable unlimited
-        swap. '
-      isArray: false
-      name: resources_memoryswap
-      required: false
-      secret: false
-    - default: false
-      description: 'Tune a container''s memory swappiness behavior. Accepts an integer
-        between 0 and 100. '
-      isArray: false
-      name: resources_memoryswappiness
-      required: false
-      secret: false
-    - default: false
-      description: CPU quota in units of 10 sup -9 /sup  CPUs.
-      isArray: false
-      name: resources_nanocpus
-      required: false
-      secret: false
-    - default: false
-      description: Disable OOM Killer for the container.
-      isArray: false
-      name: resources_oomkilldisable
-      required: false
-      secret: false
-    - default: false
-      description: 'Run an init inside the container that forwards signals and reaps
-        processes. This field is omitted if empty, and the default (as configured
-        on the daemon) is used. '
-      isArray: false
-      name: resources_init
-      required: false
-      secret: false
-    - default: false
-      description: 'Tune a container''s PIDs limit. Set `0` or `-1` for unlimited,
-        or `null` to not change. '
-      isArray: false
-      name: resources_pidslimit
-      required: false
-      secret: false
-    - default: false
-      description: 'A list of resource limits to set in the container. For example:  ```
-        {"Name": "nofile", "Soft": 1024, "Hard": 2048} ``` '
-      isArray: true
-      name: resources_ulimits
-      required: false
-      secret: false
-    - default: false
-      description: 'The number of usable CPUs (Windows only).  On Windows Server containers,
-        the processor resource controls are mutually exclusive. The order of precedence
-        is `CPUCount` first, then `CPUShares`, and `CPUPercent` last. '
-      isArray: false
-      name: resources_cpucount
-      required: false
-      secret: false
-    - default: false
-      description: 'The usable percentage of the available CPUs (Windows only).  On
-        Windows Server containers, the processor resource controls are mutually exclusive.
-        The order of precedence is `CPUCount` first, then `CPUShares`, and `CPUPercent`
-        last. '
-      isArray: false
-      name: resources_cpupercent
-      required: false
-      secret: false
-    - default: false
-      description: Maximum IOps for the container system drive (Windows only)
-      isArray: false
-      name: resources_iomaximumiops
-      required: false
-      secret: false
-    - default: false
-      description: 'Maximum IO in bytes per second for the container system drive
-        (Windows only). '
-      isArray: false
-      name: resources_iomaximumbandwidth
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: '- Empty string means not to restart - `always` Always restart
-        - `unless-stopped` Restart always except when the user has manually stopped
-        the container - `on-failure` Restart only when the container exit code is
-        non-zero '
-      isArray: false
-      name: restartpolicy_name
-      predefined:
-      - ''
-      - always
-      - unless-stopped
-      - on-failure
-      required: false
-      secret: false
-    - default: false
-      description: 'If `on-failure` is used, the number of times to retry before giving
-        up. '
-      isArray: false
-      name: restartpolicy_maximumretrycount
-      required: false
-      secret: false
-    deprecated: false
-    description: Update a container
-    execution: false
-    name: docker-container-update
-  - arguments:
-    - default: false
-      description: ID or name of the container
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: 'Wait until a container state reaches the given condition, either
-        ''not-running'' (default), ''next-exit'', or ''removed''. '
-      isArray: false
-      name: condition
-      required: false
-      secret: false
-    deprecated: false
-    description: Wait for a container
-    execution: false
-    name: docker-container-wait
-    outputs:
-    - contextPath: Docker.ContainerWaitResponse.StatusCode
-      description: Exit code of the container
-      type: Number
-  - arguments:
-    - default: false
-      description: Image name or id
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: false
-    description: Get image information from the registry
-    execution: false
-    name: docker-distribution-inspect
-    outputs:
-    - contextPath: Docker.DistributionInspectResponse.Platforms.Architecture
-      type: String
-    - contextPath: Docker.DistributionInspectResponse.Platforms.OS
-      type: String
-    - contextPath: Docker.DistributionInspectResponse.Platforms.OSVersion
-      type: String
-    - contextPath: Docker.DistributionInspectResponse.Platforms.Variant
-      type: String
-  - arguments:
-    - default: false
-      description: Exec instance ID
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Inspect an exec instance
-    execution: false
-    name: docker-exec-inspect
-    outputs:
-    - contextPath: Docker.ExecInspectResponse.CanRemove
-      type: Boolean
-    - contextPath: Docker.ExecInspectResponse.DetachKeys
-      type: String
-    - contextPath: Docker.ExecInspectResponse.ID
-      type: String
-    - contextPath: Docker.ExecInspectResponse.Running
-      type: Boolean
-    - contextPath: Docker.ExecInspectResponse.ExitCode
-      type: Number
-    - contextPath: Docker.ExecInspectResponse.OpenStdin
-      type: Boolean
-    - contextPath: Docker.ExecInspectResponse.OpenStderr
-      type: Boolean
-    - contextPath: Docker.ExecInspectResponse.OpenStdout
-      type: Boolean
-    - contextPath: Docker.ExecInspectResponse.ContainerID
-      type: String
-    - contextPath: Docker.ExecInspectResponse.Pid
-      description: The system process ID for the exec process.
-      type: Number
-  - arguments:
-    - default: false
-      description: Exec instance ID
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Height of the TTY session in characters
-      isArray: false
-      name: h
-      required: false
-      secret: false
-    - default: false
-      description: Width of the TTY session in characters
-      isArray: false
-      name: w
-      required: false
-      secret: false
-    deprecated: false
-    description: Resize an exec instance
-    execution: false
-    name: docker-exec-resize
-  - arguments:
-    - default: false
-      description: Detach from the command.
-      isArray: false
-      name: execstartconfig_detach
-      required: false
-      secret: false
-    - default: false
-      description: Allocate a pseudo-TTY.
-      isArray: false
-      name: execstartconfig_tty
-      required: false
-      secret: false
-    - default: false
-      description: Exec instance ID
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Start an exec instance
-    execution: false
-    name: docker-exec-start
-  - arguments:
-    - default: false
-      description: 'A tar archive compressed with one of the following algorithms:
-        identity (no compression), gzip, bzip2, xz.'
-      isArray: false
-      name: input_stream
-      required: false
-      secret: false
-    - default: false
-      description: Path within the build context to the `Dockerfile`. This is ignored
-        if `remote` is specified and points to an external `Dockerfile`.
-      isArray: false
-      name: dockerfile
-      required: false
-      secret: false
-    - default: false
-      description: A name and optional tag to apply to the image in the `name:tag`
-        format. If you omit the tag the default `latest` value is assumed. You can
-        provide several `t`  meters.
-      isArray: false
-      name: t
-      required: false
-      secret: false
-    - default: false
-      description: Extra hosts to add to /etc/hosts
-      isArray: false
-      name: extrahosts
-      required: false
-      secret: false
-    - default: false
-      description: A Git repository URI or HTTP/HTTPS context URI. If the URI points
-        to a single text file, the file’s contents are placed into a file called `Dockerfile`
-        and the image is built from that file. If the URI points to a tarball, the
-        file is downloaded by the daemon and the contents therein used as the context
-        for the build. If the URI points to a tarball and the `dockerfile`  meter
-        is also specified, there must be a file with the corresponding path inside
-        the tarball.
-      isArray: false
-      name: remote
-      required: false
-      secret: false
-    - default: false
-      description: Suppress verbose build output.
-      isArray: false
-      name: q
-      required: false
-      secret: false
-    - default: false
-      description: Do not use the cache when building the image.
-      isArray: false
-      name: nocache
-      required: false
-      secret: false
-    - default: false
-      description: JSON array of images used for build cache resolution.
-      isArray: false
-      name: cachefrom
-      required: false
-      secret: false
-    - default: false
-      description: Attempt to pull the image even if an older image exists locally.
-      isArray: false
-      name: pull
-      required: false
-      secret: false
-    - default: false
-      description: Remove intermediate containers after a successful build.
-      isArray: false
-      name: rm
-      required: false
-      secret: false
-    - default: false
-      description: Always remove intermediate containers, even upon failure.
-      isArray: false
-      name: forcerm
-      required: false
-      secret: false
-    - default: false
-      description: Set memory limit for build.
-      isArray: false
-      name: memory
-      required: false
-      secret: false
-    - default: false
-      description: Total memory (memory + swap). Set as `-1` to disable swap.
-      isArray: false
-      name: memswap
-      required: false
-      secret: false
-    - default: false
-      description: CPU shares (relative weight).
-      isArray: false
-      name: cpushares
-      required: false
-      secret: false
-    - default: false
-      description: CPUs in which to allow execution (e.g., `0-3`, `0,1`).
-      isArray: false
-      name: cpusetcpus
-      required: false
-      secret: false
-    - default: false
-      description: The length of a CPU period in microseconds.
-      isArray: false
-      name: cpuperiod
-      required: false
-      secret: false
-    - default: false
-      description: Microseconds of CPU time that the container can get in a CPU period.
-      isArray: false
-      name: cpuquota
-      required: false
-      secret: false
-    - default: false
-      description: 'JSON map of string pairs for build-time variables. Users pass
-        these values at build-time. Docker uses the buildargs as the environment context
-        for commands run via the `Dockerfile` RUN instruction, or for variable expansion
-        in other `Dockerfile` instructions. This is not meant for passing secret values.  For
-        example, the build arg `FOO=bar` would become `{"FOO":"bar"}` in JSON. This
-        would result in the the query  meter `buildargs={"FOO":"bar"}`. Note that
-        `{"FOO":"bar"}` should be URI component encoded.  [Read more about the buildargs
-        instruction.](https://docs.docker.com/engine/reference/builder/#arg) '
-      isArray: false
-      name: buildargs
-      required: false
-      secret: false
-    - default: false
-      description: Size of `/dev/shm` in bytes. The size must be greater than 0. If
-        omitted the system uses 64MB.
-      isArray: false
-      name: shmsize
-      required: false
-      secret: false
-    - default: false
-      description: 'Squash the resulting images layers into a single layer.  (Experimental
-        release only.) '
-      isArray: false
-      name: squash
-      required: false
-      secret: false
-    - default: false
-      description: Arbitrary key/value labels to set on the image, as a JSON map of
-        string pairs.
-      isArray: false
-      name: labels
-      required: false
-      secret: false
-    - default: false
-      description: 'Sets the networking mode for the run commands during build. Supported
-        standard values are: ` idge`, `host`, `none`, and `container: name|id `. Any
-        other value is taken as a custom network''s name or ID to which this container
-        should connect to. '
-      isArray: false
-      name: networkmode
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      isArray: false
-      name: Content-type
-      predefined:
-      - application/x-tar
-      required: false
-      secret: false
-    - default: false
-      description: 'This is a base64-encoded JSON object with auth configurations
-        for multiple registries that a build may refer to.  The key is a registry
-        URL, and the value is an auth configuration object, [as described in the authentication
-        section](#section/Authentication). For example:  ``` {   "docker.example.com":
-        {     "username": "janedoe",     "password": "hunter2"   },   "https://index.docker.io/v1/":
-        {     "username": "mobydock",     "password": "conta1n3rize14"   } } ```  Only
-        the registry domain name (and port if not the default 443) are required. However,
-        for legacy reasons, the Docker Hub registry must be specified with both a
-        `https://` prefix and a `/v1/` suffix even though Docker will prefer to use
-        the v2 registry API. '
-      isArray: false
-      name: X-Registry-Config
-      required: false
-      secret: false
-    - default: false
-      description: Platform in the format os[/arch[/variant]]
-      isArray: false
-      name: platform
-      required: false
-      secret: false
-    - default: false
-      description: Target build stage
-      isArray: false
-      name: target
-      required: false
-      secret: false
-    - default: false
-      description: BuildKit output configuration
-      isArray: false
-      name: outputs
-      required: false
-      secret: false
-    deprecated: false
-    description: Build an image
-    execution: false
-    name: docker-image-build
-  - arguments:
-    - default: false
-      description: The hostname to use for the container, as a valid RFC 1123 hostname.
-      isArray: false
-      name: containerconfig_hostname
-      required: false
-      secret: false
-    - default: false
-      description: The domain name to use for the container.
-      isArray: false
-      name: containerconfig_domainname
-      required: false
-      secret: false
-    - default: false
-      description: The user that commands are run as inside the container.
-      isArray: false
-      name: containerconfig_user
-      required: false
-      secret: false
-    - default: false
-      description: Whether to attach to `stdin`.
-      isArray: false
-      name: containerconfig_attachstdin
-      required: false
-      secret: false
-    - default: false
-      description: Whether to attach to `stdout`.
-      isArray: false
-      name: containerconfig_attachstdout
-      required: false
-      secret: false
-    - default: false
-      description: Whether to attach to `stderr`.
-      isArray: false
-      name: containerconfig_attachstderr
-      required: false
-      secret: false
-    - default: false
-      description: 'An object mapping ports to an empty object in the form:  `{" port
-        / tcp|udp|sctp ": {}}` '
-      isArray: false
-      name: containerconfig_exposedports
-      required: false
-      secret: false
-    - default: false
-      description: 'Attach standard streams to a TTY, including `stdin` if it is not
-        closed. '
-      isArray: false
-      name: containerconfig_tty
-      required: false
-      secret: false
-    - default: false
-      description: Open `stdin`
-      isArray: false
-      name: containerconfig_openstdin
-      required: false
-      secret: false
-    - default: false
-      description: Close `stdin` after one attached client disconnects
-      isArray: false
-      name: containerconfig_stdinonce
-      required: false
-      secret: false
-    - default: false
-      description: 'A list of environment variables to set inside the container in
-        the form `["VAR=value", ...]`. A variable without `=` is removed from the
-        environment, rather than to have an empty value. '
-      isArray: true
-      name: containerconfig_env
-      required: false
-      secret: false
-    - default: false
-      description: 'Command to run specified as a string or an array of strings. '
-      isArray: true
-      name: containerconfig_cmd
-      required: false
-      secret: false
-    - default: false
-      description: containerconfig_healthcheck Test
-      isArray: false
-      name: containerconfig_healthcheck_Test
-      required: false
-      secret: false
-    - default: false
-      description: containerconfig_healthcheck Interval
-      isArray: false
-      name: containerconfig_healthcheck_Interval
-      required: false
-      secret: false
-    - default: false
-      description: containerconfig_healthcheck Timeout
-      isArray: false
-      name: containerconfig_healthcheck_Timeout
-      required: false
-      secret: false
-    - default: false
-      description: containerconfig_healthcheck Retries
-      isArray: false
-      name: containerconfig_healthcheck_Retries
-      required: false
-      secret: false
-    - default: false
-      description: containerconfig_healthcheck StartPeriod
-      isArray: false
-      name: containerconfig_healthcheck_StartPeriod
-      required: false
-      secret: false
-    - default: false
-      description: Command is already escaped (Windows only)
-      isArray: false
-      name: containerconfig_argsescaped
-      required: false
-      secret: false
-    - default: false
-      description: 'The name of the image to use when creating the container/ '
-      isArray: false
-      name: containerconfig_image
-      required: false
-      secret: false
-    - default: false
-      description: 'An object mapping mount point paths inside the container to empty
-        objects. '
-      isArray: false
-      name: containerconfig_volumes
-      required: false
-      secret: false
-    - default: false
-      description: The working directory for commands to run in.
-      isArray: false
-      name: containerconfig_workingdir
-      required: false
-      secret: false
-    - default: false
-      description: 'The entry point for the container as a string or an array of strings.  If
-        the array consists of exactly one empty string (`[""]`) then the entry point
-        is reset to system default (i.e., the entry point used by docker when there
-        is no `ENTRYPOINT` instruction in the `Dockerfile`). '
-      isArray: true
-      name: containerconfig_entrypoint
-      required: false
-      secret: false
-    - default: false
-      description: Disable networking for the container.
-      isArray: false
-      name: containerconfig_networkdisabled
-      required: false
-      secret: false
-    - default: false
-      description: MAC address of the container.
-      isArray: false
-      name: containerconfig_macaddress
-      required: false
-      secret: false
-    - default: false
-      description: '`ONBUILD` metadata that were defined in the image''s `Dockerfile`. '
-      isArray: true
-      name: containerconfig_onbuild
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: containerconfig_labels
-      required: false
-      secret: false
-    - default: false
-      description: 'Signal to stop a container as a string or unsigned integer. '
-      isArray: false
-      name: containerconfig_stopsignal
-      required: false
-      secret: false
-    - default: false
-      description: Timeout to stop a container in seconds.
-      isArray: false
-      name: containerconfig_stoptimeout
-      required: false
-      secret: false
-    - default: false
-      description: 'Shell for when `RUN`, `CMD`, and `ENTRYPOINT` uses a shell. '
-      isArray: true
-      name: containerconfig_shell
-      required: false
-      secret: false
-    - default: false
-      description: The ID or name of the container to commit
-      isArray: false
-      name: container
-      required: false
-      secret: false
-    - default: false
-      description: Repository name for the created image
-      isArray: false
-      name: repo
-      required: false
-      secret: false
-    - default: false
-      description: Tag name for the create image
-      isArray: false
-      name: tag
-      required: false
-      secret: false
-    - default: false
-      description: Commit message
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
-      description: Author of the image (e.g., `John Hannibal Smith  hannibal@a-team.com
-        `)
-      isArray: false
-      name: author
-      required: false
-      secret: false
-    - default: false
-      description: Whether to pause the container before committing
-      isArray: false
-      name: pause
-      required: false
-      secret: false
-    - default: false
-      description: '`Dockerfile` instructions to apply while committing'
-      isArray: false
-      name: changes
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a new image from a container
-    execution: false
-    name: docker-image-commit
-  - arguments:
-    - default: false
-      description: Name of the image to pull. The name may include a tag or digest.
-        This  meter may only be used when pulling an image. The pull is cancelled
-        if the HTTP connection is closed.
-      isArray: false
-      name: from_image
-      required: false
-      secret: false
-    - default: false
-      description: Source to import. The value may be a URL from which the image can
-        be retrieved or `-` to read the image from the request body. This  meter may
-        only be used when importing an image.
-      isArray: false
-      name: from_src
-      required: false
-      secret: false
-    - default: false
-      description: Repository name given to an image when it is imported. The repo
-        may include a tag. This  meter may only be used when importing an image.
-      isArray: false
-      name: repo
-      required: false
-      secret: false
-    - default: false
-      description: Tag or digest. If empty when pulling an image, this causes all
-        tags for the given image to be pulled.
-      isArray: false
-      name: tag
-      required: false
-      secret: false
-    - default: false
-      description: Set commit message for imported image.
-      isArray: false
-      name: message
-      required: false
-      secret: false
-    - default: false
-      description: Image content if the value `-` has been specified in from_src query  meter
-      isArray: false
-      name: input_image
-      required: false
-      secret: false
-    - default: false
-      description: 'A base64url-encoded auth configuration.  Refer to the [authentication
-        section](#section/Authentication) for details. '
-      isArray: false
-      name: X-Registry-Auth
-      required: false
-      secret: false
-    - default: false
-      description: Platform in the format os[/arch[/variant]]
-      isArray: false
-      name: platform
-      required: false
-      secret: false
-    deprecated: false
-    description: Create an image
-    execution: false
-    name: docker-image-create
-  - arguments:
-    - default: false
-      description: Image name or ID
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: Remove the image even if it is being used by stopped containers
-        or has other tags
-      isArray: false
-      name: force
-      required: false
-      secret: false
-    - default: false
-      description: Do not delete untagged parent images
-      isArray: false
-      name: noprune
-      required: false
-      secret: false
-    deprecated: false
-    description: Remove an image
-    execution: false
-    name: docker-image-delete
-    outputs:
-    - contextPath: Docker.ImageDeleteResponseItem.Untagged
-      description: The image ID of an image that was untagged
-      type: String
-    - contextPath: Docker.ImageDeleteResponseItem.Deleted
-      description: The image ID of an image that was deleted
-      type: String
-  - arguments:
-    - default: false
-      description: Image name or ID
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    deprecated: false
-    description: Export an image
-    execution: false
-    name: docker-image-get
-  - arguments:
-    - default: false
-      description: Image names to filter by
-      isArray: true
-      name: names
-      required: false
-      secret: false
-    deprecated: false
-    description: Export several images
-    execution: false
-    name: docker-image-get-all
   - arguments:
     - default: false
       description: Image name or ID
@@ -2073,14 +832,19 @@ script:
     name: docker-image-history
     outputs:
     - contextPath: Docker.HistoryResponseItem.Id
+      description: Docker HistoryResponseItem Id
       type: String
     - contextPath: Docker.HistoryResponseItem.Created
+      description: Docker HistoryResponseItem Created
       type: Number
     - contextPath: Docker.HistoryResponseItem.CreatedBy
+      description: Docker HistoryResponseItem CreatedBy
       type: String
     - contextPath: Docker.HistoryResponseItem.Size
+      description: Docker HistoryResponseItem Size
       type: Number
     - contextPath: Docker.HistoryResponseItem.Comment
+      description: Docker HistoryResponseItem Comment
       type: String
   - arguments:
     - default: false
@@ -2095,28 +859,40 @@ script:
     name: docker-image-inspect
     outputs:
     - contextPath: Docker.Image.Id
+      description: Docker Image ID
       type: String
     - contextPath: Docker.Image.Parent
+      description: Docker Image Parent
       type: String
     - contextPath: Docker.Image.Comment
+      description: Docker Image Comment
       type: String
     - contextPath: Docker.Image.Created
+      description: Docker Image Created
       type: String
     - contextPath: Docker.Image.Container
+      description: Docker Image Container
       type: String
     - contextPath: Docker.Image.DockerVersion
+      description: Docker Image DockerVersion
       type: String
     - contextPath: Docker.Image.Author
+      description: Docker Image Author
       type: String
     - contextPath: Docker.Image.Architecture
+      description: Docker Image Architecture
       type: String
     - contextPath: Docker.Image.Os
+      description: Docker Image Os
       type: String
     - contextPath: Docker.Image.OsVersion
+      description: Docker Image OsVersion
       type: String
     - contextPath: Docker.Image.Size
+      description: Docker Image Size
       type: Number
     - contextPath: Docker.Image.VirtualSize
+      description: Docker Image VirtualSize
       type: Number
   - arguments:
     - default: false
@@ -2127,11 +903,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the images list.  Available filters:  - `before`=(` image-name
-        [: tag ]`,  ` image id ` or ` image@digest `) - `dangling=true` - `label=key`
-        or `label="key=value"` of an image label - `reference`=(` image-name [: tag
-        ]`) - `since`=(` image-name [: tag ]`,  ` image id ` or ` image@digest `) '
+      description: A JSON encoded value of the filters
       isArray: false
       name: filters
       required: false
@@ -2148,47 +920,29 @@ script:
     name: docker-image-list
     outputs:
     - contextPath: Docker.ImageSummary.Id
+      description: Docker Image Summary ID
       type: String
     - contextPath: Docker.ImageSummary.ParentId
+      description: Docker Image Summary ParentId
       type: String
     - contextPath: Docker.ImageSummary.Created
+      description: Docker Image Summary Created
       type: Number
     - contextPath: Docker.ImageSummary.Size
+      description: Docker Image Summary Size
       type: Number
     - contextPath: Docker.ImageSummary.SharedSize
+      description: Docker Image Summary SharedSize
       type: Number
     - contextPath: Docker.ImageSummary.VirtualSize
+      description: Docker Image Summary VirtualSize
       type: Number
     - contextPath: Docker.ImageSummary.Containers
+      description: Docker Image Summary Containers
       type: Number
   - arguments:
     - default: false
-      description: Tar archive containing images
-      isArray: false
-      name: images_tarball
-      required: false
-      secret: false
-    - default: false
-      description: Suppress progress details during load.
-      isArray: false
-      name: quiet
-      required: false
-      secret: false
-    deprecated: false
-    description: Import images
-    execution: false
-    name: docker-image-load
-  - arguments:
-    - default: false
-      description: 'Filters to process on the prune list, encoded as JSON (a `map[string][]string`).
-        Available filters:  - `dangling= boolean ` When set to `true` (or `1`), prune
-        only    unused  and  untagged images. When set to `false`    (or `0`), all
-        unused images are pruned. - `until= string ` Prune images created before this
-        timestamp. The ` timestamp ` can be Unix timestamps, date formatted timestamps,
-        or Go duration strings (e.g. `10m`, `1h30m`) computed relative to the daemon
-        machine’s time. - `label` (`label= key `, `label= key = value `, `label!=
-        key `, or `label!= key = value `) Prune images with (or without, in case `label!=...`
-        is used) the specified labels. '
+      description: Filters to process on the prune list
       isArray: false
       name: filters
       required: false
@@ -2207,30 +961,6 @@ script:
     - contextPath: Docker.ImagePruneResponse.SpaceReclaimed
       description: Disk space reclaimed in bytes
       type: Number
-  - arguments:
-    - default: false
-      description: Image name or ID.
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: The tag to associate with the image on the registry.
-      isArray: false
-      name: tag
-      required: false
-      secret: false
-    - default: false
-      description: 'A base64url-encoded auth configuration.  Refer to the [authentication
-        section](#section/Authentication) for details. '
-      isArray: false
-      name: X-Registry-Auth
-      required: true
-      secret: false
-    deprecated: false
-    description: Push an image
-    execution: false
-    name: docker-image-push
   - arguments:
     - default: false
       description: Term to search
@@ -2259,133 +989,20 @@ script:
     name: docker-image-search
     outputs:
     - contextPath: Docker.ImageSearchResponseItem.description
+      description: Docker ImageSearchResponseItem description
       type: String
     - contextPath: Docker.ImageSearchResponseItem.is_official
+      description: Docker ImageSearchResponseItem is_official
       type: Boolean
     - contextPath: Docker.ImageSearchResponseItem.is_automated
+      description: Docker ImageSearchResponseItem is_automated
       type: Boolean
     - contextPath: Docker.ImageSearchResponseItem.name
+      description: Docker ImageSearchResponseItem name
       type: String
     - contextPath: Docker.ImageSearchResponseItem.star_count
+      description: Docker ImageSearchResponseItem star_count
       type: Number
-  - arguments:
-    - default: false
-      description: Image name or ID to tag.
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: The repository to tag in. For example, `someuser/someimage`.
-      isArray: false
-      name: repo
-      required: false
-      secret: false
-    - default: false
-      description: The name of the new tag.
-      isArray: false
-      name: tag
-      required: false
-      secret: false
-    deprecated: false
-    description: Tag an image
-    execution: false
-    name: docker-image-tag
-  - arguments:
-    - default: false
-      description: Network ID or name
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: The ID or name of the container to connect to the network.
-      isArray: false
-      name: container_container
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig IPAMConfig
-      isArray: false
-      name: container_endpointconfig_IPAMConfig
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig Links
-      isArray: false
-      name: container_endpointconfig_Links
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig Aliases
-      isArray: false
-      name: container_endpointconfig_Aliases
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig NetworkID
-      isArray: false
-      name: container_endpointconfig_NetworkID
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig EndpointID
-      isArray: false
-      name: container_endpointconfig_EndpointID
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig Gateway
-      isArray: false
-      name: container_endpointconfig_Gateway
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig IPAddress
-      isArray: false
-      name: container_endpointconfig_IPAddress
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig IPPrefixLen
-      isArray: false
-      name: container_endpointconfig_IPPrefixLen
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig IPv6Gateway
-      isArray: false
-      name: container_endpointconfig_IPv6Gateway
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig GlobalIPv6Address
-      isArray: false
-      name: container_endpointconfig_GlobalIPv6Address
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig GlobalIPv6PrefixLen
-      isArray: false
-      name: container_endpointconfig_GlobalIPv6PrefixLen
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig MacAddress
-      isArray: false
-      name: container_endpointconfig_MacAddress
-      required: false
-      secret: false
-    - default: false
-      description: container_endpointconfig DriverOpts
-      isArray: false
-      name: container_endpointconfig_DriverOpts
-      required: false
-      secret: false
-    deprecated: false
-    description: Connect a container to a network
-    execution: false
-    name: docker-network-connect
   - arguments:
     - default: false
       description: The network's name.
@@ -2472,102 +1089,7 @@ script:
     name: docker-network-create
   - arguments:
     - default: false
-      description: Network ID or name
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Remove a network
-    execution: false
-    name: docker-network-delete
-  - arguments:
-    - default: false
-      description: Network ID or name
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: 'The ID or name of the container to disconnect from the network. '
-      isArray: false
-      name: container
-      required: false
-      secret: false
-    - default: false
-      description: 'Force the container to disconnect from the network. '
-      isArray: false
-      name: force
-      required: false
-      secret: false
-    deprecated: false
-    description: Disconnect a container from a network
-    execution: false
-    name: docker-network-disconnect
-  - arguments:
-    - default: false
-      description: Network ID or name
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Detailed inspect output for troubleshooting
-      isArray: false
-      name: verbose
-      required: false
-      secret: false
-    - default: false
-      description: Filter the network by scope (swarm, global, or local)
-      isArray: false
-      name: scope
-      required: false
-      secret: false
-    deprecated: false
-    description: Inspect a network
-    execution: false
-    name: docker-network-inspect
-    outputs:
-    - contextPath: Docker.Network.Name
-      type: String
-    - contextPath: Docker.Network.Id
-      type: String
-    - contextPath: Docker.Network.Created
-      type: String
-    - contextPath: Docker.Network.Scope
-      type: String
-    - contextPath: Docker.Network.Driver
-      type: String
-    - contextPath: Docker.Network.EnableIPv6
-      type: Boolean
-    - contextPath: Docker.Network.Internal
-      type: Boolean
-    - contextPath: Docker.Network.Attachable
-      type: Boolean
-    - contextPath: Docker.Network.Ingress
-      type: Boolean
-    - contextPath: Docker.Network.Containers.Name
-      type: String
-    - contextPath: Docker.Network.Containers.EndpointID
-      type: String
-    - contextPath: Docker.Network.Containers.MacAddress
-      type: String
-    - contextPath: Docker.Network.Containers.IPv4Address
-      type: String
-    - contextPath: Docker.Network.Containers.IPv6Address
-      type: String
-  - arguments:
-    - default: false
-      description: 'JSON encoded value of the filters (a `map[string][]string`) to
-        process on the networks list.  Available filters:  - `dangling= boolean `
-        When set to `true` (or `1`), returns all    networks that are not in use by
-        a container. When set to `false`    (or `0`), only networks that are in use
-        by one or more    containers are returned. - `driver= driver-name ` Matches
-        a network''s driver. - `id= network-id ` Matches all or part of a network
-        ID. - `label= key ` or `label= key = value ` of a network label. - `name=
-        network-name ` Matches all or part of a network name. - `scope=["swarm"|"global"|"local"]`
-        Filters networks by scope (`swarm`, `global`, or `local`). - `type=["custom"|"builtin"]`
-        Filters networks by type. The `custom` keyword returns all user-defined networks. '
+      description: 'JSON encoded value of the filters  '
       isArray: false
       name: filters
       required: false
@@ -2578,42 +1100,50 @@ script:
     name: docker-network-list
     outputs:
     - contextPath: Docker.Network.Name
+      description: Docker Network Name
       type: String
     - contextPath: Docker.Network.Id
+      description: Docker Network Id
       type: String
     - contextPath: Docker.Network.Created
+      description: Docker Network Created
       type: String
     - contextPath: Docker.Network.Scope
+      description: Docker Network Scope
       type: String
     - contextPath: Docker.Network.Driver
+      description: Docker Network Driver
       type: String
     - contextPath: Docker.Network.EnableIPv6
+      description: Docker Network EnableIPv6
       type: Boolean
     - contextPath: Docker.Network.Internal
+      description: Docker Network Internal
       type: Boolean
     - contextPath: Docker.Network.Attachable
+      description: Docker Network Attachable
       type: Boolean
     - contextPath: Docker.Network.Ingress
+      description: Docker Network Ingress
       type: Boolean
     - contextPath: Docker.Network.Containers.Name
+      description: Docker Network Containers Name
       type: String
     - contextPath: Docker.Network.Containers.EndpointID
+      description: Docker Network Containers EndpointID
       type: String
     - contextPath: Docker.Network.Containers.MacAddress
+      description: Docker Network Containers MacAddress
       type: String
     - contextPath: Docker.Network.Containers.IPv4Address
+      description: Docker Network Containers IPv4Address
       type: String
     - contextPath: Docker.Network.Containers.IPv6Address
+      description: Docker Network Containers IPv6Address
       type: String
   - arguments:
     - default: false
-      description: 'Filters to process on the prune list, encoded as JSON (a `map[string][]string`).  Available
-        filters: - `until= timestamp ` Prune networks created before this timestamp.
-        The ` timestamp ` can be Unix timestamps, date formatted timestamps, or Go
-        duration strings (e.g. `10m`, `1h30m`) computed relative to the daemon machine’s
-        time. - `label` (`label= key `, `label= key = value `, `label!= key `, or
-        `label!= key = value `) Prune networks with (or without, in case `label!=...`
-        is used) the specified labels. '
+      description: 'Filters to process on the prune list. '
       isArray: false
       name: filters
       required: false
@@ -2629,29 +1159,13 @@ script:
       name: id
       required: true
       secret: false
-    - default: false
-      description: Force remove a node from the swarm
-      isArray: false
-      name: force
-      required: false
-      secret: false
-    deprecated: false
-    description: Delete a node
-    execution: false
-    name: docker-node-delete
-  - arguments:
-    - default: false
-      description: The ID or name of the node
-      isArray: false
-      name: id
-      required: true
-      secret: false
     deprecated: false
     description: Inspect a node
     execution: false
     name: docker-node-inspect
     outputs:
     - contextPath: Docker.Node.ID
+      description: Docker Node ID
       type: String
     - contextPath: Docker.Node.CreatedAt
       description: 'Date and time at which the node was added to the swarm in [RFC
@@ -2676,6 +1190,7 @@ script:
     name: docker-node-list
     outputs:
     - contextPath: Docker.Node.ID
+      description: Docker Node ID
       type: String
     - contextPath: Docker.Node.CreatedAt
       description: 'Date and time at which the node was added to the swarm in [RFC
@@ -2685,57 +1200,6 @@ script:
       description: 'Date and time at which the node was last updated in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
         format with nano-seconds. '
       type: String
-  - arguments:
-    - default: false
-      description: The ID of the node
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Name for the node.
-      isArray: false
-      name: nodespec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: nodespec_labels
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Role of the node.
-      isArray: false
-      name: nodespec_role
-      predefined:
-      - worker
-      - manager
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Availability of the node.
-      isArray: false
-      name: nodespec_availability
-      predefined:
-      - active
-      - pause
-      - drain
-      required: false
-      secret: false
-    - default: false
-      description: 'The version number of the node object being updated. This is required
-        to avoid conflicting writes. '
-      isArray: false
-      name: version
-      required: true
-      secret: false
-    deprecated: false
-    description: Update a node
-    execution: false
-    name: docker-node-update
   - arguments:
     - default: false
       description: User-defined name of the secret.
@@ -2793,26 +1257,18 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a secret
-    execution: false
-    name: docker-secret-delete
-  - arguments:
-    - default: false
-      description: ID of the secret
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
     description: Inspect a secret
     execution: false
     name: docker-secret-inspect
     outputs:
     - contextPath: Docker.Secret.ID
+      description: Docker Secret ID
       type: String
     - contextPath: Docker.Secret.CreatedAt
+      description: Docker Secret CreatedAt
       type: String
     - contextPath: Docker.Secret.UpdatedAt
+      description: Docker Secret UpdatedAt
       type: String
   - arguments:
     - default: false
@@ -2830,624 +1286,14 @@ script:
     name: docker-secret-list
     outputs:
     - contextPath: Docker.Secret.ID
+      description: Docker Secret ID
       type: String
     - contextPath: Docker.Secret.CreatedAt
+      description: Docker Secret CreatedAt
       type: String
     - contextPath: Docker.Secret.UpdatedAt
+      description: Docker Secret UpdatedAt
       type: String
-  - arguments:
-    - default: false
-      description: The ID or name of the secret
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: User-defined name of the secret.
-      isArray: false
-      name: secretspec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: secretspec_labels
-      required: false
-      secret: false
-    - default: false
-      description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
-        data to store as secret.  This field is only used to _create_ a secret, and
-        is not returned by other endpoints. '
-      isArray: false
-      name: secretspec_data
-      required: false
-      secret: false
-    - default: false
-      description: secretspec_driver Name
-      isArray: false
-      name: secretspec_driver_Name
-      required: false
-      secret: false
-    - default: false
-      description: secretspec_driver Options
-      isArray: false
-      name: secretspec_driver_Options
-      required: false
-      secret: false
-    - default: false
-      description: secretspec_templating Name
-      isArray: false
-      name: secretspec_templating_Name
-      required: false
-      secret: false
-    - default: false
-      description: secretspec_templating Options
-      isArray: false
-      name: secretspec_templating_Options
-      required: false
-      secret: false
-    - default: false
-      description: 'The version number of the secret object being updated. This is
-        required to avoid conflicting writes. '
-      isArray: false
-      name: version
-      required: true
-      secret: false
-    deprecated: false
-    description: Update a Secret
-    execution: false
-    name: docker-secret-update
-  - arguments:
-    - default: false
-      description: Name of the service.
-      isArray: false
-      name: servicespec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: servicespec_labels
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate PluginSpec
-      isArray: false
-      name: servicespec_tasktemplate_PluginSpec
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate ContainerSpec
-      isArray: false
-      name: servicespec_tasktemplate_ContainerSpec
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate NetworkAttachmentSpec
-      isArray: false
-      name: servicespec_tasktemplate_NetworkAttachmentSpec
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Resources
-      isArray: false
-      name: servicespec_tasktemplate_Resources
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate RestartPolicy
-      isArray: false
-      name: servicespec_tasktemplate_RestartPolicy
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Placement
-      isArray: false
-      name: servicespec_tasktemplate_Placement
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate ForceUpdate
-      isArray: false
-      name: servicespec_tasktemplate_ForceUpdate
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Runtime
-      isArray: false
-      name: servicespec_tasktemplate_Runtime
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Networks
-      isArray: false
-      name: servicespec_tasktemplate_Networks
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate LogDriver
-      isArray: false
-      name: servicespec_tasktemplate_LogDriver
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode Replicated
-      isArray: false
-      name: servicespec_mode_Replicated
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode Global
-      isArray: false
-      name: servicespec_mode_Global
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode ReplicatedJob
-      isArray: false
-      name: servicespec_mode_ReplicatedJob
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode GlobalJob
-      isArray: false
-      name: servicespec_mode_GlobalJob
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Parallelism
-      isArray: false
-      name: servicespec_updateconfig_Parallelism
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Delay
-      isArray: false
-      name: servicespec_updateconfig_Delay
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig FailureAction
-      isArray: false
-      name: servicespec_updateconfig_FailureAction
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Monitor
-      isArray: false
-      name: servicespec_updateconfig_Monitor
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig MaxFailureRatio
-      isArray: false
-      name: servicespec_updateconfig_MaxFailureRatio
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Order
-      isArray: false
-      name: servicespec_updateconfig_Order
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Parallelism
-      isArray: false
-      name: servicespec_rollbackconfig_Parallelism
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Delay
-      isArray: false
-      name: servicespec_rollbackconfig_Delay
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig FailureAction
-      isArray: false
-      name: servicespec_rollbackconfig_FailureAction
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Monitor
-      isArray: false
-      name: servicespec_rollbackconfig_Monitor
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig MaxFailureRatio
-      isArray: false
-      name: servicespec_rollbackconfig_MaxFailureRatio
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Order
-      isArray: false
-      name: servicespec_rollbackconfig_Order
-      required: false
-      secret: false
-    - default: false
-      description: Specifies which networks the service should attach to.
-      isArray: true
-      name: servicespec_networks
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_endpointspec Mode
-      isArray: false
-      name: servicespec_endpointspec_Mode
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_endpointspec Ports
-      isArray: false
-      name: servicespec_endpointspec_Ports
-      required: false
-      secret: false
-    - default: false
-      description: 'A base64url-encoded auth configuration for pulling from private
-        registries.  Refer to the [authentication section](#section/Authentication)
-        for details. '
-      isArray: false
-      name: X-Registry-Auth
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a service
-    execution: false
-    name: docker-service-create
-  - arguments:
-    - default: false
-      description: ID or name of service.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Delete a service
-    execution: false
-    name: docker-service-delete
-  - arguments:
-    - default: false
-      description: ID or name of service.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Fill empty fields with default values.
-      isArray: false
-      name: insert_defaults
-      required: false
-      secret: false
-    deprecated: false
-    description: Inspect a service
-    execution: false
-    name: docker-service-inspect
-    outputs:
-    - contextPath: Docker.Service.ID
-      type: String
-    - contextPath: Docker.Service.CreatedAt
-      type: String
-    - contextPath: Docker.Service.UpdatedAt
-      type: String
-  - arguments:
-    - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the services list.  Available filters:  - `id= service id `
-        - `label= service label ` - `mode=["replicated"|"global"]` - `name= service
-        name ` '
-      isArray: false
-      name: filters
-      required: false
-      secret: false
-    - default: false
-      description: 'Include service status, with count of running and desired tasks. '
-      isArray: false
-      name: status
-      required: false
-      secret: false
-    deprecated: false
-    description: List services
-    execution: false
-    name: docker-service-list
-    outputs:
-    - contextPath: Docker.Service.ID
-      type: String
-    - contextPath: Docker.Service.CreatedAt
-      type: String
-    - contextPath: Docker.Service.UpdatedAt
-      type: String
-  - arguments:
-    - default: false
-      description: ID or name of the service
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Show service context and extra details provided to logs.
-      isArray: false
-      name: details
-      required: false
-      secret: false
-    - default: false
-      description: Keep connection after returning logs.
-      isArray: false
-      name: follow
-      required: false
-      secret: false
-    - default: false
-      description: Return logs from `stdout`
-      isArray: false
-      name: stdout
-      required: false
-      secret: false
-    - default: false
-      description: Return logs from `stderr`
-      isArray: false
-      name: stderr
-      required: false
-      secret: false
-    - default: false
-      description: Only return logs since this time, as a UNIX timestamp
-      isArray: false
-      name: since
-      required: false
-      secret: false
-    - default: false
-      description: Add timestamps to every log line
-      isArray: false
-      name: timestamps
-      required: false
-      secret: false
-    - default: false
-      description: 'Only return this number of log lines from the end of the logs.
-        Specify as an integer or `all` to output all log lines. '
-      isArray: false
-      name: tail
-      required: false
-      secret: false
-    deprecated: false
-    description: Get service logs
-    execution: false
-    name: docker-service-logs
-  - arguments:
-    - default: false
-      description: ID or name of service.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Name of the service.
-      isArray: false
-      name: servicespec_name
-      required: false
-      secret: false
-    - default: false
-      description: User-defined key/value metadata.
-      isArray: false
-      name: servicespec_labels
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate PluginSpec
-      isArray: false
-      name: servicespec_tasktemplate_PluginSpec
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate ContainerSpec
-      isArray: false
-      name: servicespec_tasktemplate_ContainerSpec
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate NetworkAttachmentSpec
-      isArray: false
-      name: servicespec_tasktemplate_NetworkAttachmentSpec
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Resources
-      isArray: false
-      name: servicespec_tasktemplate_Resources
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate RestartPolicy
-      isArray: false
-      name: servicespec_tasktemplate_RestartPolicy
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Placement
-      isArray: false
-      name: servicespec_tasktemplate_Placement
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate ForceUpdate
-      isArray: false
-      name: servicespec_tasktemplate_ForceUpdate
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Runtime
-      isArray: false
-      name: servicespec_tasktemplate_Runtime
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate Networks
-      isArray: false
-      name: servicespec_tasktemplate_Networks
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_tasktemplate LogDriver
-      isArray: false
-      name: servicespec_tasktemplate_LogDriver
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode Replicated
-      isArray: false
-      name: servicespec_mode_Replicated
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode Global
-      isArray: false
-      name: servicespec_mode_Global
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode ReplicatedJob
-      isArray: false
-      name: servicespec_mode_ReplicatedJob
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_mode GlobalJob
-      isArray: false
-      name: servicespec_mode_GlobalJob
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Parallelism
-      isArray: false
-      name: servicespec_updateconfig_Parallelism
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Delay
-      isArray: false
-      name: servicespec_updateconfig_Delay
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig FailureAction
-      isArray: false
-      name: servicespec_updateconfig_FailureAction
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Monitor
-      isArray: false
-      name: servicespec_updateconfig_Monitor
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig MaxFailureRatio
-      isArray: false
-      name: servicespec_updateconfig_MaxFailureRatio
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_updateconfig Order
-      isArray: false
-      name: servicespec_updateconfig_Order
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Parallelism
-      isArray: false
-      name: servicespec_rollbackconfig_Parallelism
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Delay
-      isArray: false
-      name: servicespec_rollbackconfig_Delay
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig FailureAction
-      isArray: false
-      name: servicespec_rollbackconfig_FailureAction
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Monitor
-      isArray: false
-      name: servicespec_rollbackconfig_Monitor
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig MaxFailureRatio
-      isArray: false
-      name: servicespec_rollbackconfig_MaxFailureRatio
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_rollbackconfig Order
-      isArray: false
-      name: servicespec_rollbackconfig_Order
-      required: false
-      secret: false
-    - default: false
-      description: Specifies which networks the service should attach to.
-      isArray: true
-      name: servicespec_networks
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_endpointspec Mode
-      isArray: false
-      name: servicespec_endpointspec_Mode
-      required: false
-      secret: false
-    - default: false
-      description: servicespec_endpointspec Ports
-      isArray: false
-      name: servicespec_endpointspec_Ports
-      required: false
-      secret: false
-    - default: false
-      description: 'The version number of the service object being updated. This is
-        required to avoid conflicting writes. This version number should be the value
-        as currently set on the service  before  the update. You can find the current
-        version by calling `GET /services/{id}` '
-      isArray: false
-      name: version
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'If the `X-Registry-Auth` header is not specified, this  meter
-        indicates where to find registry authorization credentials. '
-      isArray: false
-      name: registery_auth_from
-      predefined:
-      - spec
-      - previous-spec
-      required: false
-      secret: false
-    - default: false
-      description: 'Set to this  meter to `previous` to cause a server-side rollback
-        to the previous service spec. The supplied spec will be ignored in this case. '
-      isArray: false
-      name: rollback
-      required: false
-      secret: false
-    - default: false
-      description: 'A base64url-encoded auth configuration for pulling from private
-        registries.  Refer to the [authentication section](#section/Authentication)
-        for details. '
-      isArray: false
-      name: X-Registry-Auth
-      required: false
-      secret: false
-    deprecated: false
-    description: Update a service
-    execution: false
-    name: docker-service-update
-  - deprecated: false
-    description: Initialize interactive session
-    execution: false
-    name: docker-session
   - arguments:
     - default: false
       description: 'Listen address used for inter-manager communication, as well as
@@ -3643,59 +1489,34 @@ script:
     - contextPath: Docker.UnlockKeyResponse.UnlockKey
       description: The swarm's unlock key.
       type: String
-  - arguments:
-    - default: false
-      isArray: false
-      name: authconfig_username
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: authconfig_password
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: authconfig_email
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: authconfig_serveraddress
-      required: false
-      secret: false
-    deprecated: false
-    description: Check auth configuration
-    execution: false
-    name: docker-system-auth
-    outputs:
-    - contextPath: Docker.SystemAuthResponse.Status
-      description: The status of the authentication
-      type: String
-    - contextPath: Docker.SystemAuthResponse.IdentityToken
-      description: An opaque token used to authenticate a user after a successful
-        login
-      type: String
   - deprecated: false
     description: Get data usage information
     execution: false
     name: docker-system-data-usage
     outputs:
     - contextPath: Docker.SystemDataUsageResponse.LayersSize
+      description: Docker SystemDataUsageResponse LayersSize
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.Id
+      description: Docker SystemDataUsageResponse Images ID
       type: String
     - contextPath: Docker.SystemDataUsageResponse.Images.ParentId
+      description: Docker SystemDataUsageResponse Images ParentId
       type: String
     - contextPath: Docker.SystemDataUsageResponse.Images.Created
+      description: Docker SystemDataUsageResponse Images Created
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.Size
+      description: Docker SystemDataUsageResponse Images Size
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.SharedSize
+      description: Docker SystemDataUsageResponse Images SharedSize
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.VirtualSize
+      description: Docker SystemDataUsageResponse Images VirtualSize
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.Containers
+      description: Docker SystemDataUsageResponse Images Containers
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Volumes.Name
       description: Name of the volume.
@@ -3714,16 +1535,22 @@ script:
         or `local` for machine level. '
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.ID
+      description: Docker SystemDataUsageResponse BuildCache ID
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Parent
+      description: Docker SystemDataUsageResponse BuildCache Parent
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Type
+      description: Docker SystemDataUsageResponse BuildCache Type
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Description
+      description: Docker SystemDataUsageResponse BuildCache Description
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.InUse
+      description: Docker SystemDataUsageResponse BuildCache InUse
       type: Boolean
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Shared
+      description: Docker SystemDataUsageResponse BuildCache Shared
       type: Boolean
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Size
       description: 'Amount of disk space used by the build cache (in bytes). '
@@ -3737,51 +1564,7 @@ script:
         format with nano-seconds. '
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.UsageCount
-      type: Number
-  - arguments:
-    - default: false
-      description: Show events created since this timestamp then stream new events.
-      isArray: false
-      name: since
-      required: false
-      secret: false
-    - default: false
-      description: Show events created until this timestamp then stop streaming.
-      isArray: false
-      name: until
-      required: false
-      secret: false
-    - default: false
-      description: 'A JSON encoded value of filters (a `map[string][]string`) to process
-        on the event list. Available filters:  - `config= string ` config name or
-        ID - `container= string ` container name or ID - `daemon= string ` daemon
-        name or ID - `event= string ` event type - `image= string ` image name or
-        ID - `label= string ` image or container label - `network= string ` network
-        name or ID - `node= string ` node ID - `plugin`= string  plugin name or ID
-        - `scope`= string  local or swarm - `secret= string ` secret name or ID -
-        `service= string ` service name or ID - `type= string ` object to filter by,
-        one of `container`, `image`, `volume`, `network`, `daemon`, `plugin`, `node`,
-        `service`, `secret` or `config` - `volume= string ` volume name '
-      isArray: false
-      name: filters
-      required: false
-      secret: false
-    deprecated: false
-    description: Monitor events
-    execution: false
-    name: docker-system-events
-    outputs:
-    - contextPath: Docker.SystemEventsResponse.Type
-      description: The type of object emitting the event
-      type: String
-    - contextPath: Docker.SystemEventsResponse.Action
-      description: The type of event
-      type: String
-    - contextPath: Docker.SystemEventsResponse.time
-      description: Timestamp of event
-      type: Number
-    - contextPath: Docker.SystemEventsResponse.timeNano
-      description: Timestamp of event, with nanosecond accuracy
+      description: Docker SystemDataUsageResponse BuildCache UsageCount.
       type: Number
   - deprecated: false
     description: Get system information
@@ -3813,6 +1596,7 @@ script:
       description: Name of the storage driver in use.
       type: String
     - contextPath: Docker.SystemInfo.DriverStatus
+      description: Status of the storage driver in use.
       type: String
     - contextPath: Docker.SystemInfo.DockerRootDir
       description: 'Root directory of persistent Docker state.  Defaults to `/var/lib/docker`
@@ -4007,14 +1791,6 @@ script:
       description: The network pool size
       type: Number
   - deprecated: false
-    description: Ping
-    execution: false
-    name: docker-system-ping
-  - deprecated: false
-    description: Ping
-    execution: false
-    name: docker-system-ping-head
-  - deprecated: false
     description: Get version
     execution: false
     name: docker-system-version
@@ -4062,36 +1838,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the task
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Inspect a task
-    execution: false
-    name: docker-task-inspect
-    outputs:
-    - contextPath: Docker.Task.ID
-      description: The ID of the task.
-      type: String
-    - contextPath: Docker.Task.CreatedAt
-      type: String
-    - contextPath: Docker.Task.UpdatedAt
-      type: String
-    - contextPath: Docker.Task.Name
-      description: Name of the task.
-      type: String
-    - contextPath: Docker.Task.ServiceID
-      description: The ID of the service this task is part of.
-      type: String
-    - contextPath: Docker.Task.Slot
-      type: Number
-    - contextPath: Docker.Task.NodeID
-      description: The ID of the node that this task is on.
-      type: String
-  - arguments:
-    - default: false
       description: 'A JSON encoded value of the filters (a `map[string][]string`)
         to process on the tasks list.  Available filters:  - `desired-state=(running
         | shutdown | accepted)` - `id= task id ` - `label=key` or `label="key=value"`
@@ -4109,8 +1855,10 @@ script:
       description: The ID of the task.
       type: String
     - contextPath: Docker.Task.CreatedAt
+      description: Docker Task CreatedAt.
       type: String
     - contextPath: Docker.Task.UpdatedAt
+      description: Docker Task UpdatedAt.
       type: String
     - contextPath: Docker.Task.Name
       description: Name of the task.
@@ -4119,64 +1867,11 @@ script:
       description: The ID of the service this task is part of.
       type: String
     - contextPath: Docker.Task.Slot
+      description: Docker Task Slot
       type: Number
     - contextPath: Docker.Task.NodeID
       description: The ID of the node that this task is on.
       type: String
-  - arguments:
-    - default: false
-      description: ID of the task
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    - default: false
-      description: Show task context and extra details provided to logs.
-      isArray: false
-      name: details
-      required: false
-      secret: false
-    - default: false
-      description: Keep connection after returning logs.
-      isArray: false
-      name: follow
-      required: false
-      secret: false
-    - default: false
-      description: Return logs from `stdout`
-      isArray: false
-      name: stdout
-      required: false
-      secret: false
-    - default: false
-      description: Return logs from `stderr`
-      isArray: false
-      name: stderr
-      required: false
-      secret: false
-    - default: false
-      description: Only return logs since this time, as a UNIX timestamp
-      isArray: false
-      name: since
-      required: false
-      secret: false
-    - default: false
-      description: Add timestamps to every log line
-      isArray: false
-      name: timestamps
-      required: false
-      secret: false
-    - default: false
-      description: 'Only return this number of log lines from the end of the logs.
-        Specify as an integer or `all` to output all log lines. '
-      isArray: false
-      name: tail
-      required: false
-      secret: false
-    deprecated: false
-    description: Get task logs
-    execution: false
-    name: docker-task-logs
   - arguments:
     - default: false
       description: 'The new volume''s name. If not specified, Docker generates a name. '
@@ -4207,23 +1902,6 @@ script:
     description: Create a volume
     execution: false
     name: docker-volume-create
-  - arguments:
-    - default: false
-      description: Volume name or ID
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: Force the removal of the volume
-      isArray: false
-      name: force
-      required: false
-      secret: false
-    deprecated: false
-    description: Remove a volume
-    execution: false
-    name: docker-volume-delete
   - arguments:
     - default: false
       description: Volume name or ID
@@ -4314,4 +1992,3 @@ script:
   script: '-'
   subtype: python3
   type: python
-
