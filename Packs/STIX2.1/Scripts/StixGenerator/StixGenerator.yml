@@ -1,0 +1,56 @@
+args:
+- default: false
+  description: A Stix2.1 Prototype File
+  isArray: false
+  name: prototype
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'False'
+  description: Export to a bundles files
+  isArray: false
+  name: export
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  description: Extra generator specifications. These will be merged with the built-in
+    specifications.
+  isArray: false
+  name: extra_specs
+  required: false
+  secret: false
+- default: false
+  description: Embed variable names in generated objects using a custom property.
+  isArray: false
+  name: embed_variable_names
+  required: false
+  secret: false
+- default: false
+  description: Config file with options to customize how content is generated.
+  isArray: false
+  name: config
+  required: false
+  secret: false
+comment: 'An Automation Script to Generate STIX 2.1 Objects '
+commonfields:
+  id: StixGenerator
+  version: -1
+enabled: false
+name: StixGenerator
+outputs:
+- contextPath: STIX2.ID
+  description: STIX2 Object IT
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- stix2.1
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
