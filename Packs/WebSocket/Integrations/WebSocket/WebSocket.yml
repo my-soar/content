@@ -1,0 +1,31 @@
+category: IT Services
+commonfields:
+  id: WebSocket
+  version: -1
+configuration:
+- display: Listen Port
+  hidden: false
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Long running instance
+  hidden: false
+  name: longRunning
+  required: false
+  type: 8
+description: WebSocket APP
+display: WebSocket
+name: WebSocket
+script:
+  dockerimage: websockets:latest
+  feed: false
+  isfetch: false
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
