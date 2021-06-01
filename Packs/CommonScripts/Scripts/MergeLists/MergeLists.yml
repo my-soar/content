@@ -1,0 +1,40 @@
+args:
+- default: false
+  description: Path One
+  isArray: false
+  name: path1
+  required: true
+  secret: false
+- default: false
+  description: Path Two
+  isArray: false
+  name: path2
+  required: true
+  secret: false
+- default: false
+  description: Key One
+  isArray: false
+  name: list1
+  required: true
+  secret: false
+- default: false
+  description: Key Two
+  isArray: false
+  name: list2
+  required: true
+  secret: false
+comment: A script to merge two lists
+commonfields:
+  id: MergeLists
+  version: -1
+enabled: false
+name: MergeLists
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.15759
+fromversion: 5.5.0

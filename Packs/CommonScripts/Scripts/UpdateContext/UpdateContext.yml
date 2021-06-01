@@ -1,0 +1,34 @@
+args:
+- default: false
+  description: Dictionary to update
+  isArray: false
+  name: to
+  required: false
+  secret: false
+- default: false
+  description: Update Key ID
+  isArray: false
+  name: id
+  required: false
+  secret: false
+- default: false
+  description: Source Dictionary
+  isArray: false
+  name: source
+  required: false
+  secret: false
+comment: A Script to update Context Dictionary
+commonfields:
+  id: UpdateContext
+  version: -1
+enabled: false
+name: UpdateContext
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.15759
+fromversion: 5.5.0
