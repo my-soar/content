@@ -23,6 +23,12 @@ args:
   name: list2
   required: true
   secret: false
+- default: false
+  description: Output
+  isArray: false
+  name: output
+  required: false
+  secret: false
 comment: A script to merge two lists
 commonfields:
   id: MergeLists

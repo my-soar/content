@@ -12,12 +12,16 @@ import traceback
 
 def merge_lists(path1, path2, list1, list2, output):
     merged_list = []
-    for item1 in path1[list1]:
-        items_list = []
-        for item2 in path2[list2]:
-            if item1 in item2:
-                items_list.append(item2)
-        merged_list.append({"Parent": {list1: item1, list2: items_list}})
+    if type(path1[list1]) is list:
+        for item1 in path1[list1]:
+            items_list = []
+            for item2 in path2[list2]:
+                if item1 in item2:
+                    items_list.append(item2)
+            merged_list.append({"Parent": {list1: item1, list2: items_list}})
+    else:
+        merged_list.append({"Parent": {list1: path1[list1], list2: path2[list2]}})
+    print(merged_list)
     return {output: merged_list}
 
 
