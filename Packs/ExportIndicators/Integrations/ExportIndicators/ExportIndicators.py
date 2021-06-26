@@ -75,7 +75,7 @@ class RequestArguments:
                  mwg_type: str = 'string', strip_port: bool = False, drop_invalids: bool = False,
                  category_default: str = 'bc_category', category_attribute: str = '',
                  collapse_ips: str = DONT_COLLAPSE, csv_text: bool = False, sort_field: str = '',
-                 sort_order: str = ''):
+                 sort_order: str = '', keys_to_extract: str = '', custom_keys_to_extract: str = ''):
 
         self.query = query
         self.out_format = out_format
@@ -90,6 +90,8 @@ class RequestArguments:
         self.csv_text = csv_text
         self.sort_field = sort_field
         self.sort_order = sort_order
+        self.keys_to_extract = keys_to_extract
+        self.custom_keys_to_extract = custom_keys_to_extract
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -181,7 +183,8 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     """
     now = datetime.now()
     # poll indicators into list from demisto
-    iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset)
+    iocs = find_indicators_with_limit(request_args.query, request_args.limit, request_args.offset,
+                                      request_args.keys_to_extract, request_args.custom_keys_to_extract)
     iocs = sort_iocs(request_args, iocs)
     out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
@@ -196,7 +199,8 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
         new_limit = request_args.limit - actual_indicator_amount
 
         # poll additional indicators into list from demisto
-        new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset)
+        new_iocs = find_indicators_with_limit(request_args.query, new_limit, new_offset, request_args.keys_to_extract,
+                                              request_args.custom_keys_to_extract)
 
         # in case no additional indicators exist - exit
         if len(new_iocs) == 0:
@@ -227,7 +231,6 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
 
     else:
         out_dict[CTX_MIMETYPE_KEY] = MIMETYPE_TEXT
-
     if on_demand:
         set_integration_context({
             "last_output": out_dict,
@@ -250,11 +253,13 @@ def refresh_outbound_context(request_args: RequestArguments, on_demand: bool = F
     return out_dict[CTX_VALUES_KEY]
 
 
-def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) -> list:
+def find_indicators_with_limit(indicator_query: str, limit: int, offset: int, keys_to_extract: list,
+                               custom_keys_to_extract: list) -> list:
     """
     Finds indicators using demisto.searchIndicators
     """
     # calculate the starting page (each page holds 200 entries)
+
     if offset:
         next_page = int(offset / PAGE_SIZE)
 
@@ -271,6 +276,18 @@ def find_indicators_with_limit(indicator_query: str, limit: int, offset: int) ->
     if len(iocs) <= offset_in_page:
         return []
 
+    processed_icos =[]
+    ioc_subset = {}
+    ioc_custom_subset = {}
+
+    if keys_to_extract or custom_keys_to_extract:
+        for ioc in iocs:
+            if keys_to_extract:
+                ioc_subset = {key: ioc.get(key) for key in keys_to_extract.split(",")}
+            if custom_keys_to_extract:
+                ioc_custom_subset = {key: ioc['CustomFields'].get(key) for key in custom_keys_to_extract.split(",")}
+            processed_icos.append({**ioc_subset, **ioc_custom_subset})
+        return processed_icos[offset_in_page:limit + offset_in_page]
     return iocs[offset_in_page:limit + offset_in_page]
 
 
@@ -670,6 +687,8 @@ def get_request_args(params):
     csv_text = request.args.get('tx', params.get('csv_text', False))
     sort_field = request.args.get('sf', params.get('sort_field'))
     sort_order = request.args.get('so', params.get('sort_order'))
+    keys_to_extract = request.args.get('keys_to_extract', params.get('keys_to_extract'))
+    custom_keys_to_extract = request.args.get('custom_keys_to_extract', params.get('custom_keys_to_extract'))
 
     # handle flags
     if strip_port is not None and strip_port == '':
@@ -726,9 +745,9 @@ def get_request_args(params):
     if out_format == FORMAT_MWG:
         if mwg_type not in MWG_TYPE_OPTIONS:
             raise DemistoException(CTX_MWG_TYPE_ERR_MSG)
-
     return RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids, category_default,
-                            category_attribute, collapse_ips, csv_text, sort_field, sort_order)
+                            category_attribute, collapse_ips, csv_text, sort_field, sort_order, keys_to_extract,
+                            custom_keys_to_extract)
 
 
 @APP.route('/', methods=['GET'])
@@ -848,10 +867,15 @@ def update_outbound_command(args, params):
     print_indicators = args.get('print_indicators')
 
     query = args.get('query')
+    keys_to_extract = args.get('keys_to_extract')
+    custom_keys_to_extract = args.get('custom_keys_to_extract')
     # in case no query is entered take the query in the integration params
     if not query:
         query = params.get('indicators_query')
-
+    if not keys_to_extract:
+        keys_to_extract = params.get('keys_to_extract')
+    if not custom_keys_to_extract:
+        custom_keys_to_extract = params.get('custom_keys_to_extract')
     out_format = args.get('format')
     offset = try_parse_integer(args.get('offset', 0), CTX_OFFSET_ERR_MSG)
     mwg_type = args.get('mwg_type')
@@ -865,7 +889,8 @@ def update_outbound_command(args, params):
     sort_order = args.get('sort_order')
 
     request_args = RequestArguments(query, out_format, limit, offset, mwg_type, strip_port, drop_invalids,
-                                    category_default, category_attribute, collapse_ips, csv_text, sort_field, sort_order)
+                                    category_default, category_attribute, collapse_ips, csv_text, sort_field,
+                                    sort_order, keys_to_extract, custom_keys_to_extract)
 
     indicators = refresh_outbound_context(request_args, on_demand=on_demand)
     if indicators:
@@ -1220,8 +1245,6 @@ def run_long_running(params: Dict = None, is_test: bool = False):
                 nginx_log_monitor.kill(timeout=1.0)
             except Exception as ex:
                 demisto.error(f'Failed stopping nginx_log_monitor when exiting: {ex}')
-
-
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

@@ -158,10 +158,16 @@ configuration:
   name: nginx_server_conf
   required: false
   type: 12
-- additionalinfo: Fields to export in selected JSON keys
-  display: Fields
+- additionalinfo: 'Indicators Fields to Extract in a List, example: id,indicator_type'
+  display: Fields To Extract
   hidden: false
-  name: fields
+  name: keys_to_extract
+  required: false
+  type: 0
+- additionalinfo: 'Custom Indicators Fields to Extract in a List, example: asn'
+  display: Custom Fields To Extract
+  hidden: false
+  name: custom_keys_to_extract
   required: false
   type: 0
 description: Use the Export Indicators Service integration to provide an endpoint
@@ -320,6 +326,18 @@ script:
       predefined:
       - asc
       - desc
+      required: false
+      secret: false
+    - default: false
+      description: Fields to Extract
+      isArray: false
+      name: keys_to_extract
+      required: false
+      secret: false
+    - default: false
+      description: Custom Fields to Extract
+      isArray: false
+      name: custom_keys_to_extract
       required: false
       secret: false
     deprecated: false
