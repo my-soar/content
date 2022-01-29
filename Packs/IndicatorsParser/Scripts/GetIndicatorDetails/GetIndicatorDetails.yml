@@ -1,0 +1,35 @@
+args:
+- default: false
+  description: The indicator value
+  isArray: false
+  name: indicator_value
+  required: true
+  secret: false
+comment: Get an indicator details
+commonfields:
+  id: GetIndicatorDetails
+  version: -1
+enabled: false
+name: GetIndicatorDetails
+outputs:
+- contextPath: IndicatorDetails.indicator_type
+  description: The indicator type
+  type: String
+- contextPath: IndicatorDetails.value
+  description: The indicator value
+  type: String
+- contextPath: IndicatorDetails.id
+  description: The indicator ID
+  type: String
+- contextPath: IndicatorDetails.CustomFields
+  description: The indicator custom fields
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 5.5.0
