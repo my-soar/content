@@ -1,9 +1,21 @@
 args:
 - default: false
+  description: The markdown field to update
+  isArray: false
+  name: field_name
+  required: true
+  secret: false
+- default: false
   description: The markdown section to update
   isArray: false
   name: md_section
-  required: false
+  required: true
+  secret: false
+- default: false
+  description: The section update
+  isArray: false
+  name: section_update
+  required: true
   secret: false
 - auto: PREDEFINED
   default: false
@@ -16,14 +28,7 @@ args:
   - 'false'
   required: false
   secret: false
-- default: false
-  description: The markdown field to update
-  isArray: false
-  name: field_name
-  required: true
-  secret: false
-comment: '[Enter a description of the script, including what function it performs
-  and any important information users need to know, for example required permissions.]'
+comment: A script to update a markdown field
 commonfields:
   id: MarkDownUpdater
   version: -1
@@ -36,5 +41,5 @@ tags:
 - basescript
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: aymanam/markdown:latest
 fromversion: 5.5.0

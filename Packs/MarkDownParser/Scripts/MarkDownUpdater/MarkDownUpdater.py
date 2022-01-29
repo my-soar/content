@@ -10,27 +10,27 @@ import markdown
 ''' STANDALONE FUNCTION '''
 
 
-def markdownupdater(section: str) -> Dict[str, str]:
-
-    return {"dummy": dummy}
+def markdownupdater(md_data: str, section: str, updates: str, append: str):
+    updated_md_data = md_data
+    return updated_md_data
 
 
 ''' COMMAND FUNCTION '''
 
 
-def markdownupdater_command(args: Dict[str, Any]) -> CommandResults:
+def markdownupdater_command(args: Dict[str, Any]):
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    field = args.get('field_name', None)
+    section = args.get('md_section', None)
+    updates = args.get('section_update', None)
+    append = args.get('append', None)
 
-    result = basescript_dummy(dummy)
+    incident = demisto.incidents()[0]
+    field_data = incident.get(field, None)
 
-    return CommandResults(
-        outputs_prefix='MarkDownUpdater',
-        outputs_key_field='',
-        outputs=result,
-    )
+    updated_field_data = markdownupdater(md_data=field_data, section=section, updates=updates, append=append)
+    print (updated_field_data)
+    return_results(f"Markdown Field: {field} is updated")
 
 
 ''' MAIN FUNCTION '''
@@ -38,7 +38,7 @@ def markdownupdater_command(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        return_results(markdownupdater_command(demisto.args()))
+        markdownupdater_command(demisto.args())
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute MarkDownUpdater. Error: {str(ex)}')
