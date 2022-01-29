@@ -1,0 +1,40 @@
+args:
+- default: false
+  description: The markdown section to update
+  isArray: false
+  name: md_section
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Append to or replace the section content
+  isArray: false
+  name: append
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  description: The markdown field to update
+  isArray: false
+  name: field_name
+  required: true
+  secret: false
+comment: '[Enter a description of the script, including what function it performs
+  and any important information users need to know, for example required permissions.]'
+commonfields:
+  id: MarkDownUpdater
+  version: -1
+enabled: false
+name: MarkDownUpdater
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 5.5.0
