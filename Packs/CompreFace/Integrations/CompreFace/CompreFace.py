@@ -1,173 +1,613 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
-import requests
-import traceback
-from typing import Dict, Any
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
-
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    def __init__(self, server_url, verify, proxy, headers, auth):
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def add_subject_request(self, subject_name):
+        data = {"subject": subject_name}
+        response = self._http_request('POST', 'api/v1/recognition/subjects', json_data=data)
+        return response
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def rename_a_subject_request(self, old_subject_name, new_subject_name):
+        data = {"subject": new_subject_name}
+        response = self._http_request(
+            'PUT', f'api/v1/recognition/subjects/{old_subject_name}', json_data=data)
+        return response
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
+    def list_subjects_request(self):
+        response = self._http_request('GET', 'api/v1/recognition/subjects')
 
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
+        return response
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def delete_subject_request(self, subject_name):
+        response = self._http_request('DELETE', f'api/v1/recognition/subjects/{subject_name}',resp_type="blob")
+        return response
 
+    def delete_all_subjects_request(self):
+        response = self._http_request('DELETE', 'api/v1/recognition/subjects')
+        return response
 
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+    def add_an_example_of_a_subject_request(self, subject_name, subject_image_path, det_prob_threshold=None):
+        if det_prob_threshold:
+            params = assign_params(subject=subject_name, det_prob_threshold=det_prob_threshold)
         else:
-            raise e
-    return message
+            params = assign_params(subject=subject_name)
+        response = self._http_request('POST', 'api/v1/recognition/faces', params=params, files=subject_image_path)
+        return response
+
+    def base64_add_an_example_of_a_subject_request(self, subject, det_prob_threshold, file):
+        params = assign_params(subject=subject, det_prob_threshold=det_prob_threshold)
+        data = {"file": file}
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/recognition/faces',
+                                      params=params, json_data=data, headers=headers)
+
+        return response
+
+    def list_of_all_saved_examples_of_the_subject_request(self, page, size, subject):
+        params = assign_params(page=page, size=size, subject=subject)
+        headers = self._headers
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('GET', 'api/v1/recognition/faces', params=params, headers=headers)
+
+        return response
+
+    def delete_all_examples_of_the_subject_by_name_request(self, subject):
+        params = assign_params(subject=subject)
+        headers = self._headers
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('DELETE', 'api/v1/recognition/faces', params=params, headers=headers)
+
+        return response
+
+    def delete_an_example_of_the_subject_by_id_request(self, image_id):
+        headers = self._headers
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('DELETE', f'api/v1/recognition/faces/{image_id}', headers=headers)
+
+        return response
+
+    def delete_multiple_examples_request(self):
+        data = {}
+        headers = self._headers
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/recognition/faces/delete', json_data=data, headers=headers)
+
+        return response
+
+    def direct_download_an_image_example_of_the_subject_by_id_request(self, recognition_api_key, image_id):
+        headers = self._headers
+
+        response = self._http_request('GET', f'api/v1/static/{recognition_api_key}/images/{image_id}', headers=headers)
+
+        return response
+
+    def download_an_image_example_of_the_subject_by_id_request(self, image_id):
+        headers = self._headers
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('GET', f'api/v1/recognition/faces/{image_id}/img', headers=headers)
+
+        return response
+
+    def recognize_faces_from_a_given_image_request(self, limit, det_prob_threshold, prediction_count, face_plugins,
+                                                   status):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               prediction_count=prediction_count, face_plugins=face_plugins, status=status)
+        headers = self._headers
+        headers['Content-Type'] = 'multipart/form-data'
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/recognition/recognize', params=params, headers=headers)
+
+        return response
+
+    def base64_recognize_faces_from_a_given_image_request(self, limit, det_prob_threshold, prediction_count,
+                                                          face_plugins, status, file):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               prediction_count=prediction_count, face_plugins=face_plugins, status=status)
+        data = {"file": file}
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/recognition/recognize',
+                                      params=params, json_data=data, headers=headers)
+
+        return response
+
+    def verify_faces_from_a_given_image_request(self, image_id, limit, det_prob_threshold, face_plugins, status):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               face_plugins=face_plugins, status=status)
+        headers = self._headers
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request(
+            'POST', f'api/v1/recognition/faces/{image_id}/verify', params=params, headers=headers)
+
+        return response
+
+    def base64_verify_faces_from_a_given_image_request(self, image_id, limit, det_prob_threshold, face_plugins, status,
+                                                       file):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               face_plugins=face_plugins, status=status)
+        data = {"file": file}
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        headers['x-api-key'] = '{{recognition_api_key}}'
+
+        response = self._http_request(
+            'POST', f'api/v1/recognition/faces/{image_id}/verify', params=params, json_data=data, headers=headers)
+
+        return response
+
+    def face_detection_service_request(self, limit, det_prob_threshold, face_plugins, status):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               face_plugins=face_plugins, status=status)
+        headers = self._headers
+        headers['Content-Type'] = 'multipart/form-data'
+        headers['x-api-key'] = '{{detection_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/detection/detect', params=params, headers=headers)
+
+        return response
+
+    def face_detection_service_base_request(self, limit, det_prob_threshold, face_plugins, status, file):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               face_plugins=face_plugins, status=status)
+        data = {"file": file}
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        headers['x-api-key'] = '{{detection_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/detection/detect', params=params, json_data=data, headers=headers)
+
+        return response
+
+    def face_verification_service_request(self, limit, det_prob_threshold, face_plugins, status):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               face_plugins=face_plugins, status=status)
+        headers = self._headers
+        headers['Content-Type'] = 'multipart/form-data'
+        headers['x-api-key'] = '{{verification_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/verification/verify', params=params, headers=headers)
+
+        return response
+
+    def face_verification_service_base_request(self, limit, det_prob_threshold, face_plugins, status, source_image,
+                                               target_image):
+        params = assign_params(limit=limit, det_prob_threshold=det_prob_threshold,
+                               face_plugins=face_plugins, status=status)
+        data = {"source_image": source_image, "target_image": target_image}
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+        headers['x-api-key'] = '{{verification_api_key}}'
+
+        response = self._http_request('POST', 'api/v1/verification/verify',
+                                      params=params, json_data=data, headers=headers)
+
+        return response
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+def add_subject_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    subject_name = args.get('subject_name')
+    response = client.add_subject_request(subject_name)
+    subjects_dict = {
+        "name": response.get('subject')
+    }
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.Subjects',
+        outputs_key_field='name',
+        outputs=subjects_dict,
+        raw_response=response
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+
+    return command_results
 
 
-''' MAIN FUNCTION '''
+def rename_subject_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    old_subject_name = args.get('old_subject_name')
+    new_subject_name = args.get('new_subject_name')
+    response = client.rename_a_subject_request(old_subject_name, new_subject_name)
+    subjects_dict = {
+        "name": old_subject_name,
+        "updated": response.get('updated'),
+        "new_name": new_subject_name
+    }
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.Subjects',
+        outputs_key_field='name',
+        outputs=subjects_dict,
+        raw_response=response
+    )
+    return command_results
+
+
+def list_subjects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    response = client.list_subjects_request()
+    subjects_dict = []
+    if response.get('subjects'):
+        for subject in response.get('subjects'):
+            subjects_dict.append({"name": subject})
+        command_results = CommandResults(
+            outputs_prefix='CompreFace.Subjects',
+            outputs_key_field='name',
+            outputs=subjects_dict,
+            raw_response=response
+        )
+        return command_results
+    else:
+        command_results = CommandResults(
+            readable_output='No subjects found.'
+        )
+        return command_results
+
+def delete_subject_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    subject_name = args.get('subject_name')
+    client.delete_subject_request(subject_name)
+    subjects_dict = {
+        "name": subject_name,
+        "deleted": "true"
+    }
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.Subjects',
+        outputs_key_field='name',
+        outputs=subjects_dict
+    )
+    return command_results
+
+
+def delete_all_subjects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    response = client.delete_all_subjects_request()
+    command_results = CommandResults(
+        readable_output=f"{response.get('deleted')} subjects deleted."
+    )
+    return command_results
+
+
+def add_example_of_subject_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    subject_name = args.get('subject_name')
+    subject_image_entryid = args.get('subject_image')
+    det_prob_threshold = args.get('det_prob_threshold')
+    subject_image_path = demisto.getFilePath(subject_image_entryid)["path"]
+    response = client.add_an_example_of_a_subject_request(subject_name, subject_image_path, det_prob_threshold)
+    subjects_dict = {
+        "name": subject_name,
+        "image_id": response.get('image_id')
+    }
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.Subjects',
+        outputs_key_field='name',
+        outputs=subjects_dict,
+        raw_response=response
+    )
+    return command_results
+
+
+def base64_add_example_of_subject_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    subject = args.get('subject')
+    det_prob_threshold = args.get('det_prob_threshold')
+    file = args.get('file')
+
+    response = client.base64_add_an_example_of_a_subject_request(subject, det_prob_threshold, file)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.Base64AddAnExampleOfASubject',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def list_of_all_saved_examples_of_the_subject_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    page = args.get('page')
+    size = args.get('size')
+    subject = args.get('subject')
+
+    response = client.list_of_all_saved_examples_of_the_subject_request(page, size, subject)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.ListOfAllSavedExamplesOfTheSubject',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def delete_all_examples_of_the_subject_by_name_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    subject = args.get('subject')
+
+    response = client.delete_all_examples_of_the_subject_by_name_request(subject)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.DeleteAllExamplesOfTheSubjectByName',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def delete_example_of_the_subject_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    image_id = args.get('image_id')
+
+    response = client.delete_an_example_of_the_subject_by_id_request(image_id)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.DeleteAnExampleOfTheSubjectById',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def delete_multiple_examples_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+    response = client.delete_multiple_examples_request()
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.DeleteMultipleExamples',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def direct_download_image_example_of_the_subject_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    recognition_api_key = args.get('recognition_api_key')
+    image_id = args.get('image_id')
+
+    response = client.direct_download_an_image_example_of_the_subject_by_id_request(recognition_api_key, image_id)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.DirectDownloadAnImageExampleOfTheSubjectById',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def download_image_example_of_the_subject_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    image_id = args.get('image_id')
+
+    response = client.download_an_image_example_of_the_subject_by_id_request(image_id)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.DownloadAnImageExampleOfTheSubjectById',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def recognize_faces_from_given_image_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    prediction_count = args.get('prediction_count')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+
+    response = client.recognize_faces_from_a_given_image_request(limit, det_prob_threshold, prediction_count,
+                                                                 face_plugins, status)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.RecognizeFacesFromAGivenImage',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def base64_recognize_faces_from_given_image_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    prediction_count = args.get('prediction_count')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+    file = args.get('file')
+
+    response = client.base64_recognize_faces_from_a_given_image_request(limit, det_prob_threshold, prediction_count,
+                                                                        face_plugins, status, file)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.Base64RecognizeFacesFromAGivenImage',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def verify_faces_from_given_image_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    image_id = args.get('image_id')
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+
+    response = client.verify_faces_from_a_given_image_request(image_id, limit, det_prob_threshold, face_plugins, status)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.VerifyFacesFromAGivenImage',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def base64_verify_faces_from_given_image_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    image_id = args.get('image_id')
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+    file = args.get('file')
+
+    response = client.base64_verify_faces_from_a_given_image_request(image_id, limit, det_prob_threshold, face_plugins,
+                                                                     status, file)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.Base64VerifyFacesFromAGivenImage',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def face_detection_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+
+    response = client.face_detection_service_request(limit, det_prob_threshold, face_plugins, status)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.FaceDetectionService',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def face_detection_service_base_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+    file = args.get('file')
+
+    response = client.face_detection_service_base_request(limit, det_prob_threshold, face_plugins, status, file)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.FaceDetectionServiceBase64',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def face_verification_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+
+    response = client.face_verification_service_request(limit, det_prob_threshold, face_plugins, status)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.FaceVerificationService',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def face_verification_service_base_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = args.get('limit')
+    det_prob_threshold = args.get('det_prob_threshold')
+    face_plugins = args.get('face_plugins')
+    status = args.get('status')
+    source_image = args.get('source_image')
+    target_image = args.get('target_image')
+
+    response = client.face_verification_service_base_request(limit, det_prob_threshold, face_plugins, status,
+                                                             source_image, target_image)
+    command_results = CommandResults(
+        outputs_prefix='CompreFace.FaceVerificationServiceBase64',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def test_module(client: Client) -> None:
+    client.list_subjects_request()
+    return_results('ok')
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
+    params: Dict[str, Any] = demisto.params()
+    args: Dict[str, Any] = demisto.args()
+    url = params.get('url')
+    api_key = params.get('apikey')
+    verify_certificate: bool = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    headers = {
+        "x-api-key": api_key,
+        "Content-Type": "application/json"
+    }
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        requests.packages.urllib3.disable_warnings()
+        client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth={})
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
+        commands = {
+            'compreface-add-subject': add_subject_command,
+            'compreface-rename-subject': rename_subject_command,
+            'compreface-list-subjects': list_subjects_command,
+            'compreface-delete-subject': delete_subject_command,
+            'compreface-delete-all-subjects': delete_all_subjects_command,
+            'compreface-add-example-of-subject': add_example_of_subject_command,
+            'compreface-base64-add-example-of-subject': base64_add_example_of_subject_command,
+            'compreface-list-of-all-saved-examples-of-the-subject': list_of_all_saved_examples_of_the_subject_command,
+            'compreface-delete-all-examples-of-the-subject-by-name': delete_all_examples_of_the_subject_by_name_command,
+            'compreface-delete-example-of-the-subject-by-id': delete_example_of_the_subject_by_id_command,
+            'compreface-delete-multiple-examples': delete_multiple_examples_command,
+            'compreface-direct-download-image-example-of-the-subject-by-id':
+                direct_download_image_example_of_the_subject_by_id_command,
+            'compreface-download-image-example-of-the-subject-by-id':
+                download_image_example_of_the_subject_by_id_command,
+            'compreface-recognize-faces-from-given-image': recognize_faces_from_given_image_command,
+            'compreface-base64-recognize-faces-from-given-image': base64_recognize_faces_from_given_image_command,
+            'compreface-verify-faces-from-given-image': verify_faces_from_given_image_command,
+            'compreface-base64-verify-faces-from-given-image': base64_verify_faces_from_given_image_command,
+            'compreface-face-detection-service': face_detection_service_command,
+            'compreface-face-detection-service-base': face_detection_service_base_command,
+            'compreface-face-verification-service': face_verification_service_command,
+            'compreface-face-verification-service-base': face_verification_service_base_command,
+        }
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        if command == 'test-module':
+            test_module(client)
+        elif command in commands:
+            return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
-
-    # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(str(e))
 
 
-''' ENTRY POINT '''
-
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

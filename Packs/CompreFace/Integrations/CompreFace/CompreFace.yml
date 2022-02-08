@@ -3,54 +3,1332 @@ commonfields:
   id: CompreFace
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
+- defaultvalue: https://www.example.com
+  display: Server URL
   name: url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
+- display: API Key
+  hidden: false
+  name: apikey
   required: true
-  hiddenusername: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
+  type: 4
+- display: Use system proxy
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
+description: Exadel CompreFace is a free and open-source face recognition service
+  that can be easily integrated into any system without prior machine learning skills.
 display: CompreFace
 name: CompreFace
 script:
   commands:
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
+      description: The subject name.
       isArray: false
-      name: dummy
+      name: subject_name
       required: true
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: The command create a new subject in Face Collection.
     execution: false
-    name: baseintegration-dummy
+    name: compreface-add-subject
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: CompreFace.Subjects.name
+      description: The subject name.
       type: String
+  - arguments:
+    - default: false
+      description: The old subject name.
+      isArray: false
+      name: old_subject_name
+      required: true
+      secret: false
+    - default: false
+      description: The new subject name.
+      isArray: false
+      name: new_subject_name
+      required: true
+      secret: false
+    deprecated: false
+    description: The command renames existing subject. If a new subject name already
+      exists, subjects are merged, all faces from the old subject name are reassigned
+      to the subject with the new name, old subject removed.
+    execution: false
+    name: compreface-rename-subject
+    outputs:
+    - contextPath: CompreFace.Subjects.name
+      description: The subject name.
+      type: String
+    - contextPath: CompreFace.Subjects.updated
+      description: The update status, "true" if it was recently updated.
+      type: String
+    - contextPath: CompreFace.Subjects.new_name
+      description: The subject new name after a recent update.
+      type: String
+  - deprecated: false
+    description: This returns all subject related to Face Collection.
+    execution: false
+    name: compreface-list-subjects
+    outputs:
+    - contextPath: CompreFace.Subjects.name
+      description: The subject name.
+      type: String
+  - arguments:
+    - default: false
+      description: The subject name.
+      isArray: false
+      name: subject_name
+      required: true
+      secret: false
+    deprecated: false
+    description: This command deletes existing subject and all saved faces.
+    execution: false
+    name: compreface-delete-subject
+    outputs:
+    - contextPath: CompreFace.Subjects.name
+      description: The subject name.
+      type: String
+    - contextPath: CompreFace.Subjects.deleted
+      description: The deletion status, "true" if it was deleted.
+      type: String
+  - deprecated: false
+    description: Delete all existing subjects and all saved faces.
+    execution: false
+    name: compreface-delete-all-subjects
+  - arguments:
+    - default: false
+      description: The subject name.
+      isArray: false
+      name: subject_name
+      required: true
+      secret: false
+    - default: false
+      description: The minimum required confidence that a recognized face is actually
+        a face. Value is between 0.0 and 1.0.
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      description: The entry id of the subject image.
+      isArray: false
+      name: subject_image
+      required: true
+      secret: false
+    deprecated: false
+    description: "This creates an example of the subject by saving images. You can\
+      \ add as many images as you want to train the system. Image should \ncontain\
+      \ only one face."
+    execution: false
+    name: compreface-add-example-of-subject
+    outputs:
+    - contextPath: CompreFace.AddAnExampleOfASubject.image_id
+      type: String
+    - contextPath: CompreFace.AddAnExampleOfASubject.subject
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Full description [here](https://github.com/exadel-inc/CompreFace/blob/master/docs/Rest-API-description.md#add-an-example-of-a-subject).
+    execution: false
+    name: compreface-base64-add-example-of-subject
+    outputs:
+    - contextPath: CompreFace.Base64AddAnExampleOfASubject.image_id
+      type: String
+    - contextPath: CompreFace.Base64AddAnExampleOfASubject.subject
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    deprecated: false
+    description: "To retrieve a list of subjects saved in a Face Collection:\n\n|\
+      \ Element | Description | Type | Required | Notes |\n| --- | --- | --- | ---\
+      \ | --- |\n| x-api-key | header | string | required | api key of the Face recognition\
+      \ service, created by the user |\n| page | param | integer | optional | page\
+      \ number of examples to return. Can be used for pagination. Default value is\
+      \ 0. Since 0.6 version |\n| size | param | integer | optional | faces on page\
+      \ (page size). Can be used for pagination. Default value is 20. Since 0.6 version\
+      \ |\n| subject | param | string | required | is the name you assign to the image\
+      \ you save |\n\nResponse body on success:\n\n```\n{\n  \"faces\": [\n    {\n\
+      \      \"image_id\": ,\n      \"subject\": \n    },\n    ...\n  ],\n  \"page_number\"\
+      : 0,\n  \"page_size\": 10,\n  \"total_pages\": 2,\n  \"total_elements\": 12\n\
+      }\n\n```\n\n| Element | Type | Description |\n| --- | --- | --- |\n| face.image_id\
+      \ | UUID | UUID of the face |\n| fase.subject | string | of the person, whose\
+      \ picture was saved for this api key |\n| page_number | integer | page number\
+      \ |\n| page_size | integer | **requested** page size |\n| total_pages | integer\
+      \ | total pages |\n| total_elements | integer | total faces |"
+    execution: false
+    name: compreface-list-of-all-saved-examples-of-the-subject
+    outputs:
+    - contextPath: CompreFace.ListOfAllSavedExamplesOfTheSubject.faces.image_id
+      type: String
+    - contextPath: CompreFace.ListOfAllSavedExamplesOfTheSubject.faces.subject
+      type: String
+    - contextPath: CompreFace.ListOfAllSavedExamplesOfTheSubject.total_pages
+      type: Number
+    - contextPath: CompreFace.ListOfAllSavedExamplesOfTheSubject.total_elements
+      type: Number
+    - contextPath: CompreFace.ListOfAllSavedExamplesOfTheSubject.page_size
+      type: Number
+    - contextPath: CompreFace.ListOfAllSavedExamplesOfTheSubject.page_number
+      type: Number
+  - arguments:
+    - default: false
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      To delete all image examples of the <subject>:
+
+
+      | Element   | Description | Type   | Required | Notes                                                        |
+      | --------- | ----------- | ------ | -------- | ------------------------------------------------------------ |
+      | x-api-key | header      | string | required | api key of the Face recognition service, created by the user                    |
+      | subject   | param       | string | optional | is the name subject. If this parameter is absent, all faces in Face Collection will be removed |
+
+      Response body on success:
+      ```
+      {
+          "deleted": <count>
+      }
+      ```
+
+      | Element  | Type    | Description              |
+      | -------- | ------- | ------------------------ |
+      | count    | integer | Number of deleted faces  |
+    execution: false
+    name: compreface-delete-all-examples-of-the-subject-by-name
+    outputs:
+    - contextPath: CompreFace.DeleteAllExamplesOfTheSubjectByName.deleted
+      type: Number
+  - arguments:
+    - default: false
+      isArray: false
+      name: image_id
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Endpoint to delete an image by ID. If no image found by id - 404.
+
+      | Element   | Description | Type   | Required | Notes                                     |
+      | --------- | ----------- | ------ | -------- | ----------------------------------------- |
+      | x-api-key | header      | string | required | api key of the Face recognition service, created by the user |
+      | image_id  | variable    | UUID   | required | UUID of the removing face                 |
+
+      Response body on success:
+      ```
+      {
+        "image_id": <image_id>,
+        "subject": <subject>
+      }
+      ```
+
+      | Element  | Type   | Description                                                  |
+      | -------- | ------ | ------------------------------------------------------------ |
+      | image_id | UUID   | UUID of the removed face                                     |
+      | subject  | string | <subject> of the person, whose picture was saved for this api key |
+    execution: false
+    name: compreface-delete-example-of-the-subject-by-id
+    outputs:
+    - contextPath: CompreFace.DeleteAnExampleOfTheSubjectById.image_id
+      type: String
+    - contextPath: CompreFace.DeleteAnExampleOfTheSubjectById.subject
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: "To delete several subject examples:\n\n| Element | Description |\
+      \ Type | Required | Notes |\n| --- | --- | --- | --- | --- |\n| x-api-key |\
+      \ header | string | required | api key of the Face recognition service, created\
+      \ by the user |\n| image_id | variable | UUID | required | UUID of the removing\
+      \ face |\n\nResponse body on success:\n\n```\n{\n  \"image_id\": ,\n  \"subject\"\
+      : \n}\n\n```\n\n| Element | Type | Description |\n| --- | --- | --- |\n| image_id\
+      \ | UUID | UUID of the removed face |\n| subject | string | of the person, whose\
+      \ picture was saved for this api key |\n\nIf some image ids are not exists,\
+      \ they will be ignored"
+    execution: false
+    name: compreface-delete-multiple-examples
+    outputs:
+    - contextPath: CompreFace.DeleteMultipleExamples.image_id
+      type: String
+    - contextPath: CompreFace.DeleteMultipleExamples.subject
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: recognition_api_key
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: image_id
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      ```since 0.6 version```
+
+      You can paste this URL into the <img> html tag to show the image.
+
+      ```
+
+      | Element         | Description | Type   | Required | Notes                                     |
+      | --------------- | ----------- | ------ | -------- | ----------------------------------------- |
+      | x-api-key | variable    | string | required | api key of the Face recognition service, created by the user |
+      | image_id        | variable    | UUID   | required | UUID of the image to download                 |
+
+      Response body is binary image. Empty bytes if image not found.
+    execution: false
+    name: compreface-direct-download-image-example-of-the-subject-by-id
+  - arguments:
+    - default: false
+      isArray: false
+      name: image_id
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      ```since 0.6 version```
+
+      To download an image example of the Subject by ID:
+
+      ```
+
+      | Element   | Description | Type   | Required | Notes                                     |
+      | --------- | ----------- | ------ | -------- | ----------------------------------------- |
+      | x-api-key | header      | string | required | api key of the Face recognition service, created by the user |
+      | image_id  | variable    | UUID   | required | UUID of the image to download                 |
+
+      Response body is binary image. Empty bytes if image not found.
+    execution: false
+    name: compreface-download-image-example-of-the-subject-by-id
+  - arguments:
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: prediction_count
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    deprecated: false
+    description: "To recognize faces from the uploaded image:  \n\n| Element     \
+      \       | Description | Type    | Required | Notes                         \
+      \                               |\n| ------------------ | ----------- | -------\
+      \ | -------- | ------------------------------------------------------------\
+      \ |\n| Content-Type       | header      | string  | required | multipart/form-data\
+      \                                          |\n| x-api-key          | header\
+      \      | string  | required | api key of the Face recognition service, created\
+      \ by the user                    |\n| file               | body        | image\
+      \   | required | allowed image formats: jpeg, jpg, ico, png, bmp, gif, tif,\
+      \ tiff, webp. Max size is 5Mb |\n| limit              | param       | integer\
+      \ | optional | maximum number of faces on the image to be recognized. It recognizes\
+      \ the biggest faces first. Value of 0 represents no limit. Default value: 0\
+      \ |\n| det_prob_threshold | param       | string  | optional | minimum required\
+      \ confidence that a recognized face is actually a face. Value is between 0.0\
+      \ and 1.0. |\n| prediction_count   | param       | integer | optional | maximum\
+      \ number of subject predictions per face. It returns the most similar subjects.\
+      \ Default value: 1    |\n| face_plugins       | param       | string  | optional\
+      \ | comma-separated slugs of face plugins. If empty, no additional information\
+      \ is returned. [Learn more](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md)\
+      \  |\n| status             | param       | boolean | optional | if true includes\
+      \ system information like execution_time and plugin_version fields. Default\
+      \ value is false |\n\nResponse body on success:\n```json\n{\n  \"result\" :\
+      \ [ {\n    \"age\" : [ 25, 32 ],\n    \"gender\" : \"female\",\n    \"embedding\"\
+      \ : [ 9.424854069948196E-4, \"...\", -0.011415496468544006 ],\n    \"box\" :\
+      \ {\n      \"probability\" : 1.0,\n      \"x_max\" : 1420,\n      \"y_max\"\
+      \ : 1368,\n      \"x_min\" : 548,\n      \"y_min\" : 295\n    },\n    \"landmarks\"\
+      \ : [ [ 814, 713 ], [ 1104, 829 ], [ 832, 937 ], [ 704, 1030 ], [ 1017, 1133\
+      \ ] ],\n    \"subjects\" : [ {\n      \"similarity\" : 0.97858,\n      \"subject\"\
+      \ : \"subject1\"\n    } ],\n    \"execution_time\" : {\n      \"age\" : 28.0,\n\
+      \      \"gender\" : 26.0,\n      \"detector\" : 117.0,\n      \"calculator\"\
+      \ : 45.0\n    }\n  } ],\n  \"plugins_versions\" : {\n    \"age\" : \"agegender.AgeDetector\"\
+      ,\n    \"gender\" : \"agegender.GenderDetector\",\n    \"detector\" : \"facenet.FaceDetector\"\
+      ,\n    \"calculator\" : \"facenet.Calculator\"\n  }\n}\n```\n\n| Element   \
+      \                     | Type    | Description                              \
+      \                    |\n| ------------------------------ | ------- | ------------------------------------------------------------\
+      \ |\n| age                            | array   | detected age range. Return\
+      \ only if [age plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
+      \ is enabled         |\n| gender                         | string  | detected\
+      \ gender. Return only if [gender plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
+      \ is enabled         |\n| embedding                      | array   | face embeddings.\
+      \ Return only if [calculator plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
+      \ is enabled      |\n| box                            | object  | list of parameters\
+      \ of the bounding box for this face         |\n| probability               \
+      \     | float   | probability that a found face is actually a face         \
+      \    |\n| x_max, y_max, x_min, y_min     | integer | coordinates of the frame\
+      \ containing the face                 |\n| landmarks                      |\
+      \ array   | list of the coordinates of the frame containing the face-landmarks.\
+      \ Return only if [landmarks plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
+      \ is enabled      |\n| subjects                       | list    | list of similar\
+      \ subjects with size of <prediction_count> order by similarity |\n| similarity\
+      \                     | float   | similarity that on that image predicted person\
+      \               |\n| subject                        | string  | name of the\
+      \ subject in Face Collection                       |\n| execution_time     \
+      \            | object  | execution time of all plugins                     \
+      \  |\n| plugins_versions               | object  | contains information about\
+      \ plugin versions                       |"
+    execution: false
+    name: compreface-recognize-faces-from-given-image
+    outputs:
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.age.probability
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.age.high
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.age.low
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.gender.probability
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.gender.value
+      type: String
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.embedding
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.box.probability
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.box.x_max
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.box.y_max
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.box.x_min
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.box.y_min
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.mask.probability
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.mask.value
+      type: String
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.subjects.subject
+      type: String
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.subjects.similarity
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.landmarks
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.execution_time.age
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.result.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.RecognizeFacesFromAGivenImage.plugins_versions.mask
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: prediction_count
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Full description [here](https://github.com/exadel-inc/CompreFace/blob/master/docs/Rest-API-description.md#recognize-faces-from-a-given-image).
+    execution: false
+    name: compreface-base64-recognize-faces-from-given-image
+    outputs:
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.age.probability
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.age.high
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.age.low
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.gender.probability
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.gender.value
+      type: String
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.embedding
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.box.probability
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.box.x_max
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.box.y_max
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.box.x_min
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.box.y_min
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.mask.probability
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.mask.value
+      type: String
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.subjects.subject
+      type: String
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.subjects.similarity
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.landmarks
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.execution_time.age
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.result.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.Base64RecognizeFacesFromAGivenImage.plugins_versions.mask
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: image_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      To compare faces from the uploaded images with the face in saved image ID:
+
+      | Element            | Description | Type    | Required | Notes                                                        |
+      | ------------------ | ----------- | ------- | -------- | ------------------------------------------------------------ |
+      | Content-Type       | header      | string  | required | multipart/form-data                                          |
+      | x-api-key          | header      | string  | required | api key of the Face recognition service, created by the user                    |
+      | image_id           | variable    | UUID    | required | UUID of the verifying face                                   |
+      | file               | body        | image   | required | allowed image formats: jpeg, jpg, ico, png, bmp, gif, tif, tiff, webp. Max size is 5Mb |
+      | limit              | param       | integer | optional | maximum number of faces on the target image to be recognized. It recognizes the biggest faces first. Value of 0 represents no limit. Default value: 0 |
+      | det_prob_threshold | param       | string  | optional | minimum required confidence that a recognized face is actually a face. Value is between 0.0 and 1.0. |
+      | face_plugins       | param       | string  | optional | comma-separated slugs of face plugins. If empty, no additional information is returned. [Learn more](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md)  |
+      | status             | param       | boolean | optional | if true includes system information like execution_time and plugin_version fields. Default value is false |
+
+      Response body on success:
+      ```json
+      {
+        "result": [
+          {
+            "age" : [ 25, 32 ],
+            "gender" : "female",
+            "embedding" : [ -0.049007344990968704, "...", -0.01753818802535534 ],
+            "box" : {
+              "probability" : 0.9997453093528748,
+              "x_max" : 205,
+              "y_max" : 167,
+              "x_min" : 48,
+              "y_min" : 0
+            },
+            "landmarks" : [ [ 260, 129 ], [ 273, 127 ], [ 258, 136 ], [ 257, 150 ], [ 269, 148 ] ],
+            "similarity" : 0.97858,
+            "execution_time" : {
+              "age" : 59.0,
+              "gender" : 30.0,
+              "detector" : 177.0,
+              "calculator" : 70.0
+            }
+          }
+        ],
+        "plugins_versions" : {
+          "age" : "agegender.AgeDetector",
+          "gender" : "agegender.GenderDetector",
+          "detector" : "facenet.FaceDetector",
+          "calculator" : "facenet.Calculator"
+        }
+      }
+      ```
+
+      | Element                        | Type    | Description                                                  |
+      | ------------------------------ | ------- | ------------------------------------------------------------ |
+      | age                            | array   | detected age range. Return only if [age plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled         |
+      | gender                         | string  | detected gender. Return only if [gender plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled         |
+      | embedding                      | array   | face embeddings. Return only if [calculator plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled      |
+      | box                            | object  | list of parameters of the bounding box for this face         |
+      | probability                    | float   | probability that a found face is actually a face             |
+      | x_max, y_max, x_min, y_min     | integer | coordinates of the frame containing the face                 |
+      | landmarks                      | array   | list of the coordinates of the frame containing the face-landmarks. Return only if [landmarks plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled      |
+      | similarity                     | float   | similarity that on that image predicted person               |
+      | execution_time                 | object  | execution time of all plugins                       |
+      | plugins_versions               | object  | contains information about plugin versions                       |
+    execution: false
+    name: compreface-verify-faces-from-given-image
+    outputs:
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.box.probability
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.box.x_max
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.box.y_max
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.box.x_min
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.box.y_min
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.subject
+      type: String
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.similarity
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.landmarks
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.age.probability
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.age.high
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.age.low
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.gender.probability
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.gender.value
+      type: String
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.embedding
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.mask.probability
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.mask.value
+      type: String
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.execution_time.age
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.result.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.VerifyFacesFromAGivenImage.plugins_versions.mask
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: image_id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Full description [here](https://github.com/exadel-inc/CompreFace/blob/master/docs/Rest-API-description.md#verify-faces-from-a-given-image).
+    execution: false
+    name: compreface-base64-verify-faces-from-given-image
+    outputs:
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.box.probability
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.box.x_max
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.box.y_max
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.box.x_min
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.box.y_min
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.subject
+      type: String
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.similarity
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.landmarks
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.age.probability
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.age.high
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.age.low
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.gender.probability
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.gender.value
+      type: String
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.embedding
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.mask.probability
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.mask.value
+      type: String
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.execution_time.age
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.result.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.Base64VerifyFacesFromAGivenImage.plugins_versions.mask
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      To detect faces from the uploaded image:
+
+      | Element            | Description | Type    | Required | Notes                                                        |
+      | ------------------ | ----------- | ------- | -------- | ------------------------------------------------------------ |
+      | Content-Type       | header      | string  | required | multipart/form-data                                          |
+      | x-api-key          | header      | string  | required | api key of the Face Detection service, created by the user                    |
+      | file               | body        | image   | required | image where to detect faces. Allowed image formats: jpeg, jpg, ico, png, bmp, gif, tif, tiff, webp. Max size is 5Mb |
+      | limit              | param       | integer | optional | maximum number of faces on the image to be recognized. It recognizes the biggest faces first. Value of 0 represents no limit. Default value: 0 |
+      | det_prob_threshold | param       | string  | optional | minimum required confidence that a recognized face is actually a face. Value is between 0.0 and 1.0 |
+      | face_plugins       | param       | string  | optional | comma-separated slugs of face plugins. If empty, no additional information is returned. [Learn more](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md)  |
+      | status             | param       | boolean | optional | if true includes system information like execution_time and plugin_version fields. Default value is false |
+
+      Response body on success:
+      ```json
+      {
+        "result" : [ {
+          "age" : [ 25, 32 ],
+          "gender" : "female",
+          "embedding" : [ -0.03027934394776821, "...", -0.05117142200469971 ],
+          "box" : {
+            "probability" : 0.9987509250640869,
+            "x_max" : 376,
+            "y_max" : 479,
+            "x_min" : 68,
+            "y_min" : 77
+          },
+          "landmarks" : [ [ 156, 245 ], [ 277, 253 ], [ 202, 311 ], [ 148, 358 ], [ 274, 365 ] ],
+          "execution_time" : {
+            "age" : 30.0,
+            "gender" : 26.0,
+            "detector" : 130.0,
+            "calculator" : 49.0
+          }
+        } ],
+        "plugins_versions" : {
+          "age" : "agegender.AgeDetector",
+          "gender" : "agegender.GenderDetector",
+          "detector" : "facenet.FaceDetector",
+          "calculator" : "facenet.Calculator"
+        }
+      }
+      ```
+
+      | Element                        | Type    | Description                                                  |
+      | ------------------------------ | ------- | ------------------------------------------------------------ |
+      | age                            | array   | detected age range. Return only if [age plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled         |
+      | gender                         | string  | detected gender. Return only if [gender plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled         |
+      | embedding                      | array   | face embeddings. Return only if [calculator plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled      |
+      | box                            | object  | list of parameters of the bounding box for this face (on processedImage) |
+      | probability                    | float   | probability that a found face is actually a face (on processedImage)     |
+      | x_max, y_max, x_min, y_min     | integer | coordinates of the frame containing the face (on processedImage)         |
+      | landmarks                      | array   | list of the coordinates of the frame containing the face-landmarks. Return only if [landmarks plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled      |
+      | execution_time                 | object  | execution time of all plugins                       |
+      | plugins_versions               | object  | contains information about plugin versions                       |
+    execution: false
+    name: compreface-face-detection-service
+    outputs:
+    - contextPath: CompreFace.FaceDetectionService.result.age.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.age.high
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.age.low
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.gender.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.gender.value
+      type: String
+    - contextPath: CompreFace.FaceDetectionService.result.embedding
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.box.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.box.x_max
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.box.y_max
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.box.x_min
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.box.y_min
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.landmarks
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.mask.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.mask.value
+      type: String
+    - contextPath: CompreFace.FaceDetectionService.result.execution_time.age
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.result.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.FaceDetectionService.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.FaceDetectionService.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.FaceDetectionService.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.FaceDetectionService.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.FaceDetectionService.plugins_versions.mask
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Full description [here](https://github.com/exadel-inc/CompreFace/blob/master/docs/Rest-API-description.md#face-detection-service).
+    execution: false
+    name: compreface-face-detection-service-base
+    outputs:
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.age.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.age.high
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.age.low
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.gender.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.gender.value
+      type: String
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.embedding
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.box.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.box.x_max
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.box.y_max
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.box.x_min
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.box.y_min
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.landmarks
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.mask.probability
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.mask.value
+      type: String
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.execution_time.age
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.result.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.FaceDetectionServiceBase64.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.FaceDetectionServiceBase64.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.FaceDetectionServiceBase64.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.FaceDetectionServiceBase64.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.FaceDetectionServiceBase64.plugins_versions.mask
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      To compare faces from given two images:
+
+      | Element            | Description | Type    | Required | Notes                                                        |
+      | ------------------ | ----------- | ------- | -------- | ------------------------------------------------------------ |
+      | Content-Type       | header      | string  | required | multipart/form-data                                          |
+      | x-api-key          | header      | string  | required | api key of the Face verification service, created by the user                    |
+      | source_image       | body        | image   | required | file to be verified. Allowed image formats: jpeg, jpg, ico, png, bmp, gif, tif, tiff, webp. Max size is 5Mb |
+      | target_image       | body        | image   | required | reference file to check the source file. Allowed image formats: jpeg, jpg, ico, png, bmp, gif, tif, tiff, webp. Max size is 5Mb |
+      | limit              | param       | integer | optional | maximum number of faces on the target image to be recognized. It recognizes the biggest faces first. Value of 0 represents no limit. Default value: 0 |
+      | det_prob_threshold | param       | string  | optional | minimum required confidence that a recognized face is actually a face. Value is between 0.0 and 1.0. |
+      | face_plugins       | param       | string  | optional | comma-separated slugs of face plugins. If empty, no additional information is returned. [Learn more](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md)  |
+      | status             | param       | boolean | optional | if true includes system information like execution_time and plugin_version fields. Default value is false |
+
+      Response body on success:
+      ```json
+      {
+        "result" : [{
+          "source_image_face" : {
+            "age" : [ 25, 32 ],
+            "gender" : "female",
+            "embedding" : [ -0.0010271212086081505, "...", -0.008746841922402382 ],
+            "box" : {
+              "probability" : 0.9997453093528748,
+              "x_max" : 205,
+              "y_max" : 167,
+              "x_min" : 48,
+              "y_min" : 0
+            },
+            "landmarks" : [ [ 92, 44 ], [ 130, 68 ], [ 71, 76 ], [ 60, 104 ], [ 95, 125 ] ],
+            "execution_time" : {
+              "age" : 85.0,
+              "gender" : 51.0,
+              "detector" : 67.0,
+              "calculator" : 116.0
+            }
+          },
+          "face_matches": [
+            {
+              "age" : [ 25, 32 ],
+              "gender" : "female",
+              "embedding" : [ -0.049007344990968704, "...", -0.01753818802535534 ],
+              "box" : {
+                "probability" : 0.99975,
+                "x_max" : 308,
+                "y_max" : 180,
+                "x_min" : 235,
+                "y_min" : 98
+              },
+              "landmarks" : [ [ 260, 129 ], [ 273, 127 ], [ 258, 136 ], [ 257, 150 ], [ 269, 148 ] ],
+              "similarity" : 0.97858,
+              "execution_time" : {
+                "age" : 59.0,
+                "gender" : 30.0,
+                "detector" : 177.0,
+                "calculator" : 70.0
+              }
+            }],
+          "plugins_versions" : {
+            "age" : "agegender.AgeDetector",
+            "gender" : "agegender.GenderDetector",
+            "detector" : "facenet.FaceDetector",
+            "calculator" : "facenet.Calculator"
+          }
+        }]
+      }
+      ```
+
+      | Element                        | Type    | Description                                                  |
+      | ------------------------------ | ------- | ------------------------------------------------------------ |
+      | source_image_face              | object  | additional info about source image face |
+      | face_matches                   | array   | result of face verification |
+      | age                            | array   | detected age range. Return only if [age plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled         |
+      | gender                         | string  | detected gender. Return only if [gender plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled         |
+      | embedding                      | array   | face embeddings. Return only if [calculator plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled      |
+      | box                            | object  | list of parameters of the bounding box for this face         |
+      | probability                    | float   | probability that a found face is actually a face             |
+      | x_max, y_max, x_min, y_min     | integer | coordinates of the frame containing the face                 |
+      | landmarks                      | array   | list of the coordinates of the frame containing the face-landmarks. Return only if [landmarks plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins) is enabled      |
+      | similarity                     | float   | similarity between this face and the face on the source image               |
+      | execution_time                 | object  | execution time of all plugins                       |
+      | plugins_versions               | object  | contains information about plugin versions                       |
+    execution: false
+    name: compreface-face-verification-service
+    outputs:
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.age.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.age.high
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.age.low
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.gender.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.gender.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.embedding
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.box.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.box.x_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.box.y_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.box.x_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.box.y_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.landmarks
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.mask.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.mask.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.execution_time.age
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.source_image_face.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.age.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.age.high
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.age.low
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.gender.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.gender.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.embedding
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.box.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.box.x_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.box.y_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.box.x_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.box.y_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.landmarks
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.mask.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.mask.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.similarity
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.execution_time.age
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.face_matches.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.FaceVerificationService.result.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.FaceVerificationService.result.plugins_versions.mask
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: det_prob_threshold
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: face_plugins
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: source_image
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: target_image
+      required: false
+      secret: false
+    deprecated: false
+    description: Full description [here](https://github.com/exadel-inc/CompreFace/blob/master/docs/Rest-API-description.md#face-verification-service).
+    execution: false
+    name: compreface-face-verification-service-base
+    outputs:
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.age.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.age.high
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.age.low
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.gender.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.gender.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.embedding
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.box.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.box.x_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.box.y_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.box.x_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.box.y_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.landmarks
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.mask.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.mask.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.execution_time.age
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.source_image_face.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.age.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.age.high
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.age.low
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.gender.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.gender.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.embedding
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.box.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.box.x_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.box.y_max
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.box.x_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.box.y_min
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.landmarks
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.mask.probability
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.mask.value
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.similarity
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.execution_time.age
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.execution_time.gender
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.execution_time.detector
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.execution_time.calculator
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.face_matches.execution_time.mask
+      type: Number
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.plugins_versions.age
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.plugins_versions.gender
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.plugins_versions.detector
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.plugins_versions.calculator
+      type: String
+    - contextPath: CompreFace.FaceVerificationServiceBase64.result.plugins_versions.mask
+      type: String
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
-fromversion: 5.5.0
-tests:
-- No tests (auto formatted)
+  type: python
