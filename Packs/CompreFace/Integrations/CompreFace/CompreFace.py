@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import shutil
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
@@ -19,7 +19,6 @@ class Client(BaseClient):
 
     def list_subjects_request(self):
         response = self._http_request('GET', 'api/v1/recognition/subjects')
-
         return response
 
     def delete_subject_request(self, subject_name):
@@ -30,12 +29,19 @@ class Client(BaseClient):
         response = self._http_request('DELETE', 'api/v1/recognition/subjects')
         return response
 
-    def add_an_example_of_a_subject_request(self, subject_name, subject_image_path, det_prob_threshold=None):
+    def add_an_example_of_a_subject_request(self, subject_name, image_file, det_prob_threshold=None):
         if det_prob_threshold:
             params = assign_params(subject=subject_name, det_prob_threshold=det_prob_threshold)
         else:
             params = assign_params(subject=subject_name)
-        response = self._http_request('POST', 'api/v1/recognition/faces', params=params, files=subject_image_path)
+        #response = self._http_request('POST', 'api/v1/recognition/faces', data={}, params=params,
+                                      #files={"file": image_file})
+        headers = self._headers
+        headers['x-api-key'] = '3d4565d4-b1c6-42dd-b510-f4ab40939c36'
+
+        response = requests.post(url="http://ec2-18-184-3-100.eu-central-1.compute.amazonaws.com:9000/api/v1/recognition/faces"
+                                 ,verify=False, params={"subject":"test90"}, files={"file": open(image_file,'rb')}, data={})
+        print(response)
         return response
 
     def base64_add_an_example_of_a_subject_request(self, subject, det_prob_threshold, file):
@@ -253,6 +259,7 @@ def list_subjects_command(client: Client, args: Dict[str, Any]) -> CommandResult
         )
         return command_results
 
+
 def delete_subject_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     subject_name = args.get('subject_name')
     client.delete_subject_request(subject_name)
@@ -280,8 +287,14 @@ def add_example_of_subject_command(client: Client, args: Dict[str, Any]) -> Comm
     subject_name = args.get('subject_name')
     subject_image_entryid = args.get('subject_image')
     det_prob_threshold = args.get('det_prob_threshold')
-    subject_image_path = demisto.getFilePath(subject_image_entryid)["path"]
-    response = client.add_an_example_of_a_subject_request(subject_name, subject_image_path, det_prob_threshold)
+    subject_image_path = demisto.getFilePath(subject_image_entryid)['path']
+    subject_image_name = demisto.getFilePath(subject_image_entryid)['name']
+    print("test")
+    response = client.add_an_example_of_a_subject_request(
+        subject_name=subject_name,
+        image_file=subject_image_path,
+        det_prob_threshold=det_prob_threshold)
+
     subjects_dict = {
         "name": subject_name,
         "image_id": response.get('image_id')
