@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
+import requests
 
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
@@ -38,9 +39,9 @@ class Client(BaseClient):
                                       #files={"file": image_file})
         headers = self._headers
         headers['x-api-key'] = '3d4565d4-b1c6-42dd-b510-f4ab40939c36'
-
-        response = requests.post(url="http://ec2-18-184-3-100.eu-central-1.compute.amazonaws.com:9000/api/v1/recognition/faces"
-                                 ,verify=False, params={"subject":"test90"}, files={"file": open(image_file,'rb')}, data={})
+        response = requests.post(
+            url="http://ec2-18-184-3-100.eu-central-1.compute.amazonaws.com:9000/api/v1/recognition/faces",
+            verify=False, params={"subject": "test90"}, files={"file": open(image_file, 'rb')})
         print(response)
         return response
 
@@ -50,60 +51,46 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('POST', 'api/v1/recognition/faces',
                                       params=params, json_data=data, headers=headers)
-
         return response
 
     def list_of_all_saved_examples_of_the_subject_request(self, page, size, subject):
         params = assign_params(page=page, size=size, subject=subject)
         headers = self._headers
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('GET', 'api/v1/recognition/faces', params=params, headers=headers)
-
         return response
 
     def delete_all_examples_of_the_subject_by_name_request(self, subject):
         params = assign_params(subject=subject)
         headers = self._headers
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('DELETE', 'api/v1/recognition/faces', params=params, headers=headers)
-
         return response
 
     def delete_an_example_of_the_subject_by_id_request(self, image_id):
         headers = self._headers
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('DELETE', f'api/v1/recognition/faces/{image_id}', headers=headers)
-
         return response
 
     def delete_multiple_examples_request(self):
         data = {}
         headers = self._headers
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('POST', 'api/v1/recognition/faces/delete', json_data=data, headers=headers)
-
         return response
 
     def direct_download_an_image_example_of_the_subject_by_id_request(self, recognition_api_key, image_id):
         headers = self._headers
-
         response = self._http_request('GET', f'api/v1/static/{recognition_api_key}/images/{image_id}', headers=headers)
-
         return response
 
     def download_an_image_example_of_the_subject_by_id_request(self, image_id):
         headers = self._headers
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('GET', f'api/v1/recognition/faces/{image_id}/img', headers=headers)
-
         return response
 
     def recognize_faces_from_a_given_image_request(self, limit, det_prob_threshold, prediction_count, face_plugins,
@@ -113,9 +100,7 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'multipart/form-data'
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('POST', 'api/v1/recognition/recognize', params=params, headers=headers)
-
         return response
 
     def base64_recognize_faces_from_a_given_image_request(self, limit, det_prob_threshold, prediction_count,
@@ -126,10 +111,8 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request('POST', 'api/v1/recognition/recognize',
                                       params=params, json_data=data, headers=headers)
-
         return response
 
     def verify_faces_from_a_given_image_request(self, image_id, limit, det_prob_threshold, face_plugins, status):
@@ -137,10 +120,8 @@ class Client(BaseClient):
                                face_plugins=face_plugins, status=status)
         headers = self._headers
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request(
             'POST', f'api/v1/recognition/faces/{image_id}/verify', params=params, headers=headers)
-
         return response
 
     def base64_verify_faces_from_a_given_image_request(self, image_id, limit, det_prob_threshold, face_plugins, status,
@@ -151,10 +132,8 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
         headers['x-api-key'] = '{{recognition_api_key}}'
-
         response = self._http_request(
             'POST', f'api/v1/recognition/faces/{image_id}/verify', params=params, json_data=data, headers=headers)
-
         return response
 
     def face_detection_service_request(self, limit, det_prob_threshold, face_plugins, status):
@@ -163,9 +142,7 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'multipart/form-data'
         headers['x-api-key'] = '{{detection_api_key}}'
-
         response = self._http_request('POST', 'api/v1/detection/detect', params=params, headers=headers)
-
         return response
 
     def face_detection_service_base_request(self, limit, det_prob_threshold, face_plugins, status, file):
@@ -175,9 +152,7 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
         headers['x-api-key'] = '{{detection_api_key}}'
-
         response = self._http_request('POST', 'api/v1/detection/detect', params=params, json_data=data, headers=headers)
-
         return response
 
     def face_verification_service_request(self, limit, det_prob_threshold, face_plugins, status):
@@ -186,9 +161,7 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'multipart/form-data'
         headers['x-api-key'] = '{{verification_api_key}}'
-
         response = self._http_request('POST', 'api/v1/verification/verify', params=params, headers=headers)
-
         return response
 
     def face_verification_service_base_request(self, limit, det_prob_threshold, face_plugins, status, source_image,
@@ -199,10 +172,8 @@ class Client(BaseClient):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
         headers['x-api-key'] = '{{verification_api_key}}'
-
         response = self._http_request('POST', 'api/v1/verification/verify',
                                       params=params, json_data=data, headers=headers)
-
         return response
 
 
