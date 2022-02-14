@@ -289,7 +289,10 @@ def add_example_of_subject_command(client: Client, args: Dict[str, Any]) -> Comm
     det_prob_threshold = args.get('det_prob_threshold')
     subject_image_path = demisto.getFilePath(subject_image_entryid)['path']
     subject_image_name = demisto.getFilePath(subject_image_entryid)['name']
-    print("test")
+    shutil.copy(subject_image_path,
+                subject_image_name)
+
+    print(subject_image_name)
     response = client.add_an_example_of_a_subject_request(
         subject_name=subject_name,
         image_file=subject_image_path,
