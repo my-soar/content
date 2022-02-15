@@ -8,6 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
+- display: Port Number
+  hidden: false
+  name: port
+  required: false
+  type: 0
 - display: API Key
   hidden: false
   name: apikey
@@ -343,87 +348,13 @@ script:
     name: compreface-download-image-example-of-the-subject-by-id
   - arguments:
     - default: false
+      description: The image file Entry ID.
       isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: det_prob_threshold
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: prediction_count
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: face_plugins
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: status
-      required: false
+      name: image_file
+      required: true
       secret: false
     deprecated: false
-    description: "To recognize faces from the uploaded image:  \n\n| Element     \
-      \       | Description | Type    | Required | Notes                         \
-      \                               |\n| ------------------ | ----------- | -------\
-      \ | -------- | ------------------------------------------------------------\
-      \ |\n| Content-Type       | header      | string  | required | multipart/form-data\
-      \                                          |\n| x-api-key          | header\
-      \      | string  | required | api key of the Face recognition service, created\
-      \ by the user                    |\n| file               | body        | image\
-      \   | required | allowed image formats: jpeg, jpg, ico, png, bmp, gif, tif,\
-      \ tiff, webp. Max size is 5Mb |\n| limit              | param       | integer\
-      \ | optional | maximum number of faces on the image to be recognized. It recognizes\
-      \ the biggest faces first. Value of 0 represents no limit. Default value: 0\
-      \ |\n| det_prob_threshold | param       | string  | optional | minimum required\
-      \ confidence that a recognized face is actually a face. Value is between 0.0\
-      \ and 1.0. |\n| prediction_count   | param       | integer | optional | maximum\
-      \ number of subject predictions per face. It returns the most similar subjects.\
-      \ Default value: 1    |\n| face_plugins       | param       | string  | optional\
-      \ | comma-separated slugs of face plugins. If empty, no additional information\
-      \ is returned. [Learn more](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md)\
-      \  |\n| status             | param       | boolean | optional | if true includes\
-      \ system information like execution_time and plugin_version fields. Default\
-      \ value is false |\n\nResponse body on success:\n```json\n{\n  \"result\" :\
-      \ [ {\n    \"age\" : [ 25, 32 ],\n    \"gender\" : \"female\",\n    \"embedding\"\
-      \ : [ 9.424854069948196E-4, \"...\", -0.011415496468544006 ],\n    \"box\" :\
-      \ {\n      \"probability\" : 1.0,\n      \"x_max\" : 1420,\n      \"y_max\"\
-      \ : 1368,\n      \"x_min\" : 548,\n      \"y_min\" : 295\n    },\n    \"landmarks\"\
-      \ : [ [ 814, 713 ], [ 1104, 829 ], [ 832, 937 ], [ 704, 1030 ], [ 1017, 1133\
-      \ ] ],\n    \"subjects\" : [ {\n      \"similarity\" : 0.97858,\n      \"subject\"\
-      \ : \"subject1\"\n    } ],\n    \"execution_time\" : {\n      \"age\" : 28.0,\n\
-      \      \"gender\" : 26.0,\n      \"detector\" : 117.0,\n      \"calculator\"\
-      \ : 45.0\n    }\n  } ],\n  \"plugins_versions\" : {\n    \"age\" : \"agegender.AgeDetector\"\
-      ,\n    \"gender\" : \"agegender.GenderDetector\",\n    \"detector\" : \"facenet.FaceDetector\"\
-      ,\n    \"calculator\" : \"facenet.Calculator\"\n  }\n}\n```\n\n| Element   \
-      \                     | Type    | Description                              \
-      \                    |\n| ------------------------------ | ------- | ------------------------------------------------------------\
-      \ |\n| age                            | array   | detected age range. Return\
-      \ only if [age plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
-      \ is enabled         |\n| gender                         | string  | detected\
-      \ gender. Return only if [gender plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
-      \ is enabled         |\n| embedding                      | array   | face embeddings.\
-      \ Return only if [calculator plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
-      \ is enabled      |\n| box                            | object  | list of parameters\
-      \ of the bounding box for this face         |\n| probability               \
-      \     | float   | probability that a found face is actually a face         \
-      \    |\n| x_max, y_max, x_min, y_min     | integer | coordinates of the frame\
-      \ containing the face                 |\n| landmarks                      |\
-      \ array   | list of the coordinates of the frame containing the face-landmarks.\
-      \ Return only if [landmarks plugin](https://github.com/exadel-inc/CompreFace/blob/master/docs/Face-services-and-plugins.md#face-plugins)\
-      \ is enabled      |\n| subjects                       | list    | list of similar\
-      \ subjects with size of <prediction_count> order by similarity |\n| similarity\
-      \                     | float   | similarity that on that image predicted person\
-      \               |\n| subject                        | string  | name of the\
-      \ subject in Face Collection                       |\n| execution_time     \
-      \            | object  | execution time of all plugins                     \
-      \  |\n| plugins_versions               | object  | contains information about\
-      \ plugin versions                       |"
+    description: To recognize faces from the uploaded image.
     execution: false
     name: compreface-recognize-faces-from-given-image
     outputs:
@@ -1323,7 +1254,7 @@ script:
       type: String
     - contextPath: CompreFace.FaceVerificationServiceBase64.result.plugins_versions.mask
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: compreface
   feed: false
   isfetch: false
   longRunning: false
