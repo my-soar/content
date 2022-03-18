@@ -1,0 +1,77 @@
+args:
+- auto: PREDEFINED
+  default: false
+  description: The Zlib function name, chose one of the three options.
+  isArray: false
+  name: function_name
+  predefined:
+  - compress
+  - decompress
+  - hash
+  required: true
+  secret: false
+- default: false
+  description: The data to process with the Zlib function.
+  isArray: false
+  name: data_to_process
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: '-1'
+  description: The compression level from -1 to 9, where -1 represents a default compromise
+    between speed and compression, 0 is no compression, 1 is fastest and produces
+    the least compression, 9 is slowest and produces the most.
+  isArray: false
+  name: compression_level
+  predefined:
+  - '-1'
+  - '0'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: crc32
+  description: The hash type incase hasing data.
+  isArray: false
+  name: hash_type
+  predefined:
+  - crc32
+  - adler32
+  required: false
+  secret: false
+comment: An automation script that can be used to compress, decompress or hash data
+  using the Zlib deflate method.
+commonfields:
+  id: Zlib
+  version: -1
+enabled: false
+name: Zlib
+outputs:
+- contextPath: Zlib.Input
+  description: The Zlib input.
+  type: String
+- contextPath: Zlib.Output
+  description: The Zlib Output.
+  type: String
+- contextPath: Zlib.Function
+  description: The Zlib function that was used while processing the input.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.1.26972
+fromversion: 6.0.0

@@ -1,0 +1,23 @@
+{
+    "name": "Zlib",
+    "description": "The zlib compression library provides in-memory compression and decompression functions, including integrity checks of the uncompressed data.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "amahmoud@paloaltonetworks.com"
+    ],
+    "githubUser": []
+}
