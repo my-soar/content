@@ -1,0 +1,43 @@
+args:
+- default: false
+  description: The list to unmerge its cells
+  isArray: false
+  name: list
+  required: false
+  secret: false
+- default: false
+  description: The sheet file to unmerge its cells
+  isArray: false
+  name: sheet
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: list
+  description: The type of the object to process, list or sheet
+  isArray: false
+  name: type
+  predefined:
+  - list
+  - sheet
+  required: false
+  secret: false
+comment: A script to unmerge cells
+commonfields:
+  id: Sheets
+  version: -1
+enabled: false
+name: CellUnMerger
+outputs:
+- contextPath: CellUnMerger.List
+  description: The unmerged list
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: openpyxl
+fromversion: 6.0.0
