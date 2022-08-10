@@ -900,7 +900,6 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
     """
     job = None
     search = notable_data.get("drilldown_search", "")
-
     if search:
         raw_dict = rawToDict(notable_data.get("_raw", ""))
         searchable_query = build_drilldown_search(notable_data, search, raw_dict)
@@ -925,7 +924,6 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
                           "search {}".format(notable_data[EVENT_ID], search))
     else:
         demisto.debug("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
-
     return job
 
 
@@ -2332,6 +2330,24 @@ def splunk_job_status(service, args):
         )
 
 
+def splunk_get_drilldown_events_command(service, args):
+    num_enrichment_events = args.get('num_enrichment_events')
+    notable_raw = args.get('notable_raw')
+
+    job_details = drilldown_enrichment(service, json.loads(notable_raw), num_enrichment_events)
+
+    entry_context = {
+        'Job': job_details['sid'],
+    }
+    human_readable = tableToMarkdown('Splunk Job Status', entry_context)
+    return CommandResults(
+        outputs=entry_context,
+        readable_output=human_readable,
+        outputs_prefix="Splunk.JobStatus",
+        outputs_key_field="SID"
+    )
+
+
 def splunk_parse_raw_command():
     raw = demisto.args().get('raw', '')
     rawDict = rawToDict(raw)
@@ -2672,6 +2688,8 @@ def main():
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
         return_results(splunk_job_status(service, demisto.args()))
+    elif command == 'splunk-get-drilldown-events':
+        return_results(splunk_get_drilldown_events_command(service, demisto.args()))
     elif command.startswith('splunk-kv-') and service is not None:
         args = demisto.args()
         app = args.get('app_name', 'search')
