@@ -820,38 +820,6 @@ def get_notable_field_and_value(raw_field, notable_data, raw=None):
     return "", ""
 
 
-def build_drilldown_search(notable_data, search, raw_dict):
-    """ Replaces all needed fields in a drilldown search query
-
-    Args:
-        notable_data (dict): The notable data
-        search (str): The drilldown search query
-        raw_dict (dict): The raw dict
-
-    Returns (str): A searchable drilldown search query
-
-    """
-    searchable_search = []
-    start = 0
-
-    for match in re.finditer(DRILLDOWN_REGEX, search):
-        groups = match.groups()
-        prefix = groups[0]
-        raw_field = (groups[1] or groups[2]).strip('$')
-        field, replacement = get_notable_field_and_value(raw_field, notable_data, raw_dict)
-        if not field and not replacement:
-            return ""
-        if prefix:
-            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
-        end = match.start()
-        searchable_search.append(search[start:end])
-        searchable_search.append(str(replacement))
-        start = match.end()
-    searchable_search.append(search[start:])  # Handling the tail of the query
-
-    return ''.join(searchable_search)
-
-
 def get_drilldown_timeframe(notable_data, raw):
     """ Sets the drilldown search timeframe data.
 
@@ -887,6 +855,69 @@ def get_drilldown_timeframe(notable_data, raw):
     return task_status, earliest_offset, latest_offset
 
 
+def build_drilldown_search(notable_data):
+    """ Replaces all needed fields in a drilldown search query
+
+    Args:
+        notable_data (dict): The notable data
+        search (str): The drilldown search query
+        raw_dict (dict): The raw dict
+
+    Returns (str): A searchable drilldown search query
+
+    """
+    search = notable_data.get("drilldown_search", "")
+    raw_dict = rawToDict(notable_data.get("_raw", ""))
+    searchable_search = []
+    start = 0
+    status = True
+    for match in re.finditer(DRILLDOWN_REGEX, search):
+        groups = match.groups()
+        prefix = groups[0]
+        raw_field = (groups[1] or groups[2]).strip('$')
+        field, replacement = get_notable_field_and_value(raw_field, notable_data, raw_dict)
+        if not field and not replacement:
+            return ""
+        if prefix:
+            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
+        end = match.start()
+        searchable_search.append(search[start:end])
+        searchable_search.append(str(replacement))
+        start = match.end()
+    searchable_search.append(search[start:])  # Handling the tail of the query
+    searchable_query = ''.join(searchable_search)
+    if searchable_query:
+        status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
+        if status:
+            if "latest" not in searchable_query:
+                searchable_query = "latest={} ".format(latest_offset) + searchable_query
+            if "earliest" not in searchable_query:
+                searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
+
+    return status, searchable_query
+
+
+def build_identity_search(notable_data):
+    query = None
+    users = get_fields_query_part(
+        notable_data=notable_data, prefix="identity", fields=["user", "src_user"], add_backslash=True
+    )
+    if users:
+        query = '| inputlookup identity_lookup_expanded where {}'.format(users)
+    return query
+
+
+def build_asset_search(notable_data):
+    query = None
+    assets = get_fields_query_part(
+        notable_data=notable_data, prefix="asset", fields=["src", "dest", "src_ip", "dst_ip"]
+    )
+    if assets:
+        query = '| inputlookup append=T asset_lookup_by_str where {} | inputlookup append=t asset_lookup_by_cidr ' \
+                'where {} | rename _key as asset_id | stats values(*) as * by asset_id'.format(assets, assets)
+    return query
+
+
 def drilldown_enrichment(service, notable_data, num_enrichment_events):
     """ Performs a drilldown enrichment.
 
@@ -900,17 +931,10 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
     """
     job = None
     search = notable_data.get("drilldown_search", "")
-
     if search:
-        raw_dict = rawToDict(notable_data.get("_raw", ""))
-        searchable_query = build_drilldown_search(notable_data, search, raw_dict)
+        status, searchable_query = build_drilldown_search(notable_data)
         if searchable_query:
-            status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                if "latest" not in searchable_query:
-                    searchable_query = "latest={} ".format(latest_offset) + searchable_query
-                if "earliest" not in searchable_query:
-                    searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
                 query = build_search_query({"query": searchable_query})
                 demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
@@ -925,7 +949,6 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
                           "search {}".format(notable_data[EVENT_ID], search))
     else:
         demisto.debug("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
-
     return job
 
 
@@ -942,13 +965,9 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
     """
     job = None
     error_msg = "Failed submitting identity enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
-    users = get_fields_query_part(
-        notable_data=notable_data, prefix="identity", fields=["user", "src_user"], add_backslash=True
-    )
-
-    if users:
+    query = build_identity_search(notable_data)
+    if query:
         kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
-        query = '| inputlookup identity_lookup_expanded where {}'.format(users)
         demisto.debug("Identity query for notable {}: {}".format(notable_data[EVENT_ID], query))
         try:
             job = service.jobs.create(query, **kwargs)
@@ -973,14 +992,9 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
     """
     job = None
     error_msg = "Failed submitting asset enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
-    assets = get_fields_query_part(
-        notable_data=notable_data, prefix="asset", fields=["src", "dest", "src_ip", "dst_ip"]
-    )
-
-    if assets:
+    query = build_asset_search(notable_data)
+    if query:
         kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
-        query = '| inputlookup append=T asset_lookup_by_str where {} | inputlookup append=t asset_lookup_by_cidr ' \
-                'where {} | rename _key as asset_id | stats values(*) as * by asset_id'.format(assets, assets)
         demisto.debug("Asset query for notable {}: {}".format(notable_data[EVENT_ID], query))
         try:
             job = service.jobs.create(query, **kwargs)
@@ -2334,6 +2348,47 @@ def splunk_job_status(service, args):
         )
 
 
+def splunk_get_drilldown_enrichment_query_command(args):
+    notable_raw = args.get('notable_raw')
+    drilldown_query = build_drilldown_search(json.loads(notable_raw))
+    entry_context = {
+        'Query': drilldown_query[1]
+    }
+    human_readable = tableToMarkdown('Splunk DrillDown Enrichment Query', entry_context)
+    return CommandResults(
+        outputs=entry_context,
+        readable_output=human_readable,
+        outputs_prefix="Splunk.DrillDownEnrichment"
+    )
+
+
+def splunk_get_asset_enrichment_query_command(args):
+    notable_raw = args.get('notable_raw')
+    asset_query = build_asset_search(json.loads(notable_raw))
+    entry_context = {
+        'Query': asset_query
+    }
+    human_readable = tableToMarkdown('Splunk Asset Enrichment Query', entry_context)
+    return CommandResults(
+        outputs=entry_context,
+        readable_output=human_readable,
+        outputs_prefix="Splunk.AssetEnrichment"
+    )
+
+
+def splunk_get_identity_enrichment_query_command(args):
+    notable_raw = args.get('notable_raw')
+    identity_query = build_identity_search(json.loads(notable_raw))
+    entry_context = {
+        'Query': identity_query
+    }
+    human_readable = tableToMarkdown('Splunk Identity Enrichment Query', entry_context)
+    return CommandResults(
+        outputs=entry_context,
+        readable_output=human_readable,
+        outputs_prefix="Splunk.IdentityEnrichment"
+    )
+
 def splunk_parse_raw_command():
     raw = demisto.args().get('raw', '')
     rawDict = rawToDict(raw)
@@ -2682,6 +2737,12 @@ def main():
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
         return_results(splunk_job_status(service, demisto.args()))
+    elif command == 'splunk-get-drilldown-enrichment-query':
+        return_results(splunk_get_drilldown_enrichment_query_command(demisto.args()))
+    elif command == 'splunk-get-asset-enrichment-query':
+        return_results(splunk_get_asset_enrichment_query_command(demisto.args()))
+    elif command == 'splunk-get-identity-enrichment-query':
+        return_results(splunk_get_identity_enrichment_query_command(demisto.args()))
     elif command.startswith('splunk-kv-') and service is not None:
         args = demisto.args()
         app = args.get('app_name', 'search')
