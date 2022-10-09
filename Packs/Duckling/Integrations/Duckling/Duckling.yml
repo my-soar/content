@@ -1,0 +1,50 @@
+category: Messaging
+commonfields:
+  id: Duckling
+  version: -1
+configuration:
+- additionalinfo: Used for internel communication. You can specify any port number.
+  display: Reverse Proxy Listen Port
+  hidden: false
+  name: longRunningPort
+  required: true
+  type: 0
+- display: Duckling Port
+  hidden: false
+  name: duckling_port
+  required: false
+  type: 0
+description: The linguist that parses text into structured data.
+display: Duckling
+name: Duckling
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important
+        information users need to know, for example, default values.]'
+      isArray: false
+      name: dummy
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information
+      users need to know, for example required permissions.]'
+    execution: false
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  dockerimage: demisto/python3:3.10.5.31797
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

@@ -1,0 +1,20 @@
+{
+    "name": "Duckling",
+    "description": "The linguist that parses text into structured data.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}
