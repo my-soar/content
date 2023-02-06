@@ -637,6 +637,23 @@ class Client(BaseClient):
 
         return response
 
+    def generic_host_query(self, field_name: str, field_value: str) -> Dict:
+        url_suffix = '/endpoints/v2/0/100/hostname Ascending'
+
+        params = {
+            'accessType': '3',
+            'search': json.dumps({
+                'searchFields': [{
+                    'fieldName': field_name,
+                    'values': [{
+                        'value': field_value
+                    }]
+                }]
+            })
+        }
+
+        return self._http_request('GET', url_suffix, params=params)
+
 
 def get_endpoint_id(client: Client, endpoint_ip: list = None, endpoint_name: list = None):
     if endpoint_name and endpoint_ip:
@@ -1669,6 +1686,60 @@ def query_events_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, response
 
 
+def generic_host_query_command(client: Client, args: dict) -> Tuple[str, Dict, Dict]:
+
+    field_name = args.get('field_name', '')
+    field_value = args.get('field_value', '')
+
+    contents = []
+    context_standards = []
+    headers = ['ID', 'HostName', 'IpAddress', 'OS', 'MacAddress', 'Isolated', 'LastContactDate', 'AgentInstalled',
+               'AgentVersion', 'OnNetwork', 'AV_Enabled', 'Groups', 'ProcessorName']
+    response = client.generic_host_query(field_name, field_value)
+    if not response.get('success'):
+        raise Exception(response.get('error'))
+    hosts = response.get('data', {})
+    if not hosts:
+        return 'No hosts was found', {}, {}
+
+    host_info = hosts.get('entities', [])
+    if not host_info:
+        return 'No entities were found for the host', {}, {}
+    for host in host_info:
+        contents.append({
+            'Hostname': host.get('hostName'),
+            'ID': host.get('id'),
+            'IPAddress': host.get('ipAddress'),
+            'OS': host.get('os'),
+            'MacAddress': host.get('macAddress'),
+            'LastContactDate': host.get('lastContactDate'),
+            'AgentInstalled': host.get('agentInstalled'),
+            'AgentVersion': host.get('agentVersion'),
+            'AV_Enabled': host.get('aV_Enabled'),
+            'Isolated': host.get('isolated'),
+            'OnNetwork': host.get('onNetwork'),
+            'Groups': host.get('groups'),
+            'ProcessorName': host.get('processorName')
+        })
+
+        context_standards.append({
+            'Hostname': host.get('hostName'),
+            'ID': host.get('id'),
+            'IPAddress': host.get('ipAddress'),
+            'OS': host.get('os'),
+            'MACAddress': host.get('macAddress'),
+            'Processor': host.get('processorName')
+        })
+
+    entry_context = {
+        'FidelisEndpoint.Host(val.ID && val.ID === obj.ID)': contents,
+        'Endpoint(val.ID && val.ID === obj.ID)': context_standards
+    }
+    human_readable = tableToMarkdown('Fidelis Endpoint Host Info', contents, headers=headers, removeNull=True)
+
+    return human_readable, entry_context, response
+
+
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
@@ -1807,6 +1878,9 @@ def main():
 
         elif demisto.command() == 'fidelis-endpoint-query-events':
             return_outputs(*query_events_command(client, demisto.args()))
+
+        elif demisto.command() == 'fidelis-endpoint-generic-host-query':
+            return_outputs(*generic_host_query_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:
