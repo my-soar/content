@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Fidelis EDR v2
+  id: Fidelis EDR v3
   version: -1
 configuration:
 - display: Server URL (e.g. https://abcde.fideliscloud.com/)
@@ -40,8 +40,8 @@ configuration:
   type: 8
 description: Use the Fidelis Endpoint integration for advanced endpoint detection
   and response (EDR) across Windows, Mac and Linux OSes for faster threat remediation.
-display: Fidelis EDR v2
-name: Fidelis EDR v2
+display: Fidelis EDR v3
+name: Fidelis EDR v3
 script:
   commands:
   - arguments:
@@ -1645,6 +1645,20 @@ script:
     description: Searches hosts using generic field value.
     execution: false
     name: fidelis-endpoint-generic-host-query
+  - deprecated: false
+    description: Downloads an agent package.
+    execution: false
+    name: fidelis-endpoint-download-agent-package
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
   dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: true

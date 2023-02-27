@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+# noqa: E402 lgtm [py/polluting-import]
+  # noqa: E402 lgtm [py/polluting-import]
 
 from typing import Dict, Tuple, List, Union
 
@@ -51,7 +53,10 @@ class Client(BaseClient):
             'username': username,
             'password': password
         }
-        response = self._http_request('GET', '/authenticate', params=params)
+        if "api" in self.base_url:
+            response = self._http_request('POST', '/authenticate', params=params)
+        else:
+            response = self._http_request('POST', '/Endpoint/api/authenticate', params=params)
         if response.get('error'):
             raise Exception(response.get('error'))
         token = response.get('data', {}).get('token', '')
@@ -654,6 +659,15 @@ class Client(BaseClient):
 
         return self._http_request('GET', url_suffix, params=params)
 
+
+    def download_agent_package(self) -> Union[str, bytes]:
+        url_suffix = '/Endpoint/Handlers/AgentComponentDownload.ashx'
+
+        params = {
+            'component': 'windows'
+        }
+
+        return self._http_request('GET', url_suffix, params=params)
 
 def get_endpoint_id(client: Client, endpoint_ip: list = None, endpoint_name: list = None):
     if endpoint_name and endpoint_ip:
@@ -1740,6 +1754,13 @@ def generic_host_query_command(client: Client, args: dict) -> Tuple[str, Dict, D
     return human_readable, entry_context, response
 
 
+def download_agent_package_command(client: Client):
+    response = client.download_agent_package()
+    installation_file = fileResult('fidelis_agent', response)
+
+    return installation_file
+
+
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
@@ -1787,6 +1808,7 @@ def main():
 
     # get the service API url
     base_url = urljoin(demisto.params().get('url'), '/Endpoint/api')
+    console_url = urljoin(demisto.params().get('url'))
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -1795,6 +1817,8 @@ def main():
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(base_url, username=username, password=password, verify=verify_certificate, proxy=proxy)
+        console_client = Client(console_url, username=username, password=password, verify=verify_certificate, proxy=proxy)
+
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1881,6 +1905,9 @@ def main():
 
         elif demisto.command() == 'fidelis-endpoint-generic-host-query':
             return_outputs(*generic_host_query_command(client, demisto.args()))
+
+        elif demisto.command() == 'fidelis-endpoint-download-agent-package':
+            return_outputs(*download_agent_package_command(console_client))
 
     # Log exceptions
     except Exception as e:
